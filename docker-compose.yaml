@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_utmn-map
+    restart: always
+    environment:
+      POSTGRES_USER: utmn_user
+      POSTGRES_PASSWORD: utmn_password
+      POSTGRES_DB: utmn_map
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_utmn_map_data:/var/lib/postgresql/data
+
+volumes:
+  pg_utmn_map_data:
+    driver: local
