@@ -1,0 +1,72 @@
+# UTMN MAP Go Backend
+
+## С чего начать
+
+### Требования:
+
+- Golang (main language)
+- golangcilint (linter)
+- golines (formatter)
+- sqlc (sql codegen)
+- tern (миграции)
+
+Установить все можно написав `make init`
+
+### Конфигурация
+
+- `config/<service-name>.yaml`
+
+Пример:
+
+```yaml
+server:
+  host: "0.0.0.0"
+  port: 8000
+database:
+  dsn: "postgres://utmn_user:utmn_password@localhost:5432/utmn_map?sslmode=disable"
+```
+
+### Запуск
+
+```
+cd cmd/publicapi
+go run main.go --config=path/to/config.yaml
+```
+
+### Об архитектуре
+
+Проект построен по многослойной архитектуре, разделяя ответственность между различными слоями:
+
+- **`cmd/`** – Точка входа в приложение.
+
+  - `publicapi/main.go` – Запуск публичного API.
+  - `publicapi/app.go` – Инициализация приложения.
+  - `publicapi/config.go` – Загрузка конфигурации.
+
+- **`config/`** – Конфигурационные файлы.
+
+  - `publicapi.yaml` – Настройки для публичного API.
+
+- **`internal/`** – Основная бизнес-логика и реализация доменной модели.
+
+  - `domain/` – Доменные сущности и их бизнес-логика.
+    - `map/entities/` – Описание объектов карты (здания, двери, этажи и т. д.).
+    - `map/repository/` – Работа с базой данных (конвертеры, SQL-запросы, миграции).
+    - `map/service/` – Логика работы с картой.
+    - `route/entities/` – Граф маршрутов.
+  - `entrypoints/`
+    - `publicapi/http/handler/` – HTTP-обработчики запросов.
+
+- **Файлы и инструменты сборки:**
+  - `Makefile` – Скрипты сборки и управления проектом.
+  - `docker-compose.yaml` – Конфигурация Docker-окружения.
+  - `go.mod`, `go.sum` – Зависимости Go.
+
+Каждый слой отвечает за свою область:
+
+- **`cmd/`** – Запуск сервисов.
+- **`internal/domain/`** – Бизнес-логика и работа с данными.
+- **`internal/entrypoints/`** – Обработчики запросов.
+- **`config/`** – Конфигурации.
+
+Это краткое описание структуры проекта, где каждый слой выполняет свою роль в рамках общей архитектуры.

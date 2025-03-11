@@ -1,8 +1,10 @@
 init:
 	go mod tidy
 	go mod download
-	go install github.com/segmentio/golines@latest
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install github.com/segmentio/golines@latest
+	go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
+	go install github.com/jackc/tern@latest
 
 lint:
 	# gofumpt is a tool for formatting the code, strickter that go fmt.

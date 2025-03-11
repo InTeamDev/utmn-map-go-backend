@@ -6,13 +6,45 @@ import (
 	"github.com/google/uuid"
 )
 
-type MapConverter struct{}
+type MapConverterImpl struct{}
 
-func NewMapConverter() *MapConverter {
-	return &MapConverter{}
+func NewMapConverter() *MapConverterImpl {
+	return &MapConverterImpl{}
 }
 
-func (mc *MapConverter) ObjectSqlcToEntity(
+func (mc *MapConverterImpl) FloorSqlcToEntity(floors sqlc.Floor) entities.Floor {
+	return entities.Floor{
+		ID:    floors.ID,
+		Name:  floors.Name,
+		Alias: floors.Alias,
+	}
+}
+
+func (mc *MapConverterImpl) FloorsSqlcToEntity(floors []sqlc.Floor) []entities.Floor {
+	result := make([]entities.Floor, 0, len(floors))
+	for _, floor := range floors {
+		result = append(result, mc.FloorSqlcToEntity(floor))
+	}
+	return result
+}
+
+func (mc *MapConverterImpl) BuildingSqlcToEntity(building sqlc.Building) entities.Building {
+	return entities.Building{
+		ID:      building.ID,
+		Name:    building.Name,
+		Address: building.Address,
+	}
+}
+
+func (mc *MapConverterImpl) BuildingsSqlcToEntity(buildings []sqlc.Building) []entities.Building {
+	result := make([]entities.Building, 0, len(buildings))
+	for _, building := range buildings {
+		result = append(result, mc.BuildingSqlcToEntity(building))
+	}
+	return result
+}
+
+func (mc *MapConverterImpl) ObjectSqlcToEntity(
 	object sqlc.GetObjectsByBuildingAndFloorRow,
 	doors []entities.Door,
 ) entities.Object {
@@ -34,7 +66,7 @@ func (mc *MapConverter) ObjectSqlcToEntity(
 	}
 }
 
-func (mc *MapConverter) ObjectsSqlcToEntity(
+func (mc *MapConverterImpl) ObjectsSqlcToEntity(
 	objects []sqlc.GetObjectsByBuildingAndFloorRow,
 	doors map[uuid.UUID][]entities.Door,
 ) []entities.Object {
@@ -45,7 +77,7 @@ func (mc *MapConverter) ObjectsSqlcToEntity(
 	return result
 }
 
-func (mc *MapConverter) DoorSqlcToEntity(door sqlc.GetDoorsByObjectIDsRow) entities.Door {
+func (mc *MapConverterImpl) DoorSqlcToEntity(door sqlc.GetDoorsByObjectIDsRow) entities.Door {
 	return entities.Door{
 		ID:     door.ID,
 		X:      door.X,
@@ -55,7 +87,7 @@ func (mc *MapConverter) DoorSqlcToEntity(door sqlc.GetDoorsByObjectIDsRow) entit
 	}
 }
 
-func (mc *MapConverter) DoorsSqlcToEntity(doors []sqlc.GetDoorsByObjectIDsRow) map[uuid.UUID][]entities.Door {
+func (mc *MapConverterImpl) DoorsSqlcToEntity(doors []sqlc.GetDoorsByObjectIDsRow) map[uuid.UUID][]entities.Door {
 	result := make(map[uuid.UUID][]entities.Door)
 	for _, door := range doors {
 		result[door.ObjectID] = append(result[door.ObjectID], mc.DoorSqlcToEntity(door))
