@@ -50,10 +50,18 @@ go run main.go --config=path/to/config.yaml
 - **`internal/`** – Основная бизнес-логика и реализация доменной модели.
 
   - `domain/` – Доменные сущности и их бизнес-логика.
-    - `map/entities/` – Описание объектов карты (здания, двери, этажи и т. д.).
-    - `map/repository/` – Работа с базой данных (конвертеры, SQL-запросы, миграции).
-    - `map/service/` – Логика работы с картой.
-    - `route/entities/` – Граф маршрутов.
+    - `map/` - Поддомен карты
+        - `entities/` – Описание объектов карты (здания, двери, этажи и т. д.).
+        - `repository/` – Работа с базой данных (конвертеры, SQL-запросы, миграции).
+        - `service/` – Логика работы с картой.
+    - `route` – Граф маршрутов.
+        - `entities/`
+        - `repository/`
+        - `service/`
+    - `search` – Поиск.
+        - `entities/`
+        - `repository/`
+        - `service/`
   - `entrypoints/`
     - `publicapi/http/handler/` – HTTP-обработчики запросов.
 
