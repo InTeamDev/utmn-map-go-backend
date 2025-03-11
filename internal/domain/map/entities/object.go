@@ -5,24 +5,24 @@ import "github.com/google/uuid"
 type ObjectType string
 
 const (
-	// Аудитория
+	// Аудитория.
 	ObjectTypeCabinet ObjectType = "cabinet"
-	// Кафедра
+	// Кафедра.
 	ObjectTypeDepartment ObjectType = "department"
-	// Мужской Туалет
+	// Мужской Туалет.
 	ObjectTypeManToilet ObjectType = "man-toilet"
-	// Женский Туалет
+	// Женский Туалет.
 	ObjectTypeWomanToilet ObjectType = "woman-toilet"
-	// Лестница
+	// Лестница.
 	ObjectTypeStair ObjectType = "stair"
-	// Гардероб
+	// Гардероб.
 	ObjectTypeWardrobe ObjectType = "wardrobe"
-	// Gym
+	// Gym.
 	ObjectTypeGym ObjectType = "gym"
 )
 
 type Object struct {
-	Id          uuid.UUID  `json:"id"`
+	ID          uuid.UUID  `json:"id"`
 	Name        string     `json:"name"`
 	Alias       string     `json:"alias"`
 	Description string     `json:"description"`

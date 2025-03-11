@@ -5,7 +5,7 @@ import (
 )
 
 type Door struct {
-	Id     uuid.UUID `json:"id"`
+	ID     uuid.UUID `json:"id"`
 	X      float64   `json:"x"`
 	Y      float64   `json:"y"`
 	Width  float64   `json:"width"`

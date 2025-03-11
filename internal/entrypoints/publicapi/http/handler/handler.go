@@ -9,7 +9,7 @@ import (
 )
 
 type MapService interface {
-	GetObjects(ctx context.Context) []entities.Object
+	GetObjects(ctx context.Context, req entities.GetObjectsRequest) ([]entities.Object, error)
 }
 
 type PublicAPI struct {
@@ -28,6 +28,10 @@ func (p *PublicAPI) RegisterRoutes(router *gin.Engine) {
 }
 
 func (p *PublicAPI) GetObjectsHandler(c *gin.Context) {
-	objects := p.mapService.GetObjects(c.Request.Context())
+	objects, err := p.mapService.GetObjects(c.Request.Context(), entities.GetObjectsRequest{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"objects": objects})
 }
