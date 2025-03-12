@@ -1,4 +1,4 @@
-INSERT INTO buildings (id, name, address) VALUES ('cf8f6f8b-9aac-4d8a-a4eb-d64d4fe18b3e', 'УЛК-05', 'ул. Перекопская, дом 15-а');
+INSERT INTO buildings (id, name, address) VALUES ('cf8f6f8b-9aac-4d8a-a4eb-d64d4fe18b3e', 'УЛК-05', 'ул. Перекопская, д. 15а');
 
 INSERT INTO floors (id, name, alias, building_id) VALUES
     ('d33d56e3-aca8-4b62-b34a-9e3882276f75', 'First', '1 этаж', 'cf8f6f8b-9aac-4d8a-a4eb-d64d4fe18b3e'),
@@ -7,101 +7,101 @@ INSERT INTO floors (id, name, alias, building_id) VALUES
     ('517650f2-3e3a-42d0-b6e9-6c8e7271b096', 'Fourth', '4 этаж', 'cf8f6f8b-9aac-4d8a-a4eb-d64d4fe18b3e');
 
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('8a84fedb-4db3-42f7-9499-d101749e6122', 'IDK11', 'Floor_First_Office_IDK11', NULL, 86.9, 293.3, 117.7, 60.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('8a84fedb-4db3-42f7-9499-d101749e6122', '???', 'Floor_First_Office_IDK11', NULL, 86.9, 293.3, 117.7, 60.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('537b8113-6afe-43e7-8691-04b93f05459e', 'IDK2', 'Floor_First_Office_IDK2', NULL, 204.6, 273.6, 198.1, 80.2, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('537b8113-6afe-43e7-8691-04b93f05459e', '???', 'Floor_First_Office_IDK2', NULL, 204.6, 273.6, 198.1, 80.2, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('b0b2f8b1-3949-4c39-8fee-46c358421328', 'IDK3', 'Floor_First_Office_IDK3', NULL, 204.6, 121.0, 150.0, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('b0b2f8b1-3949-4c39-8fee-46c358421328', '???', 'Floor_First_Office_IDK3', NULL, 204.6, 121.0, 150.0, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('860e310d-e161-481a-b136-3a9944e4a8c7', 'IDK4', 'Floor_First_Office_IDK4', NULL, 354.6, 121.0, 48.1, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('860e310d-e161-481a-b136-3a9944e4a8c7', '???', 'Floor_First_Office_IDK4', NULL, 354.6, 121.0, 48.1, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('572f771f-3fe0-43e7-a1d6-fa4a6273f85a', 'IDK5', 'Floor_First_Office_IDK5', NULL, 402.7, 121.0, 52.1, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('572f771f-3fe0-43e7-a1d6-fa4a6273f85a', '???', 'Floor_First_Office_IDK5', NULL, 402.7, 121.0, 52.1, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('f416e993-b7a6-4dba-ab0f-ccd88d9a56da', 'IDK6', 'Floor_First_Office_IDK6', NULL, 454.8, 121.0, 199.5, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('f416e993-b7a6-4dba-ab0f-ccd88d9a56da', '???', 'Floor_First_Office_IDK6', NULL, 454.8, 121.0, 199.5, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('2ee8097b-9486-4f1b-a4d7-9c9c75dc94e7', 'IDK7', 'Floor_First_Office_IDK7', NULL, 654.2, 121.0, 310.6, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('2ee8097b-9486-4f1b-a4d7-9c9c75dc94e7', '???', 'Floor_First_Office_IDK7', NULL, 654.2, 121.0, 310.6, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('d1eb2048-f020-4dcc-8744-0d51d1907177', '116', 'Floor_First_Office_116', NULL, 964.8, 121.0, 265.2, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('13e3a300-dd98-45ce-af1e-e59e0cae26f8', 'IDK9', 'Floor_First_Office_IDK9', NULL, 1230.0, 121.0, 62.9, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('13e3a300-dd98-45ce-af1e-e59e0cae26f8', '???', 'Floor_First_Office_IDK9', NULL, 1230.0, 121.0, 62.9, 121.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('d5a05daa-11a5-4623-8c73-dfcc0f8a5eca', '117', 'Floor_First_Office_117', NULL, 1056.9, 242.4, 236.0, 111.6, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('1ed2ed7d-9643-4b7f-a982-f296c8cccffe', '115', 'Floor_First_Office_115', NULL, 763.0, 354.0, 82.4, 159.6, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('130bac10-d6cb-45e0-a969-d754ec5e2a07', 'Wardrobe', 'Floor_First_Office_Wardrobe', NULL, 964.8, 354.0, 61.7, 538.7, 6, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('130bac10-d6cb-45e0-a969-d754ec5e2a07', 'Гардероб', 'Floor_First_Office_Wardrobe', NULL, 964.8, 354.0, 61.7, 538.7, 6, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('c3c6cd9a-7219-43f6-80ab-60403c33b0cc', 'IDK13', 'Floor_First_Office_IDK13', NULL, 402.7, 273.6, 52.1, 80.2, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('c3c6cd9a-7219-43f6-80ab-60403c33b0cc', '???', 'Floor_First_Office_IDK13', NULL, 402.7, 273.6, 52.1, 80.2, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('b7eff446-4121-4f51-bf6e-de0e35411215', 'IDK14', 'Floor_First_Office_IDK14', NULL, 454.8, 273.6, 53.6, 80.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('b7eff446-4121-4f51-bf6e-de0e35411215', '???', 'Floor_First_Office_IDK14', NULL, 454.8, 273.6, 53.6, 80.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('2ad9981e-1bfd-46fa-88bc-256552848d0b', 'IDK15', 'Floor_First_Office_IDK15', NULL, 508.4, 286.7, 94.1, 67.3, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('2ad9981e-1bfd-46fa-88bc-256552848d0b', '???', 'Floor_First_Office_IDK15', NULL, 508.4, 286.7, 94.1, 67.3, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('7b1e26ca-dcd4-46d6-9b79-471a298cc1fc', 'IDK16', 'Floor_First_Office_IDK16', NULL, 602.5, 286.7, 150.8, 67.3, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('7b1e26ca-dcd4-46d6-9b79-471a298cc1fc', '???', 'Floor_First_Office_IDK16', NULL, 602.5, 286.7, 150.8, 67.3, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('b1b87f98-d7d9-4485-b6db-14cb60eff14a', 'woman-toilet', 'Floor_First_Office_Toilet-Shkn-W', NULL, 255.2, 1199.6, 58.7, 106.1, 4, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('b1b87f98-d7d9-4485-b6db-14cb60eff14a', 'Женский туалет', 'Floor_First_Office_Toilet-Shkn-W', NULL, 255.2, 1199.6, 58.7, 106.1, 4, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('00db51d5-7e27-4402-997b-ad212b5dc33c', 'Toilet-Shkn-M', 'Floor_First_Office_Toilet-Shkn-M', NULL, 196.5, 1199.6, 58.7, 106.2, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('00db51d5-7e27-4402-997b-ad212b5dc33c', 'Мужской туалет', 'Floor_First_Office_Toilet-Shkn-M', NULL, 196.5, 1199.6, 58.7, 106.2, 3, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('5bcb5bc2-cb4a-4318-af5c-208d96ca35ad', '101', 'Floor_First_Office_101', NULL, 86.9, 931.5, 109.6, 156.1, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('b9b7c29f-17cf-4a89-a552-e1f43a3c378a', 'IDK101', 'Floor_First_Office_IDK101', NULL, 86.9, 768.7, 109.6, 162.8, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('b9b7c29f-17cf-4a89-a552-e1f43a3c378a', '???', 'Floor_First_Office_IDK101', NULL, 86.9, 768.7, 109.6, 162.8, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('8b120f43-da64-4d3c-8502-f3f9f9475d69', 'IDK102', 'Floor_First_Office_IDK102', NULL, 196.5, 768.7, 117.4, 107.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('8b120f43-da64-4d3c-8502-f3f9f9475d69', '???', 'Floor_First_Office_IDK102', NULL, 196.5, 768.7, 117.4, 107.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('751ee5d0-451e-4352-86e7-bd624090b590', '106', 'Floor_First_Office_106', NULL, 313.9, 1074.5, 186.6, 82.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('6c18f982-1146-43f3-81de-8041f71d927f', '107', 'Floor_First_Office_107', NULL, 500.5, 1052.5, 90.5, 104.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('80f6376e-e5dc-4929-a845-c73826f02c5b', 'IDK25', 'Floor_First_Office_IDK25', NULL, 1121.3, 1117.8, 405.2, 77.2, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('80f6376e-e5dc-4929-a845-c73826f02c5b', '???', 'Floor_First_Office_IDK25', NULL, 1121.3, 1117.8, 405.2, 77.2, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('373accf4-88f6-4c37-8fe9-b68b9e1b117e', 'Wardrobe1', 'Floor_First_Office_Wardrobe1', NULL, 1121.3, 994.8, 192.3, 123.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('373accf4-88f6-4c37-8fe9-b68b9e1b117e', 'Гардероб', 'Floor_First_Office_Wardrobe1', NULL, 1121.3, 994.8, 192.3, 123.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('aa8a14d1-079e-4d9e-84c7-97d078495bc2', '101b', 'Floor_First_Office_101b', NULL, 1408.6, 994.8, 117.9, 123.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('d7a67917-b414-477e-8c39-5dcc8432a07a', '100b', 'Floor_First_Office_100b', NULL, 1526.5, 994.8, 62.6, 123.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('5737b816-971c-41c2-9f98-62c40c842577', 'IDK52', 'Floor_First_Office_IDK52', NULL, 1409.4, 786.9, 54.9, 116.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('5737b816-971c-41c2-9f98-62c40c842577', '???', 'Floor_First_Office_IDK52', NULL, 1409.4, 786.9, 54.9, 116.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('bcd762cd-66cd-40bc-b4be-bdb03258c1be', 'IDK53', 'Floor_First_Office_IDK53', NULL, 1464.4, 786.9, 54.6, 116.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('bcd762cd-66cd-40bc-b4be-bdb03258c1be', '???', 'Floor_First_Office_IDK53', NULL, 1464.4, 786.9, 54.6, 116.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('b1cd6cbd-7c59-42b4-a343-e2742fc5f256', 'IDK54', 'Floor_First_Office_IDK54', NULL, 1519.0, 786.9, 70.5, 116.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('b1cd6cbd-7c59-42b4-a343-e2742fc5f256', '???', 'Floor_First_Office_IDK54', NULL, 1519.0, 786.9, 70.5, 116.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('3e1b8dc8-caaa-4517-a71d-9904867b6981', 'Gym', 'Floor_First_Office_Gym', NULL, 906.7, 1052.6, 214.6, 477.6, 7, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('611209f8-6cfa-4967-b4c4-19610c7f814f', 'Dining', 'Floor_First_Office_Dining', NULL, 591.0, 1052.5, 212.2, 477.7, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('dec3d716-07d9-4806-9599-db330e08dabe', 'Kitchen-1', 'Floor_First_Office_Kitchen-1', NULL, 690.5, 1316.0, 112.8, 75.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('dec3d716-07d9-4806-9599-db330e08dabe', 'Кухня', 'Floor_First_Office_Kitchen-1', NULL, 690.5, 1316.0, 112.8, 75.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('ede0f6ce-63be-42b9-8144-c3c517703d3b', 'Kitchen-2', 'Floor_First_Office_Kitchen-2', NULL, 690.5, 1391.5, 56.4, 75.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('ede0f6ce-63be-42b9-8144-c3c517703d3b', 'Кухня', 'Floor_First_Office_Kitchen-2', NULL, 690.5, 1391.5, 56.4, 75.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('0fbd5843-9997-4cda-8742-d4c089e5b840', 'Kitchen-3', 'Floor_First_Office_Kitchen-3', NULL, 591.0, 1316.0, 99.5, 214.2, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('0fbd5843-9997-4cda-8742-d4c089e5b840', 'Кухня', 'Floor_First_Office_Kitchen-3', NULL, 591.0, 1316.0, 99.5, 214.2, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('85183abd-7a3f-4275-9b24-900246246055', 'Kitchen-4', 'Floor_First_Office_Kitchen-4', NULL, 746.1, 1391.5, 57.2, 75.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('85183abd-7a3f-4275-9b24-900246246055', 'Кухня', 'Floor_First_Office_Kitchen-4', NULL, 746.1, 1391.5, 57.2, 75.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('c4203a62-f056-4634-9c46-403e023f9ffb', 'Kitchen-5', 'Floor_First_Office_Kitchen-5', NULL, 690.5, 1467.1, 112.7, 63.1, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('c4203a62-f056-4634-9c46-403e023f9ffb', 'Кухня', 'Floor_First_Office_Kitchen-5', NULL, 690.5, 1467.1, 112.7, 63.1, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('e1f94bed-0684-49dd-8a56-760906c35176', 'Kitchen-6', 'Floor_First_Office_Kitchen-6', NULL, 803.2, 1467.0, 103.5, 63.1, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('e1f94bed-0684-49dd-8a56-760906c35176', 'Кухня', 'Floor_First_Office_Kitchen-6', NULL, 803.2, 1467.0, 103.5, 63.1, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('c2681c90-edfb-4342-bc6c-a044146a34c9', 'IDK59', 'Floor_First_Office_IDK59', NULL, 1026.5, 994.8, 94.8, 57.8, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('c2681c90-edfb-4342-bc6c-a044146a34c9', '???', 'Floor_First_Office_IDK59', NULL, 1026.5, 994.8, 94.8, 57.8, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('0a4b5c59-befe-4ea6-a27b-66c2f2d2f7df', 'IDK113', 'Floor_First_Office_IDK113', NULL, 953.8, 994.8, 72.7, 57.8, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('0a4b5c59-befe-4ea6-a27b-66c2f2d2f7df', '???', 'Floor_First_Office_IDK113', NULL, 953.8, 994.8, 72.7, 57.8, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('fa8545b0-2907-4035-afa1-988b6c71426e', '100', 'Floor_First_Office_100', NULL, 86.9, 1087.6, 109.6, 218.2, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('c246b61c-257b-43f3-8c79-af41183bc868', 'IDK1131', 'Floor_First_Office_IDK1131', NULL, 947.2, 1052.6, 174.1, 48.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('c246b61c-257b-43f3-8c79-af41183bc868', '???', 'Floor_First_Office_IDK1131', NULL, 947.2, 1052.6, 174.1, 48.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('76f55815-c0cd-43ab-89b6-61d31ca8184e', 'IDK1132', 'Floor_First_Office_IDK1132', NULL, 803.2, 1316.0, 51.8, 30.9, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('76f55815-c0cd-43ab-89b6-61d31ca8184e', '???', 'Floor_First_Office_IDK1132', NULL, 803.2, 1316.0, 51.8, 30.9, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('46dc7e77-ce9f-424a-9230-55829b03b55a', 'IDK1133', 'Floor_First_Office_IDK1133', NULL, 855.0, 1316.0, 51.7, 30.9, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('46dc7e77-ce9f-424a-9230-55829b03b55a', '???', 'Floor_First_Office_IDK1133', NULL, 855.0, 1316.0, 51.7, 30.9, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('d7c4c3ac-1611-430e-95a9-1580f6316cd6', 'IDK1134', 'Floor_First_Office_IDK1134', NULL, 855.0, 1346.9, 51.7, 120.1, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('d7c4c3ac-1611-430e-95a9-1580f6316cd6', '???', 'Floor_First_Office_IDK1134', NULL, 855.0, 1346.9, 51.7, 120.1, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('44109937-10e5-460c-9775-a2d7cc5a8832', 'IDK1135', 'Floor_First_Office_IDK1135', NULL, 803.3, 1346.9, 51.7, 120.1, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('44109937-10e5-460c-9775-a2d7cc5a8832', '???', 'Floor_First_Office_IDK1135', NULL, 803.3, 1346.9, 51.7, 120.1, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('ef5a771c-4db5-4899-b421-57ef6294edce', 'IDK1136', 'Floor_First_Office_IDK1136', NULL, 864.8, 1225.6, 41.9, 58.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('ef5a771c-4db5-4899-b421-57ef6294edce', '???', 'Floor_First_Office_IDK1136', NULL, 864.8, 1225.6, 41.9, 58.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('59775d8d-90be-449b-b738-a557e5ec7c2f', 'IDK1137', 'Floor_First_Office_IDK1137', NULL, 803.2, 1284.1, 103.5, 31.9, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('59775d8d-90be-449b-b738-a557e5ec7c2f', '???', 'Floor_First_Office_IDK1137', NULL, 803.2, 1284.1, 103.5, 31.9, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('18e31541-ebcc-4a00-8e56-97216556241b', '102', 'Floor_First_Office_102', NULL, 196.5, 875.7, 117.4, 81.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
@@ -123,15 +123,15 @@ INSERT INTO objects (id, name, alias, description, x, y, width, height, object_t
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('e4525fce-d773-4503-b4e7-fd806c6f8881', '106a', 'Floor_First_Office_106a', NULL, 1743.4, 1122.0, 107.7, 105.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('2f92e72d-c564-42e6-9b93-464c43999f09', 'Toilet-M-FizHim', 'Floor_First_Office_Toilet-M-FizHim', NULL, 1743.4, 1055.8, 107.7, 66.3, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('2f92e72d-c564-42e6-9b93-464c43999f09', 'Мужский Туалет', 'Floor_First_Office_Toilet-M-FizHim', NULL, 1743.4, 1055.8, 107.7, 66.3, 3, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('d1b97066-0bf4-45f3-8cac-6b04ab32fe9f', 'Toilet-W-FizHim', 'Floor_First_Office_Toilet-W-FizHim', NULL, 1743.4, 1010.5, 107.7, 45.3, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('d1b97066-0bf4-45f3-8cac-6b04ab32fe9f', 'Женский Туалет', 'Floor_First_Office_Toilet-W-FizHim', NULL, 1743.4, 1010.5, 107.7, 45.3, 4, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('c922c3f6-1f50-4077-a804-ea5e24654915', '118a', 'Floor_First_Office_118a', NULL, 1714.3, 35.5, 189.4, 229.5, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('c4ccba72-b3c3-494c-8020-ddd46ee0f124', 'IDK12313', 'Floor_First_Office_IDK12313', NULL, 1414.1, 121.0, 175.1, 133.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('c4ccba72-b3c3-494c-8020-ddd46ee0f124', '???', 'Floor_First_Office_IDK12313', NULL, 1414.1, 121.0, 175.1, 133.4, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('3afeac96-86d3-458b-a7f7-1c36e80051de', 'IDK40', 'Floor_First_Office_IDK40', NULL, 1414.1, 254.4, 175.1, 99.6, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('3afeac96-86d3-458b-a7f7-1c36e80051de', '???', 'Floor_First_Office_IDK40', NULL, 1414.1, 254.4, 175.1, 99.6, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('c8837b65-119d-411b-8675-24ac65c6b301', '116a', 'Floor_First_Office_116a', NULL, 1742.4, 354.0, 108.7, 121.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
@@ -145,7 +145,7 @@ INSERT INTO objects (id, name, alias, description, x, y, width, height, object_t
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('abff3600-16bc-46c1-b7df-95e214194783', '109a', 'Floor_First_Office_109a', NULL, 1589.4, 849.2, 103.6, 53.8, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('95c8f7df-20b9-44c7-b36a-2f4e91adf285', 'IDK47', 'Floor_First_Office_IDK47', NULL, 1589.4, 740.2, 103.6, 109.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+        VALUES ('95c8f7df-20b9-44c7-b36a-2f4e91adf285', '???', 'Floor_First_Office_IDK47', NULL, 1589.4, 740.2, 103.6, 109.0, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('35f89505-d042-476a-abc4-b9fb092ac85c', '113a', 'Floor_First_Office_113a', NULL, 1589.4, 688.3, 103.6, 51.9, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
@@ -155,9 +155,9 @@ INSERT INTO objects (id, name, alias, description, x, y, width, height, object_t
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('81b650e4-0539-42cd-a53d-c20ed199f323', '119a', 'Floor_First_Office_119a', NULL, 1589.2, 354.0, 103.8, 68.6, 1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('003e6895-4e46-4287-a2f4-8189189c70f9', 'ToiletM-Shkn', 'Floor_Second_Office_ToiletM-Shkn', NULL, 196.5, 1199.8, 58.7, 105.9, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
+        VALUES ('003e6895-4e46-4287-a2f4-8189189c70f9', 'Мужской Туалет', 'Floor_Second_Office_ToiletM-Shkn', NULL, 196.5, 1199.8, 58.7, 105.9, 3, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('eb897dab-eecb-4607-be63-5ced59564aed', 'ToiletW-Shkn', 'Floor_Second_Office_ToiletW-Shkn', NULL, 255.2, 1199.8, 58.7, 105.9, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
+        VALUES ('eb897dab-eecb-4607-be63-5ced59564aed', 'Женский Туалет', 'Floor_Second_Office_ToiletW-Shkn', NULL, 255.2, 1199.8, 58.7, 105.9, 4, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('01e8f38a-1d86-48c3-be41-82f34990e064', '201', 'Floor_Second_Office_201', NULL, 86.9, 1171.1, 109.6, 134.6, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
@@ -199,7 +199,7 @@ INSERT INTO objects (id, name, alias, description, x, y, width, height, object_t
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('bccdff2d-2f0f-473b-9f1e-01f35e33e1a3', '202-2', 'Floor_Second_Office_202-2', NULL, 803.3, 1349.4, 103.1, 180.8, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('335d7dba-6196-4b64-a5fd-af17f78860ab', '111-202', 'Floor_Second_Server_111-202', NULL, 591.0, 1414.9, 212.3, 115.3, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
+        VALUES ('335d7dba-6196-4b64-a5fd-af17f78860ab', 'Серверная 111-202', 'Floor_Second_Server_111-202', NULL, 591.0, 1414.9, 212.3, 115.3, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('4f08dd5b-340d-40fd-aac8-b025961fbc58', '212a', 'Floor_Second_Office_212a', NULL, 516.4, 121.0, 50.7, 120.6, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
@@ -217,9 +217,9 @@ INSERT INTO objects (id, name, alias, description, x, y, width, height, object_t
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('b0d6dbc5-cf58-4410-93ea-4d31fd8dbb9a', '209a', 'Floor_Second_Office_209a', NULL, 1589.2, 655.0, 103.7, 65.1, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('a15ee12e-15b5-4626-800a-b303f21aa310', 'IDK1', 'Floor_Second_Office_IDK1', NULL, 1589.2, 720.1, 103.7, 211.2, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
+        VALUES ('a15ee12e-15b5-4626-800a-b303f21aa310', '???', 'Floor_Second_Office_IDK1', NULL, 1589.2, 720.1, 103.7, 211.2, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('9f567095-07c5-4cfc-818b-0fe4900bd414', 'IDK2', 'Floor_Second_Office_IDK2', NULL, 1589.2, 931.3, 103.7, 54.4, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
+        VALUES ('9f567095-07c5-4cfc-818b-0fe4900bd414', '???', 'Floor_Second_Office_IDK2', NULL, 1589.2, 931.3, 103.7, 54.4, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('35830df4-5970-4259-ac71-14f4ddabf08f', '205a', 'Floor_Second_Office_205a', NULL, 1589.2, 985.8, 103.7, 164.1, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
@@ -231,13 +231,13 @@ INSERT INTO objects (id, name, alias, description, x, y, width, height, object_t
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('d5004b09-d481-4c1b-894f-20098b21f676', '208a', 'Floor_Second_Office_208a', NULL, 1743.4, 1170.1, 107.7, 52.8, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('f1bd68d5-e931-457e-9ce2-2598e24c71d9', 'ToiletW-FizHim', 'Floor_Second_Office_ToiletW-FizHim', NULL, 1743.4, 1120.1, 107.7, 49.9, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
+        VALUES ('f1bd68d5-e931-457e-9ce2-2598e24c71d9', 'Женский Туалет', 'Floor_Second_Office_ToiletW-FizHim', NULL, 1743.4, 1120.1, 107.7, 49.9, 4, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('ba2b1d46-47e3-42e1-9575-7a95f5c9d311', 'ToiletM-FizHim', 'Floor_Second_Office_ToiletM-FizHim', NULL, 1743.4, 1051.3, 107.7, 68.8, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
+        VALUES ('ba2b1d46-47e3-42e1-9575-7a95f5c9d311', 'Мужской Туалет', 'Floor_Second_Office_ToiletM-FizHim', NULL, 1743.4, 1051.3, 107.7, 68.8, 3, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('7856856f-ca9b-4efe-8eeb-e3ea1d3572b0', 'Toilet-Left-FizHim', 'Floor_Second_Office_Toilet-Left-FizHim', NULL, 1743.4, 1051.3, 48.6, 27.6, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
+        VALUES ('7856856f-ca9b-4efe-8eeb-e3ea1d3572b0', 'Мужской Туалет', 'Floor_Second_Office_Toilet-Left-FizHim', NULL, 1743.4, 1051.3, 48.6, 27.6, 3, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('931b70d7-a518-4e5b-bf3d-e0623fd6b76b', 'ToiletM-Right-FizHim', 'Floor_Second_Office_ToiletM-Right-FizHim', NULL, 1743.4, 1079.0, 48.6, 41.1, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
+        VALUES ('931b70d7-a518-4e5b-bf3d-e0623fd6b76b', 'Мужской Туалет', 'Floor_Second_Office_ToiletM-Right-FizHim', NULL, 1743.4, 1079.0, 48.6, 41.1, 3, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('3fd33cd0-ee4a-4d68-9360-774608aa05bf', 'IDK24', 'Floor_Second_Office_IDK24', NULL, 1743.4, 1010.5, 107.7, 40.8, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
@@ -261,7 +261,7 @@ INSERT INTO objects (id, name, alias, description, x, y, width, height, object_t
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('6e96b73f-fbdf-457a-baea-3e78352be1b7', '118', 'Floor_Second_Office_118', NULL, 1713.3, 35.7, 190.4, 231.8, 1, '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('feda0951-ed76-471f-b229-cada365978df', 'ToiletW', 'Floor_Third_Office_ToiletW', NULL, 254.2, 1199.8, 59.7, 106.0, 1, 'acc38768-c209-4702-957d-778e59f875f3');
+        VALUES ('feda0951-ed76-471f-b229-cada365978df', 'Женский Туалет', 'Floor_Third_Office_ToiletW', NULL, 254.2, 1199.8, 59.7, 106.0, 4, 'acc38768-c209-4702-957d-778e59f875f3');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('bf6d64e4-440e-4f3e-ad98-445b9685ace9', '301', 'Floor_Third_Office_301', NULL, 87.0, 1171.1, 109.5, 134.6, 1, 'acc38768-c209-4702-957d-778e59f875f3');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
@@ -301,15 +301,15 @@ INSERT INTO objects (id, name, alias, description, x, y, width, height, object_t
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('69dbc562-0238-4008-b736-50f10d66a94a', '306', 'Floor_Third_Office_306', NULL, 87.0, 351.8, 109.5, 151.3, 1, 'acc38768-c209-4702-957d-778e59f875f3');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('b4240d3e-57f9-4154-ab43-dbeb03db6324', 'Server', 'Floor_Third_Office_Server', NULL, 533.1, 286.7, 91.1, 67.3, 1, 'acc38768-c209-4702-957d-778e59f875f3');
+        VALUES ('b4240d3e-57f9-4154-ab43-dbeb03db6324', 'Серверная', 'Floor_Third_Office_Server', NULL, 533.1, 286.7, 91.1, 67.3, 1, 'acc38768-c209-4702-957d-778e59f875f3');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('3f3f1580-a952-4e0c-b40e-d47cf2086d3d', '309', 'Floor_Third_Office_309', NULL, 253.0, 571.7, 60.9, 258.1, 1, 'acc38768-c209-4702-957d-778e59f875f3');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('ee25dbef-5e89-4d02-9061-4d9749ae41d6', '309a', 'Floor_Third_Office_309a', NULL, 253.0, 829.8, 60.9, 109.6, 1, 'acc38768-c209-4702-957d-778e59f875f3');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('44ca1b70-a4f9-4b11-bc93-adc45f81f8da', 'ToiletM', 'Floor_Fourth_Office_ToiletM', NULL, 196.5, 1199.8, 57.7, 105.9, 1, '517650f2-3e3a-42d0-b6e9-6c8e7271b096');
+        VALUES ('44ca1b70-a4f9-4b11-bc93-adc45f81f8da', 'Мужской Туалет', 'Floor_Fourth_Office_ToiletM', NULL, 196.5, 1199.8, 57.7, 105.9, 3, '517650f2-3e3a-42d0-b6e9-6c8e7271b096');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
-        VALUES ('e697dcb4-c741-4801-a7a9-f07b3807f91a', 'ToiletW', 'Floor_Fourth_Office_ToiletW', NULL, 254.2, 1199.8, 59.7, 106.0, 1, '517650f2-3e3a-42d0-b6e9-6c8e7271b096');
+        VALUES ('e697dcb4-c741-4801-a7a9-f07b3807f91a', 'Женский Туалет', 'Floor_Fourth_Office_ToiletW', NULL, 254.2, 1199.8, 59.7, 106.0, 4, '517650f2-3e3a-42d0-b6e9-6c8e7271b096');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('678227ad-ce22-4276-9ea5-294c566d3d53', '401', 'Floor_Fourth_Office_401', NULL, 86.9, 1117.6, 109.5, 188.1, 1, '517650f2-3e3a-42d0-b6e9-6c8e7271b096');
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
