@@ -11,9 +11,14 @@ import (
 	"syscall"
 	"time"
 
+	popularityservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/popularity/service"
+	searchservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/service"
+
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service"
+	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/utils"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/entrypoints/publicapi/http/handler"
+	"github.com/InTeamDev/utmn-map-go-backend/internal/infrastructure/cache"
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,9 +37,10 @@ func RunApp(ctx context.Context, configPath string) error {
 	defer db.Close()
 
 	mapService := initServices(db)
+	searchService := initSearchService()
 
 	router := gin.Default()
-	publicAPI := handler.NewPublicAPI(mapService)
+	publicAPI := handler.NewPublicAPI(mapService, searchService)
 	publicAPI.RegisterRoutes(router)
 
 	server := &http.Server{
@@ -65,6 +71,25 @@ func initServices(db *sql.DB) *service.Map {
 	mapConverter := repository.NewMapConverter()
 	mapRepository := repository.NewMap(db, mapConverter)
 	return service.NewMap(mapRepository)
+}
+
+func initSearchService() *searchservice.SearchService {
+	cache := cache.NewInMemorySearchCache(5 * time.Minute)
+	// TODO: add norm repo
+	// repo := searchrepository.NewInMemorySearchRepository([]mapentities.Object{})
+	queryProcessor := utils.NewQueryProcessor("data/synonyms.json")
+	relevanceCalc := utils.NewRelevanceCalculator()
+	distanceService := utils.NewDistanceService()
+	popularityRanker := popularityservice.NewPopularityRanker()
+
+	return searchservice.NewSearchService(
+		cache,
+		nil,
+		queryProcessor,
+		relevanceCalc,
+		distanceService,
+		popularityRanker,
+	)
 }
 
 func startServer(ctx context.Context, server *http.Server) error {

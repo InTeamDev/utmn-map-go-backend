@@ -7,10 +7,12 @@ import (
 	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/popularity/service"
-	repository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/repository/search"
+	repository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/repository"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/utils"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/infrastructure/cache"
 )
+
+const RANK = 0.5
 
 type SearchService struct {
 	cache            *cache.InMemorySearchCache
@@ -19,6 +21,24 @@ type SearchService struct {
 	relevanceCalc    *utils.RelevanceCalculator
 	distanceService  *utils.DistanceService
 	popularityRanker *service.PopularityRanker
+}
+
+func NewSearchService(
+	cache *cache.InMemorySearchCache,
+	repo repository.SearchRepository,
+	queryProcessor *utils.QueryProcessor,
+	relevanceCalc *utils.RelevanceCalculator,
+	distanceService *utils.DistanceService,
+	popularityRanker *service.PopularityRanker,
+) *SearchService {
+	return &SearchService{
+		cache:            cache,
+		repo:             repo,
+		queryProcessor:   queryProcessor,
+		relevanceCalc:    relevanceCalc,
+		distanceService:  distanceService,
+		popularityRanker: popularityRanker,
+	}
 }
 
 func (s *SearchService) Search(
@@ -38,7 +58,7 @@ func (s *SearchService) Search(
 	for _, obj := range objects {
 		if s.isMatch(processedQuery, obj) && s.isSameFloor(obj, userFloor) {
 			relevance := s.relevanceCalc.Calculate(processedQuery, obj, ctx)
-			if relevance > 0.5 {
+			if relevance > RANK {
 				results = append(results, s.buildResult(obj, relevance, ctx))
 			}
 		}
@@ -49,13 +69,11 @@ func (s *SearchService) Search(
 	return results, nil
 }
 
-// isMatch проверяет, соответствует ли объект поисковому запросу.
 func (s *SearchService) isMatch(query string, obj mapentities.Object) bool {
 	return strings.Contains(strings.ToLower(string(obj.ObjectType)), query) ||
 		strings.Contains(strings.ToLower(obj.Floor.Name), query)
 }
 
-// buildResult создает SearchResult на основе объекта и релевантности.
 func (s *SearchService) buildResult(
 	obj mapentities.Object,
 	relevance float64,
