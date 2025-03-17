@@ -32,4 +32,5 @@ type Object struct {
 	Height      float64    `json:"height"`
 	ObjectType  ObjectType `json:"object_type"`
 	Doors       []Door     `json:"doors"`
+	Floor       Floor      `json:"floor"`
 }
