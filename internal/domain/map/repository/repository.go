@@ -15,6 +15,11 @@ type MapConverter interface {
 		objects []sqlc.GetObjectsByBuildingAndFloorRow,
 		doors map[uuid.UUID][]entities.Door,
 	) []entities.Object
+	ObjectsSqlcToEntityByFloor(
+		objects []sqlc.GetObjectsByFloorRow,
+		doors map[uuid.UUID][]entities.Door,
+	) []entities.Object
+
 	DoorsSqlcToEntity(doors []sqlc.GetDoorsByObjectIDsRow) map[uuid.UUID][]entities.Door
 	FloorsSqlcToEntity(floors []sqlc.Floor) []entities.Floor
 	BuildingsSqlcToEntity(buildings []sqlc.Building) []entities.Building
@@ -72,4 +77,23 @@ func (m *Map) GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floo
 		return nil, fmt.Errorf("get floors: %w", err)
 	}
 	return m.mapConverter.FloorsSqlcToEntity(floors), nil
+}
+
+func (m *Map) GetObjectsByFloor(ctx context.Context, floorID uuid.UUID) ([]entities.Object, error) {
+	q := sqlc.New(m.db)
+	rowObjects, err := q.GetObjectsByFloor(ctx, floorID)
+	if err != nil {
+		return nil, fmt.Errorf("get objects by floor: %w", err)
+	}
+	objectIDs := make([]uuid.UUID, 0, len(rowObjects))
+	for _, object := range rowObjects {
+		objectIDs = append(objectIDs, object.ID)
+	}
+	rowDoors, err := q.GetDoorsByObjectIDs(ctx, objectIDs)
+	if err != nil {
+		return nil, fmt.Errorf("get doors: %w", err)
+	}
+	doors := m.mapConverter.DoorsSqlcToEntity(rowDoors)
+	objects := m.mapConverter.ObjectsSqlcToEntityByFloor(rowObjects, doors)
+	return objects, nil
 }

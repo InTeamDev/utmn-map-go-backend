@@ -1,22 +1,25 @@
 package service
 
 import (
+	"context"
+	"log"
 	"sort"
 	"strings"
 
 	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
+	maprepository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository"
 	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/popularity/service"
-	repository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/repository"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/utils"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/infrastructure/cache"
+	"github.com/google/uuid"
 )
 
-const RANK = 0.5
+const RANK = 0.1
 
 type SearchService struct {
 	cache            *cache.InMemorySearchCache
-	repo             repository.SearchRepository
+	repo             *maprepository.Map
 	queryProcessor   *utils.QueryProcessor
 	relevanceCalc    *utils.RelevanceCalculator
 	distanceService  *utils.DistanceService
@@ -25,7 +28,7 @@ type SearchService struct {
 
 func NewSearchService(
 	cache *cache.InMemorySearchCache,
-	repo repository.SearchRepository,
+	repo *maprepository.Map,
 	queryProcessor *utils.QueryProcessor,
 	relevanceCalc *utils.RelevanceCalculator,
 	distanceService *utils.DistanceService,
@@ -42,36 +45,42 @@ func NewSearchService(
 }
 
 func (s *SearchService) Search(
+	ctx context.Context,
 	query string,
-	userFloor string,
-	ctx *searchentities.UserContext,
+	floorID uuid.UUID,
+	userContext *searchentities.UserContext,
 ) ([]searchentities.SearchResult, error) {
-	cacheKey := utils.GenerateCacheKey(query, userFloor, ctx)
+	cacheKey := utils.GenerateCacheKey(query, floorID, userContext)
 	if cached, ok := s.cache.Get(cacheKey); ok {
 		return cached, nil
 	}
 
 	processedQuery := s.queryProcessor.Process(query)
-	objects, _ := s.repo.GetAllObjects()
+
+	objects, err := s.repo.GetObjectsByFloor(ctx, floorID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
 
 	var results []searchentities.SearchResult
 	for _, obj := range objects {
-		if s.isMatch(processedQuery, obj) && s.isSameFloor(obj, userFloor) {
-			relevance := s.relevanceCalc.Calculate(processedQuery, obj, ctx)
+		if s.isMatch(processedQuery, obj) && s.isSameFloor(obj, floorID) {
+			relevance := s.relevanceCalc.Calculate(processedQuery, obj, userContext)
+			log.Println(relevance)
 			if relevance > RANK {
-				results = append(results, s.buildResult(obj, relevance, ctx))
+				results = append(results, s.buildResult(obj, relevance, userContext))
 			}
 		}
 	}
 
-	s.sortResults(results, userFloor, ctx)
+	s.sortResults(results, floorID)
 	s.cache.Set(cacheKey, results)
 	return results, nil
 }
 
 func (s *SearchService) isMatch(query string, obj mapentities.Object) bool {
-	return strings.Contains(strings.ToLower(string(obj.ObjectType)), query) ||
-		strings.Contains(strings.ToLower(obj.Floor.Name), query)
+	return strings.Contains(strings.ToLower(obj.Name), query)
 }
 
 func (s *SearchService) buildResult(
@@ -83,7 +92,7 @@ func (s *SearchService) buildResult(
 		ID:         obj.ID,
 		Relevance:  relevance,
 		Popularity: s.popularityRanker.GetPopularityScore(obj.ID),
-		Floor:      obj.Floor.Name,
+		FloorID:    obj.Floor.ID,
 		Type:       string(obj.ObjectType),
 		X:          obj.X,
 		Y:          obj.Y,
@@ -96,20 +105,19 @@ func (s *SearchService) buildResult(
 	return result
 }
 
-func (s *SearchService) isSameFloor(obj mapentities.Object, userFloor string) bool {
-	return strings.EqualFold(obj.Floor.Name, userFloor)
+func (s *SearchService) isSameFloor(obj mapentities.Object, userFloor uuid.UUID) bool {
+	return obj.Floor.ID == userFloor
 }
 
 func (s *SearchService) sortResults(
 	results []searchentities.SearchResult,
-	userFloor string,
-	ctx *searchentities.UserContext,
+	userFloor uuid.UUID,
 ) {
 	sort.Slice(results, func(i, j int) bool {
 		a, b := results[i], results[j]
 
-		if a.Floor != b.Floor {
-			return a.Floor == userFloor
+		if a.FloorID != b.FloorID {
+			return a.FloorID == userFloor
 		}
 
 		if a.Relevance != b.Relevance {

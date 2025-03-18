@@ -6,7 +6,7 @@ type SearchResult struct {
 	ID         uuid.UUID `json:"id"`
 	Relevance  float64   `json:"relevance"`
 	Popularity float64   `json:"popularity"`
-	Floor      string    `json:"floor"`
+	FloorID    uuid.UUID `json:"floor_id"`
 	Type       string    `json:"type"`
 	Detail     string    `json:"detail"`
 	X          float64   `json:"x"`

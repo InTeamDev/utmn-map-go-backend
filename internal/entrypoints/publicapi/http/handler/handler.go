@@ -18,7 +18,11 @@ type MapService interface {
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
 }
 type SearchService interface {
-	Search(query string, userFloor string, ctx *searhentities.UserContext) ([]searhentities.SearchResult, error)
+	Search(ctx context.Context,
+		query string,
+		userFloor uuid.UUID,
+		UserContext *searhentities.UserContext,
+	) ([]searhentities.SearchResult, error)
 }
 
 type PublicAPI struct {
@@ -98,6 +102,11 @@ func (p *PublicAPI) GetFloorsHandler(c *gin.Context) {
 func (p *PublicAPI) SearchHandler(c *gin.Context) {
 	query := c.Query("q")
 	userFloor := c.Query("floor")
+	floorID, err := uuid.Parse(userFloor)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid floor_id"})
+		return
+	}
 
 	var userContext *searhentities.UserContext
 	if latStr := c.Query("lat"); latStr != "" {
@@ -121,7 +130,7 @@ func (p *PublicAPI) SearchHandler(c *gin.Context) {
 		}
 	}
 
-	results, err := p.searchService.Search(query, userFloor, userContext)
+	results, err := p.searchService.Search(c.Request.Context(), query, floorID, userContext)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
