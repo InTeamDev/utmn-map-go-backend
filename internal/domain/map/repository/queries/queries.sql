@@ -46,3 +46,25 @@ SELECT
 FROM doors d
 JOIN object_doors od ON d.id = od.door_id
 WHERE od.object_id = ANY(@object_ids::uuid[]);
+
+-- name: GetObjectsByFloor :many
+SELECT 
+    o.id, 
+    o.name, 
+    o.alias, 
+    o.description, 
+    o.x, 
+    o.y, 
+    o.width, 
+    o.height, 
+    ot.name AS object_type, 
+    f.id AS floor_id, 
+    f.name AS floor_name, 
+    b.id AS building_id, 
+    b.name AS building_name
+FROM objects o
+JOIN floors f ON o.floor_id = f.id
+JOIN buildings b ON f.building_id = b.id
+JOIN object_types ot ON o.object_type_id = ot.id
+WHERE f.id = $1::uuid;
+
