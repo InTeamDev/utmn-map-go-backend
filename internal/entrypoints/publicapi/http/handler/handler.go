@@ -3,9 +3,8 @@ package handler
 import (
 	"context"
 	"net/http"
-	"strconv"
 
-	searhentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
+	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
 
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/gin-gonic/gin"
@@ -18,11 +17,11 @@ type MapService interface {
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
 }
 type SearchService interface {
-	Search(ctx context.Context,
+	Search(
+		ctx context.Context,
 		query string,
 		userFloor uuid.UUID,
-		UserContext *searhentities.UserContext,
-	) ([]searhentities.SearchResult, error)
+	) ([]searchentities.SearchResult, error)
 }
 
 type PublicAPI struct {
@@ -100,7 +99,7 @@ func (p *PublicAPI) GetFloorsHandler(c *gin.Context) {
 }
 
 func (p *PublicAPI) SearchHandler(c *gin.Context) {
-	query := c.Query("q")
+	query := c.Query("query")
 	userFloor := c.Query("floor")
 	floorID, err := uuid.Parse(userFloor)
 	if err != nil {
@@ -108,29 +107,7 @@ func (p *PublicAPI) SearchHandler(c *gin.Context) {
 		return
 	}
 
-	var userContext *searhentities.UserContext
-	if latStr := c.Query("lat"); latStr != "" {
-		if lonStr := c.Query("lon"); lonStr != "" {
-			lat, err := strconv.ParseFloat(latStr, 64)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "invalid lat"})
-				return
-			}
-			lon, err := strconv.ParseFloat(lonStr, 64)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "invalid lon"})
-				return
-			}
-			userContext = &searhentities.UserContext{
-				Location: &searhentities.Location{
-					X: lat,
-					Y: lon,
-				},
-			}
-		}
-	}
-
-	results, err := p.searchService.Search(c.Request.Context(), query, floorID, userContext)
+	results, err := p.searchService.Search(c.Request.Context(), query, floorID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

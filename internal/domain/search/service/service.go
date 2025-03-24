@@ -21,8 +21,6 @@ type SearchService struct {
 	cache            *cache.InMemorySearchCache
 	repo             *maprepository.Map
 	queryProcessor   *utils.QueryProcessor
-	relevanceCalc    *utils.RelevanceCalculator
-	distanceService  *utils.DistanceService
 	popularityRanker *service.PopularityRanker
 }
 
@@ -30,16 +28,12 @@ func NewSearchService(
 	cache *cache.InMemorySearchCache,
 	repo *maprepository.Map,
 	queryProcessor *utils.QueryProcessor,
-	relevanceCalc *utils.RelevanceCalculator,
-	distanceService *utils.DistanceService,
 	popularityRanker *service.PopularityRanker,
 ) *SearchService {
 	return &SearchService{
 		cache:            cache,
 		repo:             repo,
 		queryProcessor:   queryProcessor,
-		relevanceCalc:    relevanceCalc,
-		distanceService:  distanceService,
 		popularityRanker: popularityRanker,
 	}
 }
@@ -48,9 +42,8 @@ func (s *SearchService) Search(
 	ctx context.Context,
 	query string,
 	floorID uuid.UUID,
-	userContext *searchentities.UserContext,
 ) ([]searchentities.SearchResult, error) {
-	cacheKey := utils.GenerateCacheKey(query, floorID, userContext)
+	cacheKey := utils.GenerateCacheKey(query, floorID)
 	if cached, ok := s.cache.Get(cacheKey); ok {
 		return cached, nil
 	}
@@ -66,11 +59,7 @@ func (s *SearchService) Search(
 	var results []searchentities.SearchResult
 	for _, obj := range objects {
 		if s.isMatch(processedQuery, obj) && s.isSameFloor(obj, floorID) {
-			relevance := s.relevanceCalc.Calculate(processedQuery, obj, userContext)
-			log.Println(relevance)
-			if relevance > RANK {
-				results = append(results, s.buildResult(obj, relevance, userContext))
-			}
+			results = append(results, s.buildResult(obj))
 		}
 	}
 
@@ -85,21 +74,14 @@ func (s *SearchService) isMatch(query string, obj mapentities.Object) bool {
 
 func (s *SearchService) buildResult(
 	obj mapentities.Object,
-	relevance float64,
-	ctx *searchentities.UserContext,
 ) searchentities.SearchResult {
 	result := searchentities.SearchResult{
 		ID:         obj.ID,
-		Relevance:  relevance,
 		Popularity: s.popularityRanker.GetPopularityScore(obj.ID),
 		FloorID:    obj.Floor.ID,
 		Type:       string(obj.ObjectType),
 		X:          obj.X,
 		Y:          obj.Y,
-	}
-
-	if ctx != nil && ctx.Location != nil {
-		result.Distance = s.distanceService.Calculate(*ctx.Location, obj)
 	}
 
 	return result

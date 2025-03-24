@@ -135,16 +135,12 @@ func initServices(db *sql.DB) (*service.Map, *repository.Map) {
 func initSearchService(mapRepository *repository.Map) *searchservice.SearchService {
 	cache := cache.NewInMemorySearchCache(ttl)
 	queryProcessor := utils.NewQueryProcessor("data/synonyms.json")
-	relevanceCalc := utils.NewRelevanceCalculator()
-	distanceService := utils.NewDistanceService()
 	popularityRanker := popularityservice.NewPopularityRanker()
 
 	return searchservice.NewSearchService(
 		cache,
 		mapRepository,
 		queryProcessor,
-		relevanceCalc,
-		distanceService,
 		popularityRanker,
 	)
 }
