@@ -38,7 +38,10 @@ func (c *InMemorySearchCache) Get(key string) ([]entities.SearchResult, bool) {
 		return nil, false
 	}
 
-	item := value.(*cacheItem)
+	item, ok := value.(*cacheItem)
+	if !ok {
+		return nil, false
+	}
 	if time.Now().After(item.expiresAt) {
 		c.store.Delete(key)
 		return nil, false

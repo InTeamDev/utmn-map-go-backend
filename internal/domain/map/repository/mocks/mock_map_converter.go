@@ -97,3 +97,17 @@ func (mr *MockMapConverterMockRecorder) ObjectsSqlcToEntity(objects, doors any) 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ObjectsSqlcToEntity", reflect.TypeOf((*MockMapConverter)(nil).ObjectsSqlcToEntity), objects, doors)
 }
+
+// ObjectsSqlcToEntityByFloor mocks base method.
+func (m *MockMapConverter) ObjectsSqlcToEntityByFloor(objects []sqlc.GetObjectsByFloorRow, doors map[uuid.UUID][]entities.Door) []entities.Object {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ObjectsSqlcToEntityByFloor", objects, doors)
+	ret0, _ := ret[0].([]entities.Object)
+	return ret0
+}
+
+// ObjectsSqlcToEntityByFloor indicates an expected call of ObjectsSqlcToEntityByFloor.
+func (mr *MockMapConverterMockRecorder) ObjectsSqlcToEntityByFloor(objects, doors any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ObjectsSqlcToEntityByFloor", reflect.TypeOf((*MockMapConverter)(nil).ObjectsSqlcToEntityByFloor), objects, doors)
+}

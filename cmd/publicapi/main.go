@@ -10,11 +10,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
 	popularityservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/popularity/service"
 	searchservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/service"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gopkg.in/yaml.v2"
 
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository"
@@ -29,6 +32,46 @@ const (
 	ttl               = 5 * time.Minute
 	readHeaderTimeout = 5 * time.Second
 )
+
+var (
+	httpRequestsTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "http_requests_total",
+			Help: "Общее количество HTTP запросов",
+		},
+		[]string{"method", "path", "status"},
+	)
+
+	httpRequestDuration = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "http_request_duration_seconds",
+			Help:    "Время выполнения HTTP запроса",
+			Buckets: prometheus.DefBuckets,
+		},
+		[]string{"method", "path"},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(httpRequestsTotal, httpRequestDuration)
+}
+
+func MetricsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		start := time.Now()
+		c.Next()
+		duration := time.Since(start).Seconds()
+
+		status := c.Writer.Status()
+		path := c.FullPath()
+		if path == "" {
+			path = c.Request.URL.Path
+		}
+
+		httpRequestsTotal.WithLabelValues(c.Request.Method, path, strconv.Itoa(status)).Inc()
+		httpRequestDuration.WithLabelValues(c.Request.Method, path).Observe(duration)
+	}
+}
 
 type Config struct {
 	Server struct {
@@ -99,6 +142,11 @@ func RunApp(ctx context.Context, configPath string) error {
 	searchService := initSearchService(mapRepository)
 
 	router := gin.Default()
+
+	// 🔥 Вставляем метрики
+	router.Use(MetricsMiddleware())
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
 	publicAPI := handler.NewPublicAPI(mapService, searchService)
 	publicAPI.RegisterRoutes(router)
 
