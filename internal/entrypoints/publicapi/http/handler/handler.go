@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
+
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -14,13 +16,21 @@ type MapService interface {
 	GetBuildings(ctx context.Context) ([]entities.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
 }
-
-type PublicAPI struct {
-	mapService MapService
+type SearchService interface {
+	Search(
+		ctx context.Context,
+		query string,
+		userFloor uuid.UUID,
+	) ([]searchentities.SearchResult, error)
 }
 
-func NewPublicAPI(mapService MapService) *PublicAPI {
-	return &PublicAPI{mapService: mapService}
+type PublicAPI struct {
+	mapService    MapService
+	searchService SearchService
+}
+
+func NewPublicAPI(mapService MapService, searchService SearchService) *PublicAPI {
+	return &PublicAPI{mapService: mapService, searchService: searchService}
 }
 
 func (p *PublicAPI) RegisterRoutes(router *gin.Engine) {
@@ -29,6 +39,7 @@ func (p *PublicAPI) RegisterRoutes(router *gin.Engine) {
 		api.GET("/buildings", p.GetBuildingsHandler)
 		api.GET("/buildings/:build_id/floors", p.GetFloorsHandler)
 		api.GET("/buildings/:build_id/floors/:floor_id/objects", p.GetObjectsHandler)
+		api.GET("/search", p.SearchHandler)
 	}
 }
 
@@ -85,4 +96,22 @@ func (p *PublicAPI) GetFloorsHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"floors": floors})
+}
+
+func (p *PublicAPI) SearchHandler(c *gin.Context) {
+	query := c.Query("query")
+	userFloor := c.Query("floor")
+	floorID, err := uuid.Parse(userFloor)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid floor_id"})
+		return
+	}
+
+	results, err := p.searchService.Search(c.Request.Context(), query, floorID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"results": results})
 }
