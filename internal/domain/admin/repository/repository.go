@@ -41,11 +41,10 @@ func (r *AdminRepository) Create(ctx context.Context, admin entities.AdminCreate
 	}
 
 	result := entities.Admin{
-		ID:        createdAdmin.ID,
-		Username:  createdAdmin.Username,
-		Email:     createdAdmin.Email,
-		FullName:  createdAdmin.FullName,
-		CreatedAt: createdAdmin.CreatedAt.Time,
+		ID:       createdAdmin.ID,
+		Username: createdAdmin.Username,
+		Email:    createdAdmin.Email,
+		FullName: createdAdmin.FullName,
 	}
 	return &result, nil
 }
@@ -67,7 +66,6 @@ func (r *AdminRepository) GetByUsername(ctx context.Context, username string) (*
 		PasswordHash: admin.PasswordHash,
 		Email:        admin.Email,
 		FullName:     admin.FullName,
-		CreatedAt:    admin.CreatedAt,
 		LastLogin:    admin.LastLogin,
 	}
 	return &entity, nil
@@ -97,10 +95,10 @@ func (r *AdminRepository) GetByResetToken(ctx context.Context, token string) (*e
 	}
 
 	result := entities.Admin{
-		ID:       admin.ID,
-		Username: admin.Username,
-		Email:    admin.Email,
-		TokenExp: admin.TokenExpiresAt,
+		ID:             admin.ID,
+		Username:       admin.Username,
+		Email:          admin.Email,
+		TokenExpiresAt: admin.TokenExpiresAt,
 	}
 	return &result, nil
 }

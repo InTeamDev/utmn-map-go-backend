@@ -2,17 +2,19 @@ package entities
 
 import (
 	"database/sql"
-	"time"
 )
 
 type Admin struct {
-	ID        int32          `json:"id"`
-	Username  string         `json:"username"`
-	Email     sql.NullString `json:"email"`
-	FullName  sql.NullString `json:"full_name"`
-	CreatedAt time.Time      `json:"created_at"`
-	LastLogin sql.NullTime   `json:"last_login,omitempty"`
-	TokenExp  sql.NullTime   `json:"-"`
+	ID                 int32          `json:"id"`
+	Username           string         `json:"username"`
+	PasswordHash       string         `json:"-"`
+	Email              sql.NullString `json:"email"`
+	FullName           sql.NullString `json:"full_name"`
+	LastLogin          sql.NullTime   `json:"last_login,omitempty"`
+	IsActive           bool           `json:"is_active"`
+	Salt               string         `json:"-"`
+	PasswordResetToken sql.NullString `json:"-"`
+	TokenExpiresAt     sql.NullTime   `json:"-"`
 }
 
 type AdminWithCredentials struct {
