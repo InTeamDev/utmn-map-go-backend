@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Public API",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/publicapi",
+            "args": [
+                "--config=config/publicapi.yaml"
+            ],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

@@ -1,15 +1,21 @@
 package entities
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+
+	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
+)
+
+type SearchRequest struct {
+	Query      string                   `json:"query"`
+	Limit      int                      `json:"limit"`
+	Offset     int                      `json:"offset"`
+	BuildingID uuid.UUID                `json:"building_id"`
+	Categories []mapentities.ObjectType `json:"categories"`
+}
 
 type SearchResult struct {
-	ID         uuid.UUID `json:"id"`
-	Relevance  float64   `json:"relevance"`
-	Popularity float64   `json:"popularity"`
-	FloorID    uuid.UUID `json:"floor_id"`
-	Type       string    `json:"type"`
-	Detail     string    `json:"detail"`
-	X          float64   `json:"x"`
-	Y          float64   `json:"y"`
-	Distance   float64   `json:"distance,omitempty"`
+	ObjectID uuid.UUID `json:"object_id"`
+	Category string    `json:"category"`
+	Preview  string    `json:"preview"`
 }

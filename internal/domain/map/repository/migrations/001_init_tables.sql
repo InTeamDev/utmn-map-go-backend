@@ -14,17 +14,21 @@ CREATE TABLE floors (
 
 CREATE TABLE object_types (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL
+    name VARCHAR(50) UNIQUE NOT NULL,
+    alias VARCHAR(50) UNIQUE NOT NULL
 );
 
-INSERT INTO object_types (name) VALUES
-    ('cabinet'),
-    ('department'),
-    ('man-toilet'),
-    ('woman-toilet'),
-    ('stair'),
-    ('wardrobe'),
-    ('gym');
+INSERT INTO object_types (name, alias) VALUES
+    ('cabinet', 'Аудитория'),
+    ('department', 'Кафедра'),
+    ('man-toilet', 'Мужской туалет'),
+    ('woman-toilet', 'Женский туалет'),
+    ('stair', 'Лестница'),
+    ('wardrobe', 'Гардероб'),
+    ('gym', 'Спортзал'),
+    ('cafe', 'Кафе'),
+    ('canteen', 'Столовая'),
+    ('chill-zone', 'Зона отдыха');
 
 CREATE TABLE objects (
     id UUID PRIMARY KEY,

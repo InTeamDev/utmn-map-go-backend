@@ -134,73 +134,24 @@ func (q *Queries) GetFloorsByBuilding(ctx context.Context, buildingID uuid.UUID)
 	return items, nil
 }
 
-const getObjectsByBuildingAndFloor = `-- name: GetObjectsByBuildingAndFloor :many
-SELECT 
-    o.id, 
-    o.name, 
-    o.alias, 
-    o.description, 
-    o.x, 
-    o.y, 
-    o.width, 
-    o.height, 
-    ot.name AS object_type, 
-    f.id AS floor_id, 
-    f.name AS floor_name, 
-    b.id AS building_id, 
-    b.name AS building_name
-FROM objects o
+const getObjectTypes = `-- name: GetObjectTypes :many
+SELECT DISTINCT ot.id, ot.name, ot.alias
+FROM object_types ot
+JOIN objects o ON o.object_type_id = ot.id
 JOIN floors f ON o.floor_id = f.id
-JOIN buildings b ON f.building_id = b.id
-JOIN object_types ot ON o.object_type_id = ot.id
-WHERE b.id = $1::uuid AND f.id = $2::uuid
+WHERE f.building_id = $1::uuid
 `
 
-type GetObjectsByBuildingAndFloorParams struct {
-	BuildID uuid.UUID
-	FloorID uuid.UUID
-}
-
-type GetObjectsByBuildingAndFloorRow struct {
-	ID           uuid.UUID
-	Name         string
-	Alias        string
-	Description  sql.NullString
-	X            float64
-	Y            float64
-	Width        float64
-	Height       float64
-	ObjectType   string
-	FloorID      uuid.UUID
-	FloorName    string
-	BuildingID   uuid.UUID
-	BuildingName string
-}
-
-func (q *Queries) GetObjectsByBuildingAndFloor(ctx context.Context, arg GetObjectsByBuildingAndFloorParams) ([]GetObjectsByBuildingAndFloorRow, error) {
-	rows, err := q.db.QueryContext(ctx, getObjectsByBuildingAndFloor, arg.BuildID, arg.FloorID)
+func (q *Queries) GetObjectTypes(ctx context.Context, buildingID uuid.UUID) ([]ObjectType, error) {
+	rows, err := q.db.QueryContext(ctx, getObjectTypes, buildingID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetObjectsByBuildingAndFloorRow
+	var items []ObjectType
 	for rows.Next() {
-		var i GetObjectsByBuildingAndFloorRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Alias,
-			&i.Description,
-			&i.X,
-			&i.Y,
-			&i.Width,
-			&i.Height,
-			&i.ObjectType,
-			&i.FloorID,
-			&i.FloorName,
-			&i.BuildingID,
-			&i.BuildingName,
-		); err != nil {
+		var i ObjectType
+		if err := rows.Scan(&i.ID, &i.Name, &i.Alias); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -214,7 +165,7 @@ func (q *Queries) GetObjectsByBuildingAndFloor(ctx context.Context, arg GetObjec
 	return items, nil
 }
 
-const getObjectsByFloor = `-- name: GetObjectsByFloor :many
+const getObjectsByBuilding = `-- name: GetObjectsByBuilding :many
 SELECT 
     o.id, 
     o.name, 
@@ -233,10 +184,10 @@ FROM objects o
 JOIN floors f ON o.floor_id = f.id
 JOIN buildings b ON f.building_id = b.id
 JOIN object_types ot ON o.object_type_id = ot.id
-WHERE f.id = $1::uuid
+WHERE b.id = $1::uuid
 `
 
-type GetObjectsByFloorRow struct {
+type GetObjectsByBuildingRow struct {
 	ID           uuid.UUID
 	Name         string
 	Alias        string
@@ -252,15 +203,15 @@ type GetObjectsByFloorRow struct {
 	BuildingName string
 }
 
-func (q *Queries) GetObjectsByFloor(ctx context.Context, dollar_1 uuid.UUID) ([]GetObjectsByFloorRow, error) {
-	rows, err := q.db.QueryContext(ctx, getObjectsByFloor, dollar_1)
+func (q *Queries) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]GetObjectsByBuildingRow, error) {
+	rows, err := q.db.QueryContext(ctx, getObjectsByBuilding, buildingID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetObjectsByFloorRow
+	var items []GetObjectsByBuildingRow
 	for rows.Next() {
-		var i GetObjectsByFloorRow
+		var i GetObjectsByBuildingRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,

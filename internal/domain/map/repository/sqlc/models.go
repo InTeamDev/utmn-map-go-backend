@@ -20,3 +20,9 @@ type Floor struct {
 	Alias      string
 	BuildingID uuid.UUID
 }
+
+type ObjectType struct {
+	ID    int32
+	Name  string
+	Alias string
+}

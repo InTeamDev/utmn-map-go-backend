@@ -19,6 +19,12 @@ const (
 	ObjectTypeWardrobe ObjectType = "wardrobe"
 	// Gym.
 	ObjectTypeGym ObjectType = "gym"
+	// Кафе.
+	ObjectTypeCafe ObjectType = "cafe"
+	// Столовая.
+	ObjectTypeCanteen ObjectType = "canteen"
+	// Зона отдыха.
+	ObjectTypeChillZone ObjectType = "chill-zone"
 )
 
 type Object struct {

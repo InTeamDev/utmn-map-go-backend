@@ -2,114 +2,51 @@ package service
 
 import (
 	"context"
-	"log"
-	"sort"
-	"strings"
+	"fmt"
 
-	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
-	maprepository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository"
+	mapcache "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/cache"
+	mapservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service"
 	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
-	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/popularity/service"
-	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/utils"
-	"github.com/InTeamDev/utmn-map-go-backend/internal/infrastructure/cache"
-	"github.com/google/uuid"
 )
 
-const RANK = 0.1
-
 type SearchService struct {
-	cache            *cache.InMemorySearchCache
-	repo             *maprepository.Map
-	queryProcessor   *utils.QueryProcessor
-	popularityRanker *service.PopularityRanker
+	mapCache   *mapcache.InMemoryMapCache
+	mapService *mapservice.Map
 }
 
-func NewSearchService(
-	cache *cache.InMemorySearchCache,
-	repo *maprepository.Map,
-	queryProcessor *utils.QueryProcessor,
-	popularityRanker *service.PopularityRanker,
-) *SearchService {
+func NewSearchService(mapCache *mapcache.InMemoryMapCache, mapService *mapservice.Map) *SearchService {
 	return &SearchService{
-		cache:            cache,
-		repo:             repo,
-		queryProcessor:   queryProcessor,
-		popularityRanker: popularityRanker,
+		mapCache:   mapCache,
+		mapService: mapService,
 	}
 }
 
 func (s *SearchService) Search(
 	ctx context.Context,
-	query string,
-	floorID uuid.UUID,
+	req searchentities.SearchRequest,
 ) ([]searchentities.SearchResult, error) {
-	cacheKey := utils.GenerateCacheKey(query, floorID)
-	if cached, ok := s.cache.Get(cacheKey); ok {
-		return cached, nil
+	// simple search
+	objects, exists := s.mapCache.Get(req.BuildingID)
+	if !exists {
+		var err error
+		objects, err = s.mapService.GetObjectsByBuilding(ctx, req.BuildingID)
+		if err != nil {
+			return nil, fmt.Errorf("get objects: %w", err)
+		}
+		s.mapCache.Set(req.BuildingID, objects)
 	}
 
-	processedQuery := s.queryProcessor.Process(query)
-
-	objects, err := s.repo.GetObjectsByFloor(ctx, floorID)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	var results []searchentities.SearchResult
-	for _, obj := range objects {
-		if s.isMatch(processedQuery, obj) && s.isSameFloor(obj, floorID) {
-			results = append(results, s.buildResult(obj))
+	// filter objects by name
+	filteredObjects := make([]searchentities.SearchResult, 0, len(objects))
+	for _, object := range objects {
+		if object.Name == req.Query || req.Query == "" {
+			filteredObjects = append(filteredObjects, searchentities.SearchResult{
+				ObjectID: object.ID,
+				Category: string(object.ObjectType),
+				Preview:  fmt.Sprintf("%s %s (%s floor)", object.ObjectType, object.Name, object.Floor.Name),
+			})
 		}
 	}
 
-	s.sortResults(results, floorID)
-	s.cache.Set(cacheKey, results)
-	return results, nil
-}
-
-func (s *SearchService) isMatch(query string, obj mapentities.Object) bool {
-	return strings.Contains(strings.ToLower(obj.Name), query)
-}
-
-func (s *SearchService) buildResult(
-	obj mapentities.Object,
-) searchentities.SearchResult {
-	result := searchentities.SearchResult{
-		ID:         obj.ID,
-		Popularity: s.popularityRanker.GetPopularityScore(obj.ID),
-		FloorID:    obj.Floor.ID,
-		Type:       string(obj.ObjectType),
-		X:          obj.X,
-		Y:          obj.Y,
-	}
-
-	return result
-}
-
-func (s *SearchService) isSameFloor(obj mapentities.Object, userFloor uuid.UUID) bool {
-	return obj.Floor.ID == userFloor
-}
-
-func (s *SearchService) sortResults(
-	results []searchentities.SearchResult,
-	userFloor uuid.UUID,
-) {
-	sort.Slice(results, func(i, j int) bool {
-		a, b := results[i], results[j]
-
-		if a.FloorID != b.FloorID {
-			return a.FloorID == userFloor
-		}
-
-		if a.Relevance != b.Relevance {
-			return a.Relevance > b.Relevance
-		}
-
-		if a.Popularity != b.Popularity {
-			return a.Popularity > b.Popularity
-		}
-
-		return a.Distance < b.Distance
-	})
+	return filteredObjects, nil
 }

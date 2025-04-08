@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Интерактивная карта</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        #floor-buttons {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #floor-buttons button {
+            margin: 2px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        #info-box {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            max-width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            z-index: 10;
+            overflow: auto;
+            max-height: 90vh;
+        }
+
+        canvas {
+            display: block;
+            background: #f8f8f8;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="floor-buttons"></div>
+    <div id="info-box">Нажмите на объект для получения информации</div>
+    <canvas id="canvas"></canvas>
+    <script src="app.js"></script>
+</body>
+
+</html>

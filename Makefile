@@ -3,7 +3,6 @@ init:
 	go mod download
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	go install github.com/segmentio/golines@latest
-	go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
 	go install github.com/jackc/tern@latest
 
 lint:

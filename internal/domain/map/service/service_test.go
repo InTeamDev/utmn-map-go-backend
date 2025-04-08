@@ -31,44 +31,6 @@ func (s *MapServiceTestSuite) TearDownTest() {
 	s.ctrl.Finish()
 }
 
-// TestGetObjects_Success проверяет успешное получение объектов.
-func (s *MapServiceTestSuite) TestGetObjects_Success() {
-	req := entities.GetObjectsRequest{
-		BuildID: uuid.New(),
-		FloorID: uuid.New(),
-	}
-	expectedObjects := []entities.Object{
-		{ID: uuid.New()},
-		{ID: uuid.New()},
-	}
-
-	s.mockRepo.EXPECT().
-		GetObjects(gomock.Any(), req).
-		Return(expectedObjects, nil)
-
-	objects, err := s.mapService.GetObjects(context.Background(), req)
-	s.Require().NoError(err)
-	s.Equal(expectedObjects, objects)
-}
-
-// TestGetObjects_Error проверяет, что ошибка репозитория корректно оборачивается.
-func (s *MapServiceTestSuite) TestGetObjects_Error() {
-	req := entities.GetObjectsRequest{
-		BuildID: uuid.New(),
-		FloorID: uuid.New(),
-	}
-	repoErr := errors.New("repository error")
-	s.mockRepo.EXPECT().
-		GetObjects(gomock.Any(), req).
-		Return(nil, repoErr)
-
-	objects, err := s.mapService.GetObjects(context.Background(), req)
-	s.Require().Error(err)
-	s.Nil(objects)
-	s.Contains(err.Error(), "get objects")
-	s.Contains(err.Error(), "repository error")
-}
-
 // TestGetBuildings_Success проверяет успешное получение зданий.
 func (s *MapServiceTestSuite) TestGetBuildings_Success() {
 	expectedBuildings := []entities.Building{

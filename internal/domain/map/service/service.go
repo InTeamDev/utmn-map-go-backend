@@ -9,9 +9,10 @@ import (
 )
 
 type MapRepository interface {
-	GetObjects(ctx context.Context, req entities.GetObjectsRequest) ([]entities.Object, error)
 	GetBuildings(ctx context.Context) ([]entities.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
+	GetObjectTypes(ctx context.Context, buildID uuid.UUID) ([]entities.ObjectType, error)
+	GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]entities.Object, error)
 }
 
 type Map struct {
@@ -20,14 +21,6 @@ type Map struct {
 
 func NewMap(repo MapRepository) *Map {
 	return &Map{repo: repo}
-}
-
-func (m *Map) GetObjects(ctx context.Context, req entities.GetObjectsRequest) ([]entities.Object, error) {
-	objects, err := m.repo.GetObjects(ctx, req)
-	if err != nil {
-		return nil, fmt.Errorf("get objects: %w", err)
-	}
-	return objects, nil
 }
 
 func (m *Map) GetBuildings(ctx context.Context) ([]entities.Building, error) {
@@ -44,4 +37,20 @@ func (m *Map) GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floo
 		return nil, fmt.Errorf("get floors: %w", err)
 	}
 	return floors, nil
+}
+
+func (m *Map) GetObjectCategories(ctx context.Context, buildID uuid.UUID) ([]entities.ObjectType, error) {
+	objectTypes, err := m.repo.GetObjectTypes(ctx, buildID)
+	if err != nil {
+		return nil, fmt.Errorf("get object categories: %w", err)
+	}
+	return objectTypes, nil
+}
+
+func (m *Map) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]entities.Object, error) {
+	objects, err := m.repo.GetObjectsByBuilding(ctx, buildID)
+	if err != nil {
+		return nil, fmt.Errorf("get objects: %w", err)
+	}
+	return objects, nil
 }

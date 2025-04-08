@@ -72,6 +72,21 @@ func (mr *MockMapRepositoryMockRecorder) GetFloors(ctx, buildID any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFloors", reflect.TypeOf((*MockMapRepository)(nil).GetFloors), ctx, buildID)
 }
 
+// GetObjectTypes mocks base method.
+func (m *MockMapRepository) GetObjectTypes(ctx context.Context, buildID uuid.UUID) ([]entities.ObjectType, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetObjectTypes", ctx, buildID)
+	ret0, _ := ret[0].([]entities.ObjectType)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetObjectTypes indicates an expected call of GetObjectTypes.
+func (mr *MockMapRepositoryMockRecorder) GetObjectTypes(ctx, buildID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjectTypes", reflect.TypeOf((*MockMapRepository)(nil).GetObjectTypes), ctx, buildID)
+}
+
 // GetObjects mocks base method.
 func (m *MockMapRepository) GetObjects(ctx context.Context, req entities.GetObjectsRequest) ([]entities.Object, error) {
 	m.ctrl.T.Helper()
@@ -85,4 +100,19 @@ func (m *MockMapRepository) GetObjects(ctx context.Context, req entities.GetObje
 func (mr *MockMapRepositoryMockRecorder) GetObjects(ctx, req any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjects", reflect.TypeOf((*MockMapRepository)(nil).GetObjects), ctx, req)
+}
+
+// GetObjectsByBuilding mocks base method.
+func (m *MockMapRepository) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]entities.Object, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetObjectsByBuilding", ctx, buildID)
+	ret0, _ := ret[0].([]entities.Object)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetObjectsByBuilding indicates an expected call of GetObjectsByBuilding.
+func (mr *MockMapRepositoryMockRecorder) GetObjectsByBuilding(ctx, buildID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjectsByBuilding", reflect.TypeOf((*MockMapRepository)(nil).GetObjectsByBuilding), ctx, buildID)
 }
