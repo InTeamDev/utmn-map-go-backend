@@ -96,6 +96,23 @@ func (q *Queries) GetDoorsByObjectIDs(ctx context.Context, objectIds []uuid.UUID
 	return items, nil
 }
 
+const getFloorByID = `-- name: GetFloorByID :one
+SELECT id, name, alias, building_id FROM floors
+WHERE id = $1::uuid
+`
+
+func (q *Queries) GetFloorByID(ctx context.Context, id uuid.UUID) (Floor, error) {
+	row := q.db.QueryRowContext(ctx, getFloorByID, id)
+	var i Floor
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Alias,
+		&i.BuildingID,
+	)
+	return i, err
+}
+
 const getFloorsByBuilding = `-- name: GetFloorsByBuilding :many
 SELECT 
     f.id, 
@@ -134,16 +151,37 @@ func (q *Queries) GetFloorsByBuilding(ctx context.Context, buildingID uuid.UUID)
 	return items, nil
 }
 
+const getObjectTypeByID = `-- name: GetObjectTypeByID :one
+SELECT id, name, alias FROM object_types
+WHERE id = $1::int
+`
+
+func (q *Queries) GetObjectTypeByID(ctx context.Context, id int32) (ObjectType, error) {
+	row := q.db.QueryRowContext(ctx, getObjectTypeByID, id)
+	var i ObjectType
+	err := row.Scan(&i.ID, &i.Name, &i.Alias)
+	return i, err
+}
+
+const getObjectTypeByName = `-- name: GetObjectTypeByName :one
+SELECT id, name, alias FROM object_types
+WHERE name = $1::VARCHAR(50)
+`
+
+func (q *Queries) GetObjectTypeByName(ctx context.Context, name string) (ObjectType, error) {
+	row := q.db.QueryRowContext(ctx, getObjectTypeByName, name)
+	var i ObjectType
+	err := row.Scan(&i.ID, &i.Name, &i.Alias)
+	return i, err
+}
+
 const getObjectTypes = `-- name: GetObjectTypes :many
 SELECT DISTINCT ot.id, ot.name, ot.alias
 FROM object_types ot
-JOIN objects o ON o.object_type_id = ot.id
-JOIN floors f ON o.floor_id = f.id
-WHERE f.building_id = $1::uuid
 `
 
-func (q *Queries) GetObjectTypes(ctx context.Context, buildingID uuid.UUID) ([]ObjectType, error) {
-	rows, err := q.db.QueryContext(ctx, getObjectTypes, buildingID)
+func (q *Queries) GetObjectTypes(ctx context.Context) ([]ObjectType, error) {
+	rows, err := q.db.QueryContext(ctx, getObjectTypes)
 	if err != nil {
 		return nil, err
 	}
@@ -238,4 +276,46 @@ func (q *Queries) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateObject = `-- name: UpdateObject :one
+UPDATE objects
+SET name = $1,
+    alias = $2,
+    description = $3,
+    object_type_id = $4
+WHERE id = $5
+RETURNING id, name, alias, description, x, y, width, height, object_type_id, floor_id
+`
+
+type UpdateObjectParams struct {
+	Name         string
+	Alias        string
+	Description  sql.NullString
+	ObjectTypeID int32
+	ID           uuid.UUID
+}
+
+func (q *Queries) UpdateObject(ctx context.Context, arg UpdateObjectParams) (Object, error) {
+	row := q.db.QueryRowContext(ctx, updateObject,
+		arg.Name,
+		arg.Alias,
+		arg.Description,
+		arg.ObjectTypeID,
+		arg.ID,
+	)
+	var i Object
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Alias,
+		&i.Description,
+		&i.X,
+		&i.Y,
+		&i.Width,
+		&i.Height,
+		&i.ObjectTypeID,
+		&i.FloorID,
+	)
+	return i, err
 }

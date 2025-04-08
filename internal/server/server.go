@@ -11,11 +11,8 @@ import (
 	"time"
 )
 
-const (
-	readHeaderTimeout = 5 * time.Second
-)
-
-func StartPublicAPIServer(ctx context.Context, server *http.Server) error {
+func StartServer(ctx context.Context, server *http.Server) error {
+	const readHeaderTimeout = 5 * time.Second
 	serverErr := make(chan error, 1)
 
 	go func() {

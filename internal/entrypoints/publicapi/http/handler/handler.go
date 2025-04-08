@@ -16,7 +16,7 @@ const defaultPageLimit = 30
 type MapService interface {
 	GetBuildings(ctx context.Context) ([]mapentites.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]mapentites.Floor, error)
-	GetObjectCategories(ctx context.Context, buildID uuid.UUID) ([]mapentites.ObjectType, error)
+	GetObjectCategories(ctx context.Context) ([]mapentites.ObjectType, error)
 	GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]mapentites.Object, error)
 }
 
@@ -45,12 +45,10 @@ func (p *PublicAPI) RegisterRoutes(router *gin.Engine) {
 		api.GET("/buildings/:build_id/floors", p.GetFloorsHandler)
 		// GET получить объекты этажа корпуса (для отрисовки объектов на карте)
 		api.GET("/buildings/:build_id/objects", p.GetObjectsByBuildingHandler)
-		// GET получить все категории объектов корпуса (для фильтрации объектов на карте)
-		api.GET("/buildings/:build_id/categories", p.GetObjectCategories)
 		// GET поиск объектов
 		api.GET("/buildings/:build_id/search", p.SearchHandler)
-		// ADMIN API
-		api.PATCH("/objects/:id", p.UpdateObjectHandler)
+		// GET получить все категории объектов корпуса (для фильтрации объектов на карте)
+		api.GET("/categories", p.GetObjectCategories)
 	}
 }
 
@@ -97,14 +95,7 @@ func (p *PublicAPI) GetFloorsHandler(c *gin.Context) {
 }
 
 func (p *PublicAPI) GetObjectCategories(c *gin.Context) {
-	buildIDStr := c.Param("build_id")
-	buildID, err := uuid.Parse(buildIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid build_id"})
-		return
-	}
-
-	categories, err := p.mapService.GetObjectCategories(c.Request.Context(), buildID)
+	categories, err := p.mapService.GetObjectCategories(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -145,50 +136,4 @@ func (p *PublicAPI) SearchHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"results": results})
-}
-
-func (p *PublicAPI) UpdateObjectHandler(c *gin.Context) {
-	// objectIDStr := c.Param("id")
-	// objectID, err := uuid.Parse(objectIDStr)
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "invalid object id"})
-	// 	return
-	// }
-
-	// var input struct {
-	// 	Name        *string `json:"name"`
-	// 	Alias       *string `json:"alias"`
-	// 	Description *string `json:"description"`
-	// 	ObjectType  *string `json:"object_type"`
-	// }
-
-	// if err := c.ShouldBindJSON(&input); err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
-	// 	return
-	// }
-
-	// updatedObj := mapentites.UpdateObjectInput{
-	// 	ID: objectID,
-	// }
-
-	// if input.Name != nil {
-	// 	updatedObj.Name = *input.Name
-	// }
-	// if input.Alias != nil {
-	// 	updatedObj.Alias = *input.Alias
-	// }
-	// if input.Description != nil {
-	// 	updatedObj.Description = *input.Description
-	// }
-	// if input.ObjectType != nil {
-	// 	updatedObj.ObjectType = mapentites.ObjectType(*input.ObjectType)
-	// }
-
-	// result, err := p.mapService.UpdateObject(c.Request.Context(), updatedObj)
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
-	c.JSON(http.StatusOK, gin.H{"result": "ok"})
 }

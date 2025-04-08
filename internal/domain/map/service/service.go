@@ -11,8 +11,9 @@ import (
 type MapRepository interface {
 	GetBuildings(ctx context.Context) ([]entities.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
-	GetObjectTypes(ctx context.Context, buildID uuid.UUID) ([]entities.ObjectType, error)
+	GetObjectTypes(ctx context.Context) ([]entities.ObjectType, error)
 	GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]entities.Object, error)
+	UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error)
 }
 
 type Map struct {
@@ -39,8 +40,8 @@ func (m *Map) GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floo
 	return floors, nil
 }
 
-func (m *Map) GetObjectCategories(ctx context.Context, buildID uuid.UUID) ([]entities.ObjectType, error) {
-	objectTypes, err := m.repo.GetObjectTypes(ctx, buildID)
+func (m *Map) GetObjectCategories(ctx context.Context) ([]entities.ObjectType, error) {
+	objectTypes, err := m.repo.GetObjectTypes(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get object categories: %w", err)
 	}
@@ -53,4 +54,12 @@ func (m *Map) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]en
 		return nil, fmt.Errorf("get objects: %w", err)
 	}
 	return objects, nil
+}
+
+func (m *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error) {
+	object, err := m.repo.UpdateObject(ctx, input)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("get object: %w", err)
+	}
+	return object, nil
 }

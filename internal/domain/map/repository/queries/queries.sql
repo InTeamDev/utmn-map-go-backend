@@ -16,10 +16,7 @@ WHERE f.building_id = @building_id::uuid;
 
 -- name: GetObjectTypes :many
 SELECT DISTINCT ot.*
-FROM object_types ot
-JOIN objects o ON o.object_type_id = ot.id
-JOIN floors f ON o.floor_id = f.id
-WHERE f.building_id = @building_id::uuid;
+FROM object_types ot;
 
 -- name: GetObjectsByBuilding :many
 SELECT 
@@ -53,3 +50,24 @@ SELECT
 FROM doors d
 JOIN object_doors od ON d.id = od.door_id
 WHERE od.object_id = ANY(@object_ids::uuid[]);
+
+-- name: UpdateObject :one
+UPDATE objects
+SET name = @name,
+    alias = @alias,
+    description = @description,
+    object_type_id = @object_type_id
+WHERE id = @id
+RETURNING *;
+
+-- name: GetFloorByID :one
+SELECT * FROM floors
+WHERE id = @id::uuid;
+
+-- name: GetObjectTypeByID :one
+SELECT * FROM object_types
+WHERE id = @id::int;
+
+-- name: GetObjectTypeByName :one
+SELECT * FROM object_types
+WHERE name = @name::VARCHAR(50);

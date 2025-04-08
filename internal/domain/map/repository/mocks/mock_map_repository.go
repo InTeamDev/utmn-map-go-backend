@@ -73,33 +73,18 @@ func (mr *MockMapRepositoryMockRecorder) GetFloors(ctx, buildID any) *gomock.Cal
 }
 
 // GetObjectTypes mocks base method.
-func (m *MockMapRepository) GetObjectTypes(ctx context.Context, buildID uuid.UUID) ([]entities.ObjectType, error) {
+func (m *MockMapRepository) GetObjectTypes(ctx context.Context) ([]entities.ObjectType, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetObjectTypes", ctx, buildID)
+	ret := m.ctrl.Call(m, "GetObjectTypes", ctx)
 	ret0, _ := ret[0].([]entities.ObjectType)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetObjectTypes indicates an expected call of GetObjectTypes.
-func (mr *MockMapRepositoryMockRecorder) GetObjectTypes(ctx, buildID any) *gomock.Call {
+func (mr *MockMapRepositoryMockRecorder) GetObjectTypes(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjectTypes", reflect.TypeOf((*MockMapRepository)(nil).GetObjectTypes), ctx, buildID)
-}
-
-// GetObjects mocks base method.
-func (m *MockMapRepository) GetObjects(ctx context.Context, req entities.GetObjectsRequest) ([]entities.Object, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetObjects", ctx, req)
-	ret0, _ := ret[0].([]entities.Object)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetObjects indicates an expected call of GetObjects.
-func (mr *MockMapRepositoryMockRecorder) GetObjects(ctx, req any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjects", reflect.TypeOf((*MockMapRepository)(nil).GetObjects), ctx, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjectTypes", reflect.TypeOf((*MockMapRepository)(nil).GetObjectTypes), ctx)
 }
 
 // GetObjectsByBuilding mocks base method.
@@ -115,4 +100,19 @@ func (m *MockMapRepository) GetObjectsByBuilding(ctx context.Context, buildID uu
 func (mr *MockMapRepositoryMockRecorder) GetObjectsByBuilding(ctx, buildID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjectsByBuilding", reflect.TypeOf((*MockMapRepository)(nil).GetObjectsByBuilding), ctx, buildID)
+}
+
+// UpdateObject mocks base method.
+func (m *MockMapRepository) UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateObject", ctx, input)
+	ret0, _ := ret[0].(entities.Object)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateObject indicates an expected call of UpdateObject.
+func (mr *MockMapRepositoryMockRecorder) UpdateObject(ctx, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateObject", reflect.TypeOf((*MockMapRepository)(nil).UpdateObject), ctx, input)
 }

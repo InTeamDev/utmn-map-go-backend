@@ -58,7 +58,7 @@ function saveObject() {
         updatedFields[key] = value;
     });
 
-    fetch(`http://localhost:8000/api/objects/${selectedObject.id}`, {
+    fetch(`http://localhost:8001/api/objects/${selectedObject.id}`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -72,11 +72,9 @@ function saveObject() {
         .then(updated => {
             Object.assign(selectedObject, updated);
             visualize(allData);
-            alert('Объект успешно сохранён!');
         })
         .catch(err => {
             console.error(err);
-            alert('Не удалось сохранить объект');
         });
 }
 
@@ -106,7 +104,7 @@ canvas.addEventListener('mousemove', e => {
 });
 canvas.addEventListener('wheel', e => {
     e.preventDefault();
-    const zoomFactor = 1.1;
+    const zoomFactor = 1.025;
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -152,7 +150,7 @@ async function showObjectInfo(obj) {
 
     let optionsHTML = `<option value="">-- выберите тип --</option>`;
     try {
-        const res = await fetch(`http://localhost:8000/api/buildings/${currentBuildingId}/categories`);
+        const res = await fetch(`http://localhost:8000/api/categories`);
         const data = await res.json();
         const categories = data.categories;
 

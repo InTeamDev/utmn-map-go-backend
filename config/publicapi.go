@@ -7,7 +7,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type Config struct {
+type PublicAPI struct {
 	Server struct {
 		Host string `yaml:"host"`
 		Port int    `yaml:"port"`
@@ -17,13 +17,13 @@ type Config struct {
 	} `yaml:"database"`
 }
 
-func Load(path string) (*Config, error) {
+func LoadPublicAPI(path string) (*PublicAPI, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var cfg Config
+	var cfg PublicAPI
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
 		return nil, err
 	}

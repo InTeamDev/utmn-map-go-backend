@@ -133,7 +133,7 @@ func (s *RepositoryNewTestSuite) TestGetObjectTypes_Error() {
 		WithArgs(testBuildingID).
 		WillReturnError(errors.New("db error"))
 
-	objectTypes, err := s.repo.GetObjectTypes(context.Background(), testBuildingID)
+	objectTypes, err := s.repo.GetObjectTypes(context.Background())
 	s.Require().Error(err)
 	s.Nil(objectTypes)
 	s.Contains(err.Error(), "get object types")

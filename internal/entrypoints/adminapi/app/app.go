@@ -15,11 +15,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/InTeamDev/utmn-map-go-backend/config"
-	mapcache "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/cache"
 	maprepository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository"
 	mapservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service"
-	searchservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/service"
-	"github.com/InTeamDev/utmn-map-go-backend/internal/entrypoints/publicapi/http/handler"
+	"github.com/InTeamDev/utmn-map-go-backend/internal/entrypoints/adminapi/http/handler"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/middleware"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/server"
 	"github.com/InTeamDev/utmn-map-go-backend/pkg/database"
@@ -47,7 +45,7 @@ func Run(configPath string) int {
 }
 
 func runApp(ctx context.Context, configPath string) error {
-	cfg, err := config.LoadPublicAPI(configPath)
+	cfg, err := config.LoadAdminAPI(configPath)
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
@@ -61,9 +59,6 @@ func runApp(ctx context.Context, configPath string) error {
 	mapConverter := maprepository.NewMapConverter()
 	mapRepository := maprepository.NewMap(db, mapConverter)
 	mapService := mapservice.NewMap(mapRepository)
-	mapCache := mapcache.NewInMemoryMapCache()
-
-	searchService := searchservice.NewSearchService(mapCache, mapService)
 
 	metrics := middleware.NewMetrics()
 	router := gin.Default()
@@ -79,8 +74,8 @@ func runApp(ctx context.Context, configPath string) error {
 	router.Use(metrics.Middleware())
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
-	publicAPI := handler.NewPublicAPI(mapService, searchService)
-	publicAPI.RegisterRoutes(router)
+	adminAPI := handler.NewAdminAPI(mapService)
+	adminAPI.RegisterRoutes(router)
 
 	srv := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),

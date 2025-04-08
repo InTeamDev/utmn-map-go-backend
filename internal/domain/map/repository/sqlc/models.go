@@ -5,6 +5,8 @@
 package sqlc
 
 import (
+	"database/sql"
+
 	"github.com/google/uuid"
 )
 
@@ -19,6 +21,19 @@ type Floor struct {
 	Name       string
 	Alias      string
 	BuildingID uuid.UUID
+}
+
+type Object struct {
+	ID           uuid.UUID
+	Name         string
+	Alias        string
+	Description  sql.NullString
+	X            float64
+	Y            float64
+	Width        float64
+	Height       float64
+	ObjectTypeID int32
+	FloorID      uuid.UUID
 }
 
 type ObjectType struct {

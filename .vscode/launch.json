@@ -11,6 +11,17 @@
                 "--config=config/publicapi.yaml"
             ],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Launch Admin API",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/adminapi",
+            "args": [
+                "--config=config/adminapi.yaml"
+            ],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
