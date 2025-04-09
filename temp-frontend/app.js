@@ -18,7 +18,6 @@ async function init() {
         if (!Array.isArray(data.buildings) || data.buildings.length === 0) {
             throw new Error("Нет доступных зданий");
         }
-
         currentBuildingId = data.buildings[0].id; // выбираем первое здание
         console.log("Выбранное здание:", currentBuildingId);
         loadBuildingObjects(currentBuildingId);
@@ -32,8 +31,8 @@ function loadBuildingObjects(buildingId) {
     fetch(`http://localhost:8000/api/buildings/${buildingId}/objects`)
         .then(res => res.json())
         .then(data => {
-            const result = data.objects; // извлекаем нужное
-            console.log("Извлечённые объекты:", result);
+            const result = data.objects; // извлекаем объект с building, floors, background
+            console.log("Извлечённые данные:", result);
             if (!Array.isArray(result.floors)) throw new Error("Ожидался массив этажей");
             allData = result;
             createFloorButtons(allData);
@@ -120,11 +119,31 @@ canvas.addEventListener('wheel', e => {
     visualize(allData);
 }, { passive: false });
 
+// Обновленный обработчик клика по canvas
 canvas.addEventListener('click', e => {
     const rect = canvas.getBoundingClientRect();
     const clickX = (e.clientX - rect.left - offsetX) / scale;
     const clickY = (e.clientY - rect.top - offsetY) / scale;
 
+    // Сначала ищем клик по двери
+    let doorClickedInfo = null;
+    for (const object of visibleObjects) {
+        if (Array.isArray(object.doors)) {
+            for (const door of object.doors) {
+                if (isPointInRotatedRect(clickX, clickY, door)) {
+                    doorClickedInfo = { door, parent: object };
+                    break;
+                }
+            }
+        }
+        if (doorClickedInfo) break;
+    }
+    if (doorClickedInfo) {
+        showDoorInfo(doorClickedInfo.door, doorClickedInfo.parent);
+        return;
+    }
+
+    // Если клик не по двери — ищем клик по объекту
     for (let obj of visibleObjects) {
         if (
             clickX >= obj.x &&
@@ -136,7 +155,6 @@ canvas.addEventListener('click', e => {
             return;
         }
     }
-
     infoBox.innerHTML = 'Объект не найден. Нажмите на элемент на карте.';
 });
 
@@ -145,7 +163,7 @@ async function showObjectInfo(obj) {
 
     let html = `<b>Редактирование объекта:</b><br>`;
     html += `<b>id:</b> <div style="font-family: monospace; user-select: all">${obj.id}</div>`;
-    html += `<b>coords:</b> <div style="font-family: monospace; user-select: all">x=${obj.x};y=${obj.y}<br>w=${obj.width};h=${obj.height}</div>`;
+    html += `<b>coords:</b> <div style="font-family: monospace; user-select: all">x=${obj.x}; y=${obj.y}<br>w=${obj.width}; h=${obj.height}</div>`;
     html += `<b>name:</b> <input data-key="name" value="${obj.name || ''}" style="width: 100%;"><br>`;
     html += `<b>alias:</b> <input data-key="alias" value="${obj.alias || ''}" style="width: 100%;"><br>`;
     html += `<b>description:</b> <input data-key="description" value="${obj.description || ''}" style="width: 100%;"><br>`;
@@ -155,7 +173,6 @@ async function showObjectInfo(obj) {
         const res = await fetch(`http://localhost:8000/api/categories`);
         const data = await res.json();
         const categories = data.categories;
-
         optionsHTML += categories.map(cat =>
             `<option value="${cat}" ${cat === obj.object_type ? 'selected' : ''}>${cat}</option>`
         ).join('');
@@ -166,13 +183,28 @@ async function showObjectInfo(obj) {
 
     html += `<b>object_type:</b> 
         <select data-key="object_type" style="width: 100%;">${optionsHTML}</select><br>`;
-
     html += `<button onclick="saveObject()">Сохранить</button>`;
 
     infoBox.innerHTML = html;
 }
 
+function showDoorInfo(door, parent) {
+    let html = `<b>Информация о двери:</b><br>`;
+    html += `<b>door id:</b> <div style="font-family: monospace; user-select: all">${door.id}</div>`;
+    html += `<b>Координаты:</b> <div style="font-family: monospace;">x=${door.x}, y=${door.y}, w=${door.width}, h=${door.height}</div>`;
+    html += `<b>Угол (angle):</b> <div style="font-family: monospace;">${door.angle || 0}</div>`;
+
+    html += `<hr><b>Объект:</b><br>`;
+    html += `<b>object id:</b> <div style="font-family: monospace;">${parent.id}</div>`;
+    html += `<b>name:</b> <div>${parent.name || '???'}</div>`;
+    html += `<b>alias:</b> <div>${parent.alias || ''}</div>`;
+
+    infoBox.innerHTML = html;
+}
+
+
 function createFloorButtons(data) {
+    // data.floors — это массив этажей, каждый имеет поле floor.name
     const floors = data.floors.map(f => f.floor.name);
     const container = document.getElementById('floor-buttons');
     container.innerHTML = '';
@@ -264,14 +296,14 @@ function visualize(data) {
 
     visibleObjects = [];
 
+    // Определяем, какие этажи отрисовывать: если выбран конкретный этаж – только его, иначе все
     const floorData = currentFloor
         ? allData.floors.find(f => f.floor.name === currentFloor)
         : null;
-
     const floorsToRender = floorData ? [floorData] : allData.floors;
 
     for (const floor of floorsToRender) {
-        // Рисуем фон
+        // Рисуем фон этажа (background)
         for (const bg of floor.background) {
             const sortedPoints = bg.points.sort((a, b) => a.order - b.order);
             if (sortedPoints.length > 1) {
@@ -288,11 +320,13 @@ function visualize(data) {
             }
         }
 
+        // Рисуем объекты этажа
         for (const object of floor.objects) {
             const { x, y, width, height } = object;
 
+            // Для типа "cabinet" используем непрозрачный цвет
             let color = {
-                'cabinet': 'rgba(0, 128, 255, 1)', // убрали прозрачность
+                'cabinet': 'rgba(0, 128, 255, 1)', // без прозрачности
                 'wardrobe': 'rgba(255, 165, 0, 0.5)',
                 'woman-toilet': 'rgba(255, 192, 203, 0.5)',
                 'man-toilet': 'rgba(144, 238, 144, 0.5)',
@@ -326,33 +360,28 @@ function visualize(data) {
 // Обработчик клика по canvas
 canvas.addEventListener('click', e => {
     const rect = canvas.getBoundingClientRect();
-    // Преобразуем координаты клика с учётом смещения и масштаба
     const clickX = (e.clientX - rect.left - offsetX) / scale;
     const clickY = (e.clientY - rect.top - offsetY) / scale;
 
-    let doorClicked = null;
-
-    // Проверяем, был ли клик по двери, с учётом поворота
+    // Проверяем, был ли клик по двери (и запоминаем родительский объект)
+    let doorClickedInfo = null;
     for (const object of visibleObjects) {
         if (Array.isArray(object.doors)) {
             for (const door of object.doors) {
                 if (isPointInRotatedRect(clickX, clickY, door)) {
-                    doorClicked = door;
+                    doorClickedInfo = { door, parent: object };
                     break;
                 }
             }
         }
-        if (doorClicked) break;
+        if (doorClickedInfo) break;
     }
-
-    if (doorClicked) {
-        // Если дверь закрыта (angle === 0) – открываем, иначе закрываем
-        const targetAngle = (doorClicked.angle === 0 ? -Math.PI / 3 : 0);
-        animateDoor(doorClicked, targetAngle);
+    if (doorClickedInfo) {
+        showDoorInfo(doorClickedInfo.door, doorClickedInfo.parent);
         return;
     }
 
-    // Если клик не по двери — проверяем попадание по объектам
+    // Если клик не по двери, проверяем попадание по объектам
     for (let obj of visibleObjects) {
         if (
             clickX >= obj.x &&
@@ -364,7 +393,6 @@ canvas.addEventListener('click', e => {
             return;
         }
     }
-
     infoBox.innerHTML = 'Объект не найден. Нажмите на элемент на карте.';
 });
 
