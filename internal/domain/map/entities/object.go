@@ -40,11 +40,3 @@ type Object struct {
 	Doors       []Door     `json:"doors"`
 	Floor       Floor      `json:"floor"`
 }
-
-type UpdateObjectInput struct {
-	ID          uuid.UUID
-	Name        string
-	Alias       string
-	Description string
-	ObjectType  ObjectType
-}

@@ -5,6 +5,14 @@ SELECT
     b.address
 FROM buildings b;
 
+-- name: GetBuildingByID :one
+SELECT 
+    b.id, 
+    b.name,
+    b.address
+FROM buildings b
+WHERE b.id = @id::uuid;
+
 -- name: GetFloorsByBuilding :many
 SELECT 
     f.id, 
@@ -71,3 +79,21 @@ WHERE id = @id::int;
 -- name: GetObjectTypeByName :one
 SELECT * FROM object_types
 WHERE name = @name::VARCHAR(50);
+
+-- name: GetFloorBackground :many
+SELECT 
+    fp.id, 
+    fp.label, 
+    fp.z_index, 
+    json_agg(
+        json_build_object(
+            'order', fpp.point_order,
+            'x', fpp.x,
+            'y', fpp.y
+        ) ORDER BY fpp.point_order
+    ) AS points
+FROM floor_polygons fp
+JOIN floor_polygon_points fpp ON fp.id = fpp.polygon_id
+WHERE fp.floor_id = @floor_id::uuid
+GROUP BY fp.id, fp.label, fp.z_index
+ORDER BY fp.z_index;

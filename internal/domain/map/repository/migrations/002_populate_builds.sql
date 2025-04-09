@@ -1087,5 +1087,18 @@ INSERT INTO object_doors (object_id, door_id)
 INSERT INTO object_doors (object_id, door_id) 
             VALUES ('c6a1fe59-b400-4226-b336-527396c3a383', 'c2777c75-5a11-4527-9a9d-28907b5eac1f');
 
-
 ---- create above / drop below ----
+
+DELETE FROM object_doors;
+DELETE FROM doors;
+
+DELETE FROM object_polygons;
+DELETE FROM objects;
+
+DELETE FROM floor_polygon_points;
+DELETE FROM floor_polygons;
+
+DELETE FROM floors;
+DELETE FROM buildings;
+
+DELETE FROM object_types;

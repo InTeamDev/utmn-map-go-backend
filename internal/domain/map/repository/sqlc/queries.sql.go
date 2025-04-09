@@ -8,10 +8,27 @@ package sqlc
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
+
+const getBuildingByID = `-- name: GetBuildingByID :one
+SELECT 
+    b.id, 
+    b.name,
+    b.address
+FROM buildings b
+WHERE b.id = $1::uuid
+`
+
+func (q *Queries) GetBuildingByID(ctx context.Context, id uuid.UUID) (Building, error) {
+	row := q.db.QueryRowContext(ctx, getBuildingByID, id)
+	var i Building
+	err := row.Scan(&i.ID, &i.Name, &i.Address)
+	return i, err
+}
 
 const getBuildings = `-- name: GetBuildings :many
 SELECT 
@@ -82,6 +99,60 @@ func (q *Queries) GetDoorsByObjectIDs(ctx context.Context, objectIds []uuid.UUID
 			&i.Width,
 			&i.Height,
 			&i.ObjectID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getFloorBackground = `-- name: GetFloorBackground :many
+SELECT 
+    fp.id, 
+    fp.label, 
+    fp.z_index, 
+    json_agg(
+        json_build_object(
+            'order', fpp.point_order,
+            'x', fpp.x,
+            'y', fpp.y
+        ) ORDER BY fpp.point_order
+    ) AS points
+FROM floor_polygons fp
+JOIN floor_polygon_points fpp ON fp.id = fpp.polygon_id
+WHERE fp.floor_id = $1::uuid
+GROUP BY fp.id, fp.label, fp.z_index
+ORDER BY fp.z_index
+`
+
+type GetFloorBackgroundRow struct {
+	ID     uuid.UUID
+	Label  sql.NullString
+	ZIndex sql.NullInt32
+	Points json.RawMessage
+}
+
+func (q *Queries) GetFloorBackground(ctx context.Context, floorID uuid.UUID) ([]GetFloorBackgroundRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFloorBackground, floorID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFloorBackgroundRow
+	for rows.Next() {
+		var i GetFloorBackgroundRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Label,
+			&i.ZIndex,
+			&i.Points,
 		); err != nil {
 			return nil, err
 		}

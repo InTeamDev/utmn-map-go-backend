@@ -88,18 +88,33 @@ func (mr *MockMapRepositoryMockRecorder) GetObjectTypes(ctx any) *gomock.Call {
 }
 
 // GetObjectsByBuilding mocks base method.
-func (m *MockMapRepository) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]entities.Object, error) {
+func (m *MockMapRepository) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetObjectsByBuilding", ctx, buildID)
+	ret := m.ctrl.Call(m, "GetObjectsByBuilding", ctx, buildingID)
 	ret0, _ := ret[0].([]entities.Object)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetObjectsByBuilding indicates an expected call of GetObjectsByBuilding.
-func (mr *MockMapRepositoryMockRecorder) GetObjectsByBuilding(ctx, buildID any) *gomock.Call {
+func (mr *MockMapRepositoryMockRecorder) GetObjectsByBuilding(ctx, buildingID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjectsByBuilding", reflect.TypeOf((*MockMapRepository)(nil).GetObjectsByBuilding), ctx, buildID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjectsByBuilding", reflect.TypeOf((*MockMapRepository)(nil).GetObjectsByBuilding), ctx, buildingID)
+}
+
+// GetObjectsResponse mocks base method.
+func (m *MockMapRepository) GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (entities.GetObjectsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetObjectsResponse", ctx, buildingID)
+	ret0, _ := ret[0].(entities.GetObjectsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetObjectsResponse indicates an expected call of GetObjectsResponse.
+func (mr *MockMapRepositoryMockRecorder) GetObjectsResponse(ctx, buildingID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjectsResponse", reflect.TypeOf((*MockMapRepository)(nil).GetObjectsResponse), ctx, buildingID)
 }
 
 // UpdateObject mocks base method.

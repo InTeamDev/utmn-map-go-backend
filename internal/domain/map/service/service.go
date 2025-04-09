@@ -12,7 +12,8 @@ type MapRepository interface {
 	GetBuildings(ctx context.Context) ([]entities.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
 	GetObjectTypes(ctx context.Context) ([]entities.ObjectType, error)
-	GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]entities.Object, error)
+	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (entities.GetObjectsResponse, error)
+	GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error)
 	UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error)
 }
 
@@ -46,6 +47,14 @@ func (m *Map) GetObjectCategories(ctx context.Context) ([]entities.ObjectType, e
 		return nil, fmt.Errorf("get object categories: %w", err)
 	}
 	return objectTypes, nil
+}
+
+func (m *Map) GetObjectsResponse(ctx context.Context, buildID uuid.UUID) (entities.GetObjectsResponse, error) {
+	objects, err := m.repo.GetObjectsResponse(ctx, buildID)
+	if err != nil {
+		return entities.GetObjectsResponse{}, fmt.Errorf("get objects: %w", err)
+	}
+	return objects, nil
 }
 
 func (m *Map) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]entities.Object, error) {

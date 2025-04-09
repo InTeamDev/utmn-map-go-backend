@@ -17,9 +17,12 @@ type MapConverter interface {
 	) []entities.Object
 	ObjectSqlcToEntity(object sqlc.GetObjectsByBuildingRow, doors []entities.Door) entities.Object
 	DoorsSqlcToEntityMap(doors []sqlc.GetDoorsByObjectIDsRow) map[uuid.UUID][]entities.Door
+	FloorSqlcToEntity(f sqlc.Floor) entities.Floor
 	FloorsSqlcToEntity(floors []sqlc.Floor) []entities.Floor
 	BuildingsSqlcToEntity(buildings []sqlc.Building) []entities.Building
 	ObjectTypesSqlcToEntity(objectTypes []sqlc.ObjectType) []entities.ObjectType
+	// Новая функция для конвертации background этажа
+	FloorBackgroundSqlcToEntityMany(rows []sqlc.GetFloorBackgroundRow) []entities.FloorBackgroundElement
 }
 
 type Map struct {
@@ -56,6 +59,80 @@ func (r *Map) GetObjectTypes(ctx context.Context) ([]entities.ObjectType, error)
 		return nil, fmt.Errorf("failed to get object types: %w", err)
 	}
 	return r.converter.ObjectTypesSqlcToEntity(objectTypes), nil
+}
+
+func (r *Map) GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (entities.GetObjectsResponse, error) {
+	buildingRow, err := r.q.GetBuildingByID(ctx, buildingID)
+	if err != nil {
+		return entities.GetObjectsResponse{}, fmt.Errorf("failed to get building: %w", err)
+	}
+	buildingEntity := entities.Building{
+		ID:      buildingRow.ID,
+		Name:    buildingRow.Name,
+		Address: buildingRow.Address,
+	}
+
+	// Получаем этажи здания
+	floorRows, err := r.q.GetFloorsByBuilding(ctx, buildingID)
+	if err != nil {
+		return entities.GetObjectsResponse{}, fmt.Errorf("failed to get floors: %w", err)
+	}
+
+	// Получаем объекты по зданию
+	rowObjects, err := r.q.GetObjectsByBuilding(ctx, buildingID)
+	if err != nil {
+		return entities.GetObjectsResponse{}, fmt.Errorf("failed to get objects by building: %w", err)
+	}
+
+	// Собираем ID объектов для запроса дверей
+	objectIDs := make([]uuid.UUID, len(rowObjects))
+	for i, obj := range rowObjects {
+		objectIDs[i] = obj.ID
+	}
+
+	rowDoors, err := r.q.GetDoorsByObjectIDs(ctx, objectIDs)
+	if err != nil {
+		return entities.GetObjectsResponse{}, fmt.Errorf("failed to get doors: %w", err)
+	}
+	doorsMap := r.converter.DoorsSqlcToEntityMap(rowDoors)
+	objects := r.converter.ObjectsSqlcToEntityByBuilding(rowObjects, doorsMap)
+
+	// Группируем объекты по этажам
+	floorObjectsMap := make(map[uuid.UUID][]entities.Object)
+	for _, obj := range objects {
+		floorObjectsMap[obj.Floor.ID] = append(floorObjectsMap[obj.Floor.ID], obj)
+	}
+
+	// Для каждого этажа получаем фон (background) и собираем данные
+	var floorsWithData []entities.FloorWithData
+	for _, fl := range floorRows {
+		// Получаем фон по данному этажу
+		bgRows, err := r.q.GetFloorBackground(ctx, fl.ID)
+		if err != nil {
+			return entities.GetObjectsResponse{}, fmt.Errorf(
+				"failed to get floor background for floor %s: %w",
+				fl.ID,
+				err,
+			)
+		}
+		background := r.converter.FloorBackgroundSqlcToEntityMany(bgRows)
+
+		// Преобразуем строку этажа в сущность
+		floorEntity := r.converter.FloorSqlcToEntity(fl)
+		floorData := entities.FloorWithData{
+			Floor:      floorEntity,
+			Objects:    floorObjectsMap[fl.ID],
+			Background: background,
+		}
+		floorsWithData = append(floorsWithData, floorData)
+	}
+
+	response := entities.GetObjectsResponse{
+		Building: buildingEntity,
+		Floors:   floorsWithData,
+	}
+
+	return response, nil
 }
 
 func (r *Map) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error) {
@@ -96,11 +173,6 @@ func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput
 		return entities.Object{}, fmt.Errorf("failed to update object: %w", err)
 	}
 
-	floor, err := r.q.GetFloorByID(ctx, rowObject.FloorID)
-	if err != nil {
-		return entities.Object{}, fmt.Errorf("failed to get floor: %w", err)
-	}
-
 	rowDoors, err := r.q.GetDoorsByObjectIDs(ctx, []uuid.UUID{rowObject.ID})
 	if err != nil {
 		return entities.Object{}, fmt.Errorf("failed to get doors: %w", err)
@@ -123,7 +195,6 @@ func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput
 		Height:      rowObject.Height,
 		ObjectType:  entities.ObjectType(objectType.Name),
 		Doors:       doorsMap[rowObject.ID],
-		Floor:       entities.Floor{ID: floor.ID, Name: floor.Name, Alias: floor.Alias},
 	}
 	return updatedObject, nil
 }

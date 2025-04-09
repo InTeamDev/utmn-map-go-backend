@@ -32,9 +32,10 @@ function loadBuildingObjects(buildingId) {
     fetch(`http://localhost:8000/api/buildings/${buildingId}/objects`)
         .then(res => res.json())
         .then(data => {
-            if (!Array.isArray(data.objects)) throw new Error("Ожидался массив объектов");
-
-            allData = data;
+            const result = data.objects; // извлекаем нужное
+            console.log("Извлечённые объекты:", result);
+            if (!Array.isArray(result.floors)) throw new Error("Ожидался массив этажей");
+            allData = result;
             createFloorButtons(allData);
             resizeCanvas();
         })
@@ -104,7 +105,7 @@ canvas.addEventListener('mousemove', e => {
 });
 canvas.addEventListener('wheel', e => {
     e.preventDefault();
-    const zoomFactor = 1.025;
+    const zoomFactor = 1.05;
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -144,6 +145,7 @@ async function showObjectInfo(obj) {
 
     let html = `<b>Редактирование объекта:</b><br>`;
     html += `<b>id:</b> <div style="font-family: monospace; user-select: all">${obj.id}</div>`;
+    html += `<b>coords:</b> <div style="font-family: monospace; user-select: all">x=${obj.x};y=${obj.y}<br>w=${obj.width};h=${obj.height}</div>`;
     html += `<b>name:</b> <input data-key="name" value="${obj.name || ''}" style="width: 100%;"><br>`;
     html += `<b>alias:</b> <input data-key="alias" value="${obj.alias || ''}" style="width: 100%;"><br>`;
     html += `<b>description:</b> <input data-key="description" value="${obj.description || ''}" style="width: 100%;"><br>`;
@@ -171,7 +173,7 @@ async function showObjectInfo(obj) {
 }
 
 function createFloorButtons(data) {
-    const floors = new Set(data.objects.map(o => o.floor?.name).filter(Boolean));
+    const floors = data.floors.map(f => f.floor.name);
     const container = document.getElementById('floor-buttons');
     container.innerHTML = '';
 
@@ -194,6 +196,66 @@ function createFloorButtons(data) {
     });
 }
 
+// Функция для корректировки яркости цвета (используется для объектов и дверей)
+function adjustColor(color, factor) {
+    // Ожидается формат rgba(r, g, b, a)
+    const parts = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*([\d.]+)?\)/);
+    if (parts) {
+        let r = Math.min(255, Math.max(0, Math.round(parseFloat(parts[1]) * factor)));
+        let g = Math.min(255, Math.max(0, Math.round(parseFloat(parts[2]) * factor)));
+        let b = Math.min(255, Math.max(0, Math.round(parseFloat(parts[3]) * factor)));
+        let a = parts[4] ? parseFloat(parts[4]) : 1;
+        return `rgba(${r}, ${g}, ${b}, ${a})`;
+    }
+    return color;
+}
+
+function lightenColor(color, factor = 1.2) {
+    return adjustColor(color, factor);
+}
+
+function darkenColor(color, factor = 0.8) {
+    return adjustColor(color, factor);
+}
+
+/**
+ * Проверяет, попадает ли точка (px,py) в повернутый прямоугольник двери.
+ * Переводим точку в локальные координаты двери (относительно её оси поворота),
+ * затем проверяем, лежит ли она в пределах [0, door.width] и [0, door.height].
+ */
+function isPointInRotatedRect(px, py, door) {
+    const angle = door.angle || 0;
+    const dx = px - door.x;
+    const dy = py - door.y;
+    const cos = Math.cos(-angle);
+    const sin = Math.sin(-angle);
+    const localX = dx * cos - dy * sin;
+    const localY = dx * sin + dy * cos;
+    return localX >= 0 && localX <= door.width && localY >= 0 && localY <= door.height;
+}
+
+/**
+ * Анимация (открытия/закрытия) двери.
+ * Плавно поворачивает дверь от текущего угла до targetAngle за duration миллисекунд.
+ */
+function animateDoor(door, targetAngle) {
+    const duration = 500; // длительность анимации в мс
+    const startAngle = door.angle || 0;
+    const startTime = performance.now();
+
+    function step() {
+        const now = performance.now();
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        door.angle = startAngle + (targetAngle - startAngle) * progress;
+        visualize(allData); // перерисовываем сцену
+        if (progress < 1) {
+            requestAnimationFrame(step);
+        }
+    }
+    requestAnimationFrame(step);
+}
+
 function visualize(data) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
@@ -202,43 +264,109 @@ function visualize(data) {
 
     visibleObjects = [];
 
-    const objects = currentFloor
-        ? data.objects.filter(o => o.floor?.name === currentFloor)
-        : data.objects;
+    const floorData = currentFloor
+        ? allData.floors.find(f => f.floor.name === currentFloor)
+        : null;
 
-    for (const object of objects) {
-        const { x, y, width, height } = object;
+    const floorsToRender = floorData ? [floorData] : allData.floors;
 
-        let color = {
-            'cabinet': 'rgba(0, 128, 255, 0.5)',
-            'wardrobe': 'rgba(255, 165, 0, 0.5)',
-            'woman-toilet': 'rgba(255, 192, 203, 0.5)',
-            'man-toilet': 'rgba(144, 238, 144, 0.5)',
-            'gym': 'rgba(128, 0, 128, 0.5)',
-        }[object.object_type] || 'rgba(200, 200, 200, 0.5)';
-
-        ctx.fillStyle = color;
-        ctx.fillRect(x, y, width, height);
-        ctx.strokeStyle = 'black';
-        ctx.strokeRect(x, y, width, height);
-
-        ctx.fillStyle = 'black';
-        ctx.font = '14px Arial';
-        ctx.fillText(object.name || '???', x + 5, y + 15);
-
-        if (Array.isArray(object.doors)) {
-            for (const door of object.doors) {
-                ctx.fillStyle = 'red';
-                ctx.fillRect(door.x, door.y, door.width, door.height);
-                ctx.strokeRect(door.x, door.y, door.width, door.height);
+    for (const floor of floorsToRender) {
+        // Рисуем фон
+        for (const bg of floor.background) {
+            const sortedPoints = bg.points.sort((a, b) => a.order - b.order);
+            if (sortedPoints.length > 1) {
+                ctx.beginPath();
+                ctx.moveTo(sortedPoints[0].x, sortedPoints[0].y);
+                for (let i = 1; i < sortedPoints.length; i++) {
+                    ctx.lineTo(sortedPoints[i].x, sortedPoints[i].y);
+                }
+                ctx.closePath();
+                ctx.fillStyle = '#f0f0f0';
+                ctx.fill();
+                ctx.strokeStyle = '#999';
+                ctx.stroke();
             }
         }
 
-        visibleObjects.push(object);
+        for (const object of floor.objects) {
+            const { x, y, width, height } = object;
+
+            let color = {
+                'cabinet': 'rgba(0, 128, 255, 1)', // убрали прозрачность
+                'wardrobe': 'rgba(255, 165, 0, 0.5)',
+                'woman-toilet': 'rgba(255, 192, 203, 0.5)',
+                'man-toilet': 'rgba(144, 238, 144, 0.5)',
+                'gym': 'rgba(128, 0, 128, 0.5)',
+            }[object.object_type] || 'rgba(200, 200, 200, 0.5)';
+
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, width, height);
+            ctx.strokeStyle = 'black';
+            ctx.strokeRect(x, y, width, height);
+
+            ctx.fillStyle = 'black';
+            ctx.font = '14px Arial';
+            ctx.fillText(object.name || '???', x + 5, y + 15);
+
+            if (Array.isArray(object.doors)) {
+                for (const door of object.doors) {
+                    ctx.fillStyle = 'red';
+                    ctx.fillRect(door.x, door.y, door.width, door.height);
+                    ctx.strokeRect(door.x, door.y, door.width, door.height);
+                }
+            }
+
+            visibleObjects.push(object);
+        }
     }
 
     ctx.restore();
 }
+
+// Обработчик клика по canvas
+canvas.addEventListener('click', e => {
+    const rect = canvas.getBoundingClientRect();
+    // Преобразуем координаты клика с учётом смещения и масштаба
+    const clickX = (e.clientX - rect.left - offsetX) / scale;
+    const clickY = (e.clientY - rect.top - offsetY) / scale;
+
+    let doorClicked = null;
+
+    // Проверяем, был ли клик по двери, с учётом поворота
+    for (const object of visibleObjects) {
+        if (Array.isArray(object.doors)) {
+            for (const door of object.doors) {
+                if (isPointInRotatedRect(clickX, clickY, door)) {
+                    doorClicked = door;
+                    break;
+                }
+            }
+        }
+        if (doorClicked) break;
+    }
+
+    if (doorClicked) {
+        // Если дверь закрыта (angle === 0) – открываем, иначе закрываем
+        const targetAngle = (doorClicked.angle === 0 ? -Math.PI / 3 : 0);
+        animateDoor(doorClicked, targetAngle);
+        return;
+    }
+
+    // Если клик не по двери — проверяем попадание по объектам
+    for (let obj of visibleObjects) {
+        if (
+            clickX >= obj.x &&
+            clickX <= obj.x + obj.width &&
+            clickY >= obj.y &&
+            clickY <= obj.y + obj.height
+        ) {
+            showObjectInfo(obj);
+            return;
+        }
+    }
+
+    infoBox.innerHTML = 'Объект не найден. Нажмите на элемент на карте.';
+});
 
 // 🔥 Запуск
 init();

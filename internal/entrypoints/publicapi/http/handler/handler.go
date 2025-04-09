@@ -18,6 +18,7 @@ type MapService interface {
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]mapentites.Floor, error)
 	GetObjectCategories(ctx context.Context) ([]mapentites.ObjectType, error)
 	GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]mapentites.Object, error)
+	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentites.GetObjectsResponse, error)
 }
 
 type SearchService interface {
@@ -60,7 +61,7 @@ func (p *PublicAPI) GetObjectsByBuildingHandler(c *gin.Context) {
 		return
 	}
 
-	objects, err := p.mapService.GetObjectsByBuilding(c.Request.Context(), buildID)
+	objects, err := p.mapService.GetObjectsResponse(c.Request.Context(), buildID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

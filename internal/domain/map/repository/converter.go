@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"encoding/json"
+
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository/sqlc"
 	"github.com/google/uuid"
@@ -14,34 +16,34 @@ func NewMapConverter() *MapConverterImpl {
 	return &MapConverterImpl{}
 }
 
-func (mc *MapConverterImpl) floorSqlcToEntity(floors sqlc.Floor) entities.Floor {
+func (mc *MapConverterImpl) FloorSqlcToEntity(f sqlc.Floor) entities.Floor {
 	return entities.Floor{
-		ID:    floors.ID,
-		Name:  floors.Name,
-		Alias: floors.Alias,
+		ID:    f.ID,
+		Name:  f.Name,
+		Alias: f.Alias,
 	}
 }
 
 func (mc *MapConverterImpl) FloorsSqlcToEntity(floors []sqlc.Floor) []entities.Floor {
 	result := make([]entities.Floor, 0, len(floors))
-	for _, floor := range floors {
-		result = append(result, mc.floorSqlcToEntity(floor))
+	for _, f := range floors {
+		result = append(result, mc.FloorSqlcToEntity(f))
 	}
 	return result
 }
 
-func (mc *MapConverterImpl) buildingSqlcToEntity(building sqlc.Building) entities.Building {
+func (mc *MapConverterImpl) buildingSqlcToEntity(b sqlc.Building) entities.Building {
 	return entities.Building{
-		ID:      building.ID,
-		Name:    building.Name,
-		Address: building.Address,
+		ID:      b.ID,
+		Name:    b.Name,
+		Address: b.Address,
 	}
 }
 
 func (mc *MapConverterImpl) BuildingsSqlcToEntity(buildings []sqlc.Building) []entities.Building {
 	result := make([]entities.Building, 0, len(buildings))
-	for _, building := range buildings {
-		result = append(result, mc.buildingSqlcToEntity(building))
+	for _, b := range buildings {
+		result = append(result, mc.buildingSqlcToEntity(b))
 	}
 	return result
 }
@@ -50,22 +52,21 @@ func (mc *MapConverterImpl) ObjectSqlcToEntity(
 	object sqlc.GetObjectsByBuildingRow,
 	doors []entities.Door,
 ) entities.Object {
-	description := ""
-	if object.Description.Valid {
-		description = object.Description.String
-	}
 	return entities.Object{
 		ID:          object.ID,
 		Name:        object.Name,
 		Alias:       object.Alias,
-		Description: description,
+		Description: object.Description.String,
 		X:           object.X,
 		Y:           object.Y,
 		Width:       object.Width,
 		Height:      object.Height,
 		ObjectType:  entities.ObjectType(object.ObjectType),
 		Doors:       doors,
-		Floor:       entities.Floor{ID: object.FloorID, Name: object.FloorName},
+		Floor: entities.Floor{
+			ID:    object.FloorID,
+			Name:  object.FloorName,
+			Alias: object.FloorName},
 	}
 }
 
@@ -102,6 +103,30 @@ func (mc *MapConverterImpl) ObjectTypesSqlcToEntity(objectTypes []sqlc.ObjectTyp
 	result := make([]entities.ObjectType, 0, len(objectTypes))
 	for _, objectType := range objectTypes {
 		result = append(result, entities.ObjectType(objectType.Name))
+	}
+	return result
+}
+
+// Функция для преобразования фоновых элементов этажа.
+// Предполагается, что поле Points типа []byte содержит JSON-массив точек,
+// который преобразуем в []entities.BackgroundPoint.
+func (mc *MapConverterImpl) FloorBackgroundSqlcToEntityMany(
+	rows []sqlc.GetFloorBackgroundRow,
+) []entities.FloorBackgroundElement {
+	result := make([]entities.FloorBackgroundElement, 0, len(rows))
+	for _, row := range rows {
+		var points []entities.BackgroundPoint
+		if err := json.Unmarshal(row.Points, &points); err != nil {
+			// При ошибке можно логировать и пропускать этот элемент
+			continue
+		}
+		element := entities.FloorBackgroundElement{
+			ID:     row.ID,
+			Label:  row.Label.String,
+			ZIndex: int(row.ZIndex.Int32),
+			Points: points,
+		}
+		result = append(result, element)
 	}
 	return result
 }

@@ -29,8 +29,9 @@ database:
 ### Запуск
 
 ```
-cd cmd/publicapi
-go run main.go --config=path/to/config.yaml
+go run cmd/publicapi/main.go --config=config/publicapi.yaml
+
+go run cmd/adminapi/main.go --config=config/adminapi.yaml
 ```
 
 ### Об архитектуре
@@ -51,17 +52,17 @@ go run main.go --config=path/to/config.yaml
 
   - `domain/` – Доменные сущности и их бизнес-логика.
     - `map/` - Поддомен карты
-        - `entities/` – Описание объектов карты (здания, двери, этажи и т. д.).
-        - `repository/` – Работа с базой данных (конвертеры, SQL-запросы, миграции).
-        - `service/` – Логика работы с картой.
+      - `entities/` – Описание объектов карты (здания, двери, этажи и т. д.).
+      - `repository/` – Работа с базой данных (конвертеры, SQL-запросы, миграции).
+      - `service/` – Логика работы с картой.
     - `route` – Граф маршрутов.
-        - `entities/`
-        - `repository/`
-        - `service/`
+      - `entities/`
+      - `repository/`
+      - `service/`
     - `search` – Поиск.
-        - `entities/`
-        - `repository/`
-        - `service/`
+      - `entities/`
+      - `repository/`
+      - `service/`
   - `entrypoints/`
     - `publicapi/http/handler/` – HTTP-обработчики запросов.
 
