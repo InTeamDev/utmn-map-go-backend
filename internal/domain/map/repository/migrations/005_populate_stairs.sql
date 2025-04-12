@@ -16,7 +16,7 @@ VALUES ('87d3a8f5-2795-4530-998e-20bbbc48240e', 'Лестница 3', 'Цент�
 -- 1 этаж — Лестница 4 (северо-восточная секция)
 INSERT INTO objects (id, name, alias, x, y, width, height, object_type_id, floor_id)
 VALUES ('20dcdfbd-2cd7-4861-bb0c-3be1ab1504a1', 'Лестница 4', 'Северо-восточная секция', 865.1, 1106.8, 41.6, 90.9,
-  (SELECT id FROM object_types WHERE name = 'stair'), 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+(SELECT id FROM object_types WHERE name = 'stair'), 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 
 -- 1 этаж — Лестница 5 (правый верхний угол)
 INSERT INTO objects (id, name, alias, x, y, width, height, object_type_id, floor_id)
@@ -65,8 +65,8 @@ VALUES ('a41ffeb5-d54c-47e3-88a5-2ad3059fe957', 'Лестница 3', 'Цент�
 
 -- 2 этаж — Лестница 4 (северо-восточная)
 INSERT INTO objects (id, name, alias, x, y, width, height, object_type_id, floor_id)
-VALUES ('2dcd6de3-e4a4-434f-b9b3-e85c3d2ab937', 'Лестница 4', 'Северо-восточная секция', 864.8, 1101.9, 41.6, 95.9,
-  (SELECT id FROM object_types WHERE name = 'stair'), '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
+VALUES ('2dcd6de3-e4a4-434f-b9b3-e85c3d2ab937', 'Лестница 4', 'Северо-восточная секция', 865.1, 1106.8, 41.6, 90.9,
+(SELECT id FROM object_types WHERE name = 'stair'), '4ccb7c2d-0bb2-49e0-828f-5b2c43787ee5');
 
 -- 2 этаж — Лестница 5 (правый верхний угол)
 INSERT INTO objects (id, name, alias, x, y, width, height, object_type_id, floor_id)
@@ -106,5 +106,33 @@ VALUES ('67b40b8e-64b1-4c80-b4a2-857e3b7fa7be', 'Лестница у туале�
 
 ---- create above / drop below ----
 
--- Write your migrate down statements here. If this migration is irreversible
--- Then delete the separator line above.
+DELETE FROM objects WHERE id IN (
+  -- 4 этаж
+  '67b40b8e-64b1-4c80-b4a2-857e3b7fa7be',
+  '775f5c3c-d5a5-4e01-b933-dc4236e4d423',
+
+  -- 3 этаж
+  '79a4a4d2-e991-4b4a-9f58-facc68c45b33',
+  '1f1c888e-3dc4-4f86-90e6-41e27ee7045e',
+  '8772b21a-e183-4fa5-a3ed-2e011aebef84',
+
+  -- 2 этаж
+  'd92d4131-07cf-4534-8419-2de0f91ebf3e',
+  '5290b3b6-f24f-4320-9569-69b68a750536',
+  '2dcd6de3-e4a4-434f-b9b3-e85c3d2ab937',
+  'a41ffeb5-d54c-47e3-88a5-2ad3059fe957',
+  '52454b36-1895-41b4-b39b-d8f71a5ff9be',
+  '2ae8c611-2321-46d6-933f-bb5e17c6bb38',
+
+  -- 1 этаж
+  '8b4c9b42-80fd-4a85-9d52-ef78a948f2e4',
+  'beed2307-33c6-4d10-a416-73d31edb5aa9',
+  'fd8d2a93-55e3-4a5f-87a0-c9a12f0021cb',
+  '9b728658-f5fd-4f31-b872-90f60e1eac36',
+  '82a1a2b2-356e-4f61-a07d-3e6f48a6b2a2',
+  '2f04a0ae-69b3-4534-9061-97c340e261f3',
+  '20dcdfbd-2cd7-4861-bb0c-3be1ab1504a1',
+  '87d3a8f5-2795-4530-998e-20bbbc48240e',
+  'b71ae235-8b14-4175-9607-3068d49a3c8a',
+  'a98ef279-e4a7-44e4-b093-71221e3b8e4f'
+);

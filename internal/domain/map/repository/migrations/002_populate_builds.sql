@@ -376,10 +376,6 @@ INSERT INTO doors (id, x, y, width, height)
 INSERT INTO doors (id, x, y, width, height) 
             VALUES ('a311d3a4-f0e4-4353-8b0b-734bc95459ab', 499.3, 240.9, 20.0, 3.0);
 INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('1e50e5ae-fe77-4d11-9f1a-5e094fac5b4e', 843.9, 246.9, 3.0, 33.6);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('4329a61a-dbb2-4d52-b98c-a1f3d6829562', 963.3, 246.9, 3.0, 33.6);
-INSERT INTO doors (id, x, y, width, height) 
             VALUES ('a6d10dec-0efc-4c07-aeeb-25923a729ca1', 685.5, 240.9, 20.0, 3.0);
 INSERT INTO doors (id, x, y, width, height) 
             VALUES ('367a90f1-9a4c-4ebe-be0c-d96096c160bb', 999.7, 240.9, 20.0, 3.0);
@@ -739,10 +735,6 @@ INSERT INTO object_doors (object_id, door_id)
 INSERT INTO object_doors (object_id, door_id) 
             VALUES ('f416e993-b7a6-4dba-ab0f-ccd88d9a56da', 'a311d3a4-f0e4-4353-8b0b-734bc95459ab');
 INSERT INTO object_doors (object_id, door_id) 
-            VALUES ('2ee8097b-9486-4f1b-a4d7-9c9c75dc94e7', '1e50e5ae-fe77-4d11-9f1a-5e094fac5b4e');
-INSERT INTO object_doors (object_id, door_id) 
-            VALUES ('2ee8097b-9486-4f1b-a4d7-9c9c75dc94e7', '4329a61a-dbb2-4d52-b98c-a1f3d6829562');
-INSERT INTO object_doors (object_id, door_id) 
             VALUES ('2ee8097b-9486-4f1b-a4d7-9c9c75dc94e7', 'a6d10dec-0efc-4c07-aeeb-25923a729ca1');
 INSERT INTO object_doors (object_id, door_id) 
             VALUES ('d1eb2048-f020-4dcc-8744-0d51d1907177', '367a90f1-9a4c-4ebe-be0c-d96096c160bb');
@@ -1092,7 +1084,6 @@ INSERT INTO object_doors (object_id, door_id)
 DELETE FROM object_doors;
 DELETE FROM doors;
 
-DELETE FROM object_polygons;
 DELETE FROM objects;
 
 DELETE FROM floor_polygon_points;
