@@ -313,7 +313,7 @@ SELECT
     o.y, 
     o.width, 
     o.height, 
-    ot.name AS object_type, 
+    ot.id AS object_type, 
     f.id AS floor_id, 
     f.name AS floor_name, 
     b.id AS building_id, 
@@ -334,7 +334,7 @@ type GetObjectsByBuildingRow struct {
 	Y            float64
 	Width        float64
 	Height       float64
-	ObjectType   string
+	ObjectType   int32
 	FloorID      uuid.UUID
 	FloorName    string
 	BuildingID   uuid.UUID
@@ -401,19 +401,27 @@ func (q *Queries) UpdateBuilding(ctx context.Context, arg UpdateBuildingParams) 
 
 const updateObject = `-- name: UpdateObject :one
 UPDATE objects
-SET name = $1,
-    alias = $2,
-    description = $3,
-    object_type_id = $4
-WHERE id = $5
+SET name = COALESCE($1, name),
+    alias = COALESCE($2, alias),
+    description = COALESCE($3, description),
+    x = COALESCE($4, x),
+    y = COALESCE($5, y),
+    width = COALESCE($6, width),
+    height = COALESCE($7, height),
+    object_type_id = COALESCE($8, object_type_id)
+WHERE id = $9
 RETURNING id, name, alias, description, x, y, width, height, object_type_id, floor_id
 `
 
 type UpdateObjectParams struct {
-	Name         string
-	Alias        string
+	Name         sql.NullString
+	Alias        sql.NullString
 	Description  sql.NullString
-	ObjectTypeID int32
+	X            sql.NullFloat64
+	Y            sql.NullFloat64
+	Width        sql.NullFloat64
+	Height       sql.NullFloat64
+	ObjectTypeID sql.NullInt32
 	ID           uuid.UUID
 }
 
@@ -422,6 +430,10 @@ func (q *Queries) UpdateObject(ctx context.Context, arg UpdateObjectParams) (Obj
 		arg.Name,
 		arg.Alias,
 		arg.Description,
+		arg.X,
+		arg.Y,
+		arg.Width,
+		arg.Height,
 		arg.ObjectTypeID,
 		arg.ID,
 	)
