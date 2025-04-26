@@ -21,13 +21,14 @@ type FloorWithData struct {
 }
 
 type UpdateObjectInput struct {
-	ID          uuid.UUID
-	Name        string
-	Alias       string
-	Description string
-	X           float64
-	Y           float64
-	Width       float64
-	Height      float64
-	ObjectType  ObjectType
+	ID           uuid.UUID
+	Name         *string
+	Alias        *string
+	Description  *string
+	X            *float64
+	Y            *float64
+	Width        *float64
+	Height       *float64
+	ObjectType   *ObjectType
+	ObjectTypeID *int32
 }

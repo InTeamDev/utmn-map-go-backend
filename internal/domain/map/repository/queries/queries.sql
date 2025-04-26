@@ -36,7 +36,7 @@ SELECT
     o.y, 
     o.width, 
     o.height, 
-    ot.name AS object_type, 
+    ot.id AS object_type, 
     f.id AS floor_id, 
     f.name AS floor_name, 
     b.id AS building_id, 
@@ -61,14 +61,14 @@ WHERE od.object_id = ANY(@object_ids::uuid[]);
 
 -- name: UpdateObject :one
 UPDATE objects
-SET name = @name,
-    alias = @alias,
-    x = @x,
-    y = @y,
-    width = @width,
-    height = @height,
-    description = @description,
-    object_type_id = @object_type_id
+SET name = COALESCE(sqlc.narg('name'), name),
+    alias = COALESCE(sqlc.narg('alias'), alias),
+    description = COALESCE(sqlc.narg('description'), description),
+    x = COALESCE(sqlc.narg('x'), x),
+    y = COALESCE(sqlc.narg('y'), y),
+    width = COALESCE(sqlc.narg('width'), width),
+    height = COALESCE(sqlc.narg('height'), height),
+    object_type_id = COALESCE(sqlc.narg('object_type_id'), object_type_id)
 WHERE id = @id
 RETURNING *;
 

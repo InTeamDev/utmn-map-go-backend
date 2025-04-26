@@ -156,32 +156,29 @@ func (r *Map) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([
 }
 
 func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error) {
-	objectType, err := r.q.GetObjectTypeByName(ctx, string(input.ObjectType))
-	if err != nil {
-		return entities.Object{}, fmt.Errorf("failed to get object type: %w", err)
+	if input.ObjectType != nil {
+		objectType, err := r.q.GetObjectTypeByName(ctx, string(*input.ObjectType))
+		if err != nil {
+			return entities.Object{}, fmt.Errorf("failed to get object type: %w", err)
+		}
+		input.ObjectTypeID = &objectType.ID
 	}
 
 	params := sqlc.UpdateObjectParams{
-		Name:         input.Name,
-		Alias:        input.Alias,
-		Description:  sql.NullString{String: input.Description, Valid: input.Description != ""},
-		X:            input.X,
-		Y:            input.Y,
-		Width:        input.Width,
-		Height:       input.Height,
-		ObjectTypeID: objectType.ID,
 		ID:           input.ID,
+		Name:         sqlNullString(input.Name),
+		Alias:        sqlNullString(input.Alias),
+		Description:  sqlNullString(input.Description),
+		X:            sqlNullFloat64(input.X),
+		Y:            sqlNullFloat64(input.Y),
+		Width:        sqlNullFloat64(input.Width),
+		Height:       sqlNullFloat64(input.Height),
+		ObjectTypeID: sqlNullInt32(input.ObjectTypeID),
 	}
 	rowObject, err := r.q.UpdateObject(ctx, params)
 	if err != nil {
 		return entities.Object{}, fmt.Errorf("failed to update object: %w", err)
 	}
-
-	rowDoors, err := r.q.GetDoorsByObjectIDs(ctx, []uuid.UUID{rowObject.ID})
-	if err != nil {
-		return entities.Object{}, fmt.Errorf("failed to get doors: %w", err)
-	}
-	doorsMap := r.converter.DoorsSqlcToEntityMap(rowDoors)
 
 	description := ""
 	if rowObject.Description.Valid {
@@ -189,16 +186,36 @@ func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput
 	}
 
 	updatedObject := entities.Object{
-		ID:          rowObject.ID,
-		Name:        rowObject.Name,
-		Alias:       rowObject.Alias,
-		Description: description,
-		X:           rowObject.X,
-		Y:           rowObject.Y,
-		Width:       rowObject.Width,
-		Height:      rowObject.Height,
-		ObjectType:  entities.ObjectType(objectType.Name),
-		Doors:       doorsMap[rowObject.ID],
+		ID:           rowObject.ID,
+		Name:         rowObject.Name,
+		Alias:        rowObject.Alias,
+		Description:  description,
+		X:            rowObject.X,
+		Y:            rowObject.Y,
+		Width:        rowObject.Width,
+		Height:       rowObject.Height,
+		ObjectTypeID: rowObject.ObjectTypeID,
 	}
 	return updatedObject, nil
+}
+
+func sqlNullString(s *string) sql.NullString {
+	if s == nil {
+		return sql.NullString{Valid: false}
+	}
+	return sql.NullString{String: *s, Valid: true}
+}
+
+func sqlNullInt32(i *int32) sql.NullInt32 {
+	if i == nil {
+		return sql.NullInt32{Valid: false}
+	}
+	return sql.NullInt32{Int32: *i, Valid: true}
+}
+
+func sqlNullFloat64(i *float64) sql.NullFloat64 {
+	if i == nil {
+		return sql.NullFloat64{Valid: false}
+	}
+	return sql.NullFloat64{Float64: *i, Valid: true}
 }
