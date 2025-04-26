@@ -165,6 +165,10 @@ func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput
 		Name:         input.Name,
 		Alias:        input.Alias,
 		Description:  sql.NullString{String: input.Description, Valid: input.Description != ""},
+		X:            input.X,
+		Y:            input.Y,
+		Width:        input.Width,
+		Height:       input.Height,
 		ObjectTypeID: objectType.ID,
 		ID:           input.ID,
 	}
