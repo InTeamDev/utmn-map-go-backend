@@ -26,7 +26,7 @@ jobs:
 
       - name: Run linters
         run: |
-          golangci-lint run --timeout 5m
+          golangci-lint run --out-format=github-actions
 
       - name: Run tests
         run: |
