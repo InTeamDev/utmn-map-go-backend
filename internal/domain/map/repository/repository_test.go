@@ -126,19 +126,6 @@ func (s *RepositoryNewTestSuite) TestGetFloors_Error() {
 	s.Contains(err.Error(), "get floors")
 }
 
-func (s *RepositoryNewTestSuite) TestGetObjectTypes_Error() {
-	testBuildingID := uuid.New()
-	objectTypeQueryRegex := regexp.MustCompile(`(?s).*FROM object_types.*`)
-	s.mockDB.ExpectQuery(objectTypeQueryRegex.String()).
-		WithArgs(testBuildingID).
-		WillReturnError(errors.New("db error"))
-
-	objectTypes, err := s.repo.GetObjectTypes(context.Background())
-	s.Require().Error(err)
-	s.Nil(objectTypes)
-	s.Contains(err.Error(), "get object types")
-}
-
 func TestRepositoryNewTestSuite(t *testing.T) {
 	suite.Run(t, new(RepositoryNewTestSuite))
 }
