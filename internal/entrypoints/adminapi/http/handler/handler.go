@@ -38,10 +38,14 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 
 	var input struct {
-		Name        *string `json:"name"`
-		Alias       *string `json:"alias"`
-		Description *string `json:"description"`
-		ObjectType  *string `json:"object_type"`
+		Name        *string  `json:"name"`
+		Alias       *string  `json:"alias"`
+		Description *string  `json:"description"`
+		X           *float64 `json:"x"`
+		Y           *float64 `json:"y"`
+		Width       *float64 `json:"width"`
+		Height      *float64 `json:"height"`
+		ObjectType  *string  `json:"object_type"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -61,6 +65,18 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 	if input.Description != nil {
 		updatedObj.Description = *input.Description
+	}
+	if input.X != nil {
+		updatedObj.X = *input.X
+	}
+	if input.Y != nil {
+		updatedObj.Y = *input.Y
+	}
+	if input.Width != nil {
+		updatedObj.Width = *input.Width
+	}
+	if input.Height != nil {
+		updatedObj.Height = *input.Height
 	}
 	if input.ObjectType != nil {
 		updatedObj.ObjectType = mapentites.ObjectType(*input.ObjectType)

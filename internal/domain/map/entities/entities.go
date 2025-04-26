@@ -25,5 +25,9 @@ type UpdateObjectInput struct {
 	Name        string
 	Alias       string
 	Description string
+	X           float64
+	Y           float64
+	Width       float64
+	Height      float64
 	ObjectType  ObjectType
 }
