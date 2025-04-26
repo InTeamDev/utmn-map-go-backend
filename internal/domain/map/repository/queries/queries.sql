@@ -63,6 +63,10 @@ WHERE od.object_id = ANY(@object_ids::uuid[]);
 UPDATE objects
 SET name = @name,
     alias = @alias,
+    x = @x,
+    y = @y,
+    width = @width,
+    height = @height,
     description = @description,
     object_type_id = @object_type_id
 WHERE id = @id
