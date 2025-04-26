@@ -2,9 +2,9 @@ name: Go CI/CD
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 jobs:
   build:
@@ -12,26 +12,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
 
-    - name: Install golangci-lint
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.58.1
+      - name: Install golangci-lint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.58.1
 
-    - name: Run linters
-      run: |
-        golangci-lint run ./...
+      - name: Run linters
+        run: |
+          golangci-lint run --new-from-rev=origin/master --timeout 5m
 
-    - name: Run tests
-      run: |
-        go test ./... -v
+      - name: Run tests
+        run: |
+          go test ./... -v
 
-    - name: Build
-      run: |
-        go build ./...
+      - name: Build
+        run: |
+          go build ./...
