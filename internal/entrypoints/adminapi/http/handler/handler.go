@@ -76,32 +76,19 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 
 	updatedObj := mapentites.UpdateObjectInput{
-		ID: objectID,
+		ID:          objectID,
+		Name:        input.Name,
+		Alias:       input.Alias,
+		Description: input.Description,
+		X:           input.X,
+		Y:           input.Y,
+		Width:       input.Width,
+		Height:      input.Height,
 	}
 
-	if input.Name != nil {
-		updatedObj.Name = *input.Name
-	}
-	if input.Alias != nil {
-		updatedObj.Alias = *input.Alias
-	}
-	if input.Description != nil {
-		updatedObj.Description = *input.Description
-	}
-	if input.X != nil {
-		updatedObj.X = *input.X
-	}
-	if input.Y != nil {
-		updatedObj.Y = *input.Y
-	}
-	if input.Width != nil {
-		updatedObj.Width = *input.Width
-	}
-	if input.Height != nil {
-		updatedObj.Height = *input.Height
-	}
 	if input.ObjectType != nil {
-		updatedObj.ObjectType = mapentites.ObjectType(*input.ObjectType)
+		objType := mapentites.ObjectType(*input.ObjectType)
+		updatedObj.ObjectType = &objType
 	}
 
 	result, err := p.mapService.UpdateObject(c.Request.Context(), updatedObj)
