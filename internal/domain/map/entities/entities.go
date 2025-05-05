@@ -28,7 +28,7 @@ type UpdateObjectInput struct {
 	ObjectType  ObjectType
 }
 
-// модель создания (структура данных и валидация полей)
+// модель создания  (структура данных и валидация полей)
 type CreateObjectRequest struct {
 	Name         string  `json:"name" binding:"required,max=255"`
 	Alias        string  `json:"alias" binding:"required,max=255"`
