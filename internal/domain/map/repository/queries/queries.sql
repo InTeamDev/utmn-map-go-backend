@@ -24,7 +24,8 @@ WHERE f.building_id = @building_id::uuid;
 
 -- name: GetObjectTypes :many
 SELECT DISTINCT ot.*
-FROM object_types ot;
+FROM object_types ot
+ORDER BY ot.id;
 
 -- name: GetObjectsByBuilding :many
 SELECT 

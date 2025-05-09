@@ -20,7 +20,8 @@ type MapConverter interface {
 	FloorSqlcToEntity(f sqlc.Floor) entities.Floor
 	FloorsSqlcToEntity(floors []sqlc.Floor) []entities.Floor
 	BuildingsSqlcToEntity(buildings []sqlc.Building) []entities.Building
-	ObjectTypesSqlcToEntity(objectTypes []sqlc.ObjectType) []entities.ObjectType
+	ObjectTypeSqlcToEntity(objectType sqlc.ObjectType) entities.ObjectTypeInfo
+	ObjectTypesSqlcToEntity(objectTypes []sqlc.ObjectType) []entities.ObjectTypeInfo
 	// Новая функция для конвертации background этажа
 	FloorBackgroundSqlcToEntityMany(rows []sqlc.GetFloorBackgroundRow) []entities.FloorBackgroundElement
 }
@@ -53,7 +54,7 @@ func (r *Map) GetFloors(ctx context.Context, buildingID uuid.UUID) ([]entities.F
 	return r.converter.FloorsSqlcToEntity(floors), nil
 }
 
-func (r *Map) GetObjectTypes(ctx context.Context) ([]entities.ObjectType, error) {
+func (r *Map) GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error) {
 	objectTypes, err := r.q.GetObjectTypes(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get object types: %w", err)

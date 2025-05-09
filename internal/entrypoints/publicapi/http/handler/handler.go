@@ -15,7 +15,7 @@ const defaultPageLimit = 30
 type MapService interface {
 	GetBuildings(ctx context.Context) ([]mapentites.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]mapentites.Floor, error)
-	GetObjectCategories(ctx context.Context) ([]mapentites.ObjectType, error)
+	GetObjectCategories(ctx context.Context) ([]mapentites.ObjectTypeInfo, error)
 	GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]mapentites.Object, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentites.GetObjectsResponse, error)
 }
