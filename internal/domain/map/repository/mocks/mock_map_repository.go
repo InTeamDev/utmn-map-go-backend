@@ -102,10 +102,10 @@ func (mr *MockMapRepositoryMockRecorder) GetFloors(ctx, buildID any) *gomock.Cal
 }
 
 // GetObjectTypes mocks base method.
-func (m *MockMapRepository) GetObjectTypes(ctx context.Context) ([]entities.ObjectType, error) {
+func (m *MockMapRepository) GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetObjectTypes", ctx)
-	ret0, _ := ret[0].([]entities.ObjectType)
+	ret0, _ := ret[0].([]entities.ObjectTypeInfo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

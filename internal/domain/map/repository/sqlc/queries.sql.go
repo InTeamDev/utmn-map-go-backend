@@ -278,6 +278,7 @@ func (q *Queries) GetObjectTypeByName(ctx context.Context, name string) (ObjectT
 const getObjectTypes = `-- name: GetObjectTypes :many
 SELECT DISTINCT ot.id, ot.name, ot.alias
 FROM object_types ot
+ORDER BY ot.id
 `
 
 func (q *Queries) GetObjectTypes(ctx context.Context) ([]ObjectType, error) {
