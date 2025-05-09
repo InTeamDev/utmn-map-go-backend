@@ -4,10 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-
-	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 )
 
 type MapService interface {
@@ -38,10 +37,14 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 
 	var input struct {
-		Name        *string `json:"name"`
-		Alias       *string `json:"alias"`
-		Description *string `json:"description"`
-		ObjectType  *string `json:"object_type"`
+		Name        *string  `json:"name"`
+		Alias       *string  `json:"alias"`
+		Description *string  `json:"description"`
+		X           *float64 `json:"x"`
+		Y           *float64 `json:"y"`
+		Width       *float64 `json:"width"`
+		Height      *float64 `json:"height"`
+		ObjectType  *string  `json:"object_type"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -50,20 +53,19 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 
 	updatedObj := mapentites.UpdateObjectInput{
-		ID: objectID,
+		ID:          objectID,
+		Name:        input.Name,
+		Alias:       input.Alias,
+		Description: input.Description,
+		X:           input.X,
+		Y:           input.Y,
+		Width:       input.Width,
+		Height:      input.Height,
 	}
 
-	if input.Name != nil {
-		updatedObj.Name = *input.Name
-	}
-	if input.Alias != nil {
-		updatedObj.Alias = *input.Alias
-	}
-	if input.Description != nil {
-		updatedObj.Description = *input.Description
-	}
 	if input.ObjectType != nil {
-		updatedObj.ObjectType = mapentites.ObjectType(*input.ObjectType)
+		objType := mapentites.ObjectType(*input.ObjectType)
+		updatedObj.ObjectType = &objType
 	}
 
 	result, err := p.mapService.UpdateObject(c.Request.Context(), updatedObj)

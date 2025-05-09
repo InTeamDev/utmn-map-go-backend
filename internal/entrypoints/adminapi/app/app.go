@@ -10,10 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-
 	"github.com/InTeamDev/utmn-map-go-backend/config"
 	maprepository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository"
 	mapservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service"
@@ -21,6 +17,9 @@ import (
 	"github.com/InTeamDev/utmn-map-go-backend/internal/middleware"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/server"
 	"github.com/InTeamDev/utmn-map-go-backend/pkg/database"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (

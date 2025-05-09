@@ -20,7 +20,8 @@ type MapConverter interface {
 	FloorSqlcToEntity(f sqlc.Floor) entities.Floor
 	FloorsSqlcToEntity(floors []sqlc.Floor) []entities.Floor
 	BuildingsSqlcToEntity(buildings []sqlc.Building) []entities.Building
-	ObjectTypesSqlcToEntity(objectTypes []sqlc.ObjectType) []entities.ObjectType
+	ObjectTypeSqlcToEntity(objectType sqlc.ObjectType) entities.ObjectTypeInfo
+	ObjectTypesSqlcToEntity(objectTypes []sqlc.ObjectType) []entities.ObjectTypeInfo
 	// Новая функция для конвертации background этажа
 	FloorBackgroundSqlcToEntityMany(rows []sqlc.GetFloorBackgroundRow) []entities.FloorBackgroundElement
 }
@@ -53,7 +54,7 @@ func (r *Map) GetFloors(ctx context.Context, buildingID uuid.UUID) ([]entities.F
 	return r.converter.FloorsSqlcToEntity(floors), nil
 }
 
-func (r *Map) GetObjectTypes(ctx context.Context) ([]entities.ObjectType, error) {
+func (r *Map) GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error) {
 	objectTypes, err := r.q.GetObjectTypes(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get object types: %w", err)
@@ -156,28 +157,29 @@ func (r *Map) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([
 }
 
 func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error) {
-	objectType, err := r.q.GetObjectTypeByName(ctx, string(input.ObjectType))
-	if err != nil {
-		return entities.Object{}, fmt.Errorf("failed to get object type: %w", err)
+	if input.ObjectType != nil {
+		objectType, err := r.q.GetObjectTypeByName(ctx, string(*input.ObjectType))
+		if err != nil {
+			return entities.Object{}, fmt.Errorf("failed to get object type: %w", err)
+		}
+		input.ObjectTypeID = &objectType.ID
 	}
 
 	params := sqlc.UpdateObjectParams{
-		Name:         input.Name,
-		Alias:        input.Alias,
-		Description:  sql.NullString{String: input.Description, Valid: input.Description != ""},
-		ObjectTypeID: objectType.ID,
 		ID:           input.ID,
+		Name:         sqlNullString(input.Name),
+		Alias:        sqlNullString(input.Alias),
+		Description:  sqlNullString(input.Description),
+		X:            sqlNullFloat64(input.X),
+		Y:            sqlNullFloat64(input.Y),
+		Width:        sqlNullFloat64(input.Width),
+		Height:       sqlNullFloat64(input.Height),
+		ObjectTypeID: sqlNullInt32(input.ObjectTypeID),
 	}
 	rowObject, err := r.q.UpdateObject(ctx, params)
 	if err != nil {
 		return entities.Object{}, fmt.Errorf("failed to update object: %w", err)
 	}
-
-	rowDoors, err := r.q.GetDoorsByObjectIDs(ctx, []uuid.UUID{rowObject.ID})
-	if err != nil {
-		return entities.Object{}, fmt.Errorf("failed to get doors: %w", err)
-	}
-	doorsMap := r.converter.DoorsSqlcToEntityMap(rowDoors)
 
 	description := ""
 	if rowObject.Description.Valid {
@@ -185,16 +187,36 @@ func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput
 	}
 
 	updatedObject := entities.Object{
-		ID:          rowObject.ID,
-		Name:        rowObject.Name,
-		Alias:       rowObject.Alias,
-		Description: description,
-		X:           rowObject.X,
-		Y:           rowObject.Y,
-		Width:       rowObject.Width,
-		Height:      rowObject.Height,
-		ObjectType:  entities.ObjectType(objectType.Name),
-		Doors:       doorsMap[rowObject.ID],
+		ID:           rowObject.ID,
+		Name:         rowObject.Name,
+		Alias:        rowObject.Alias,
+		Description:  description,
+		X:            rowObject.X,
+		Y:            rowObject.Y,
+		Width:        rowObject.Width,
+		Height:       rowObject.Height,
+		ObjectTypeID: rowObject.ObjectTypeID,
 	}
 	return updatedObject, nil
+}
+
+func sqlNullString(s *string) sql.NullString {
+	if s == nil {
+		return sql.NullString{Valid: false}
+	}
+	return sql.NullString{String: *s, Valid: true}
+}
+
+func sqlNullInt32(i *int32) sql.NullInt32 {
+	if i == nil {
+		return sql.NullInt32{Valid: false}
+	}
+	return sql.NullInt32{Int32: *i, Valid: true}
+}
+
+func sqlNullFloat64(i *float64) sql.NullFloat64 {
+	if i == nil {
+		return sql.NullFloat64{Valid: false}
+	}
+	return sql.NullFloat64{Float64: *i, Valid: true}
 }

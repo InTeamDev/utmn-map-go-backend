@@ -8,10 +8,11 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate mockgen -destination=../repository/mocks/mock_map_repository.go -package=mocks github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service MapRepository
 type MapRepository interface {
 	GetBuildings(ctx context.Context) ([]entities.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
-	GetObjectTypes(ctx context.Context) ([]entities.ObjectType, error)
+	GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (entities.GetObjectsResponse, error)
 	GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error)
 	UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error)
@@ -41,7 +42,7 @@ func (m *Map) GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floo
 	return floors, nil
 }
 
-func (m *Map) GetObjectCategories(ctx context.Context) ([]entities.ObjectType, error) {
+func (m *Map) GetObjectCategories(ctx context.Context) ([]entities.ObjectTypeInfo, error) {
 	objectTypes, err := m.repo.GetObjectTypes(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get object categories: %w", err)

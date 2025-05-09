@@ -42,8 +42,8 @@ func (s *SearchService) Search(
 		if object.Name == req.Query || req.Query == "" {
 			filteredObjects = append(filteredObjects, searchentities.SearchResult{
 				ObjectID: object.ID,
-				Category: string(object.ObjectType),
-				Preview:  fmt.Sprintf("%s %s (%s floor)", object.ObjectType, object.Name, object.Floor.Name),
+				/// Category: string(object.ObjectType),	FIX (Sam): Временно закомментированно. Паша, разберись!
+				/// Preview:  fmt.Sprintf("%s %s (%s floor)", object.ObjectType, object.Name, object.Floor.Name),
 			})
 		}
 	}

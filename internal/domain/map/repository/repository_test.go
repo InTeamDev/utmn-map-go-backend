@@ -8,14 +8,13 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/suite"
-	"go.uber.org/mock/gomock"
-
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository/mocks"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository/sqlc"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/suite"
+	"go.uber.org/mock/gomock"
 )
 
 type RepositoryNewTestSuite struct {

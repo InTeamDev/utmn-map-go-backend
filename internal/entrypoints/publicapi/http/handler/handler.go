@@ -4,11 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-
 	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 const defaultPageLimit = 30
@@ -16,7 +15,7 @@ const defaultPageLimit = 30
 type MapService interface {
 	GetBuildings(ctx context.Context) ([]mapentites.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]mapentites.Floor, error)
-	GetObjectCategories(ctx context.Context) ([]mapentites.ObjectType, error)
+	GetObjectCategories(ctx context.Context) ([]mapentites.ObjectTypeInfo, error)
 	GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]mapentites.Object, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentites.GetObjectsResponse, error)
 }
