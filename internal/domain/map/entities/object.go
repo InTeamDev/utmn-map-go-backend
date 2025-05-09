@@ -40,3 +40,9 @@ type Object struct {
 	Doors        []Door    `json:"doors"`
 	Floor        Floor     `json:"floor"`
 }
+
+type ObjectTypeInfo struct {
+	ID    int32  `json:"id"`
+	Name  string `json:"name"`
+	Alias string `json:"alias"`
+}
