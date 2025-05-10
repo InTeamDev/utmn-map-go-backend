@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
+	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -14,12 +15,26 @@ type MapService interface {
 	CreateBuilding(ctx context.Context, input mapentites.CreateBuildingInput) (mapentites.Building, error)
 }
 
-type AdminAPI struct {
-	mapService MapService
+type RouteService interface {
+	// GetRoute строит маршрут между точками
+	// (первая точка - начальная, промежуточные, последняя - конечная).
+	// Точки - ID Объектов.
+	// BuildRoute(ctx context.Context, start uuid.UUID, end uuid.UUID, waypoints []uuid.UUID) ([]entities.Edge, error)
+	// Admin. AddIntersection добавляет новый узел в граф.
+	AddIntersection(ctx context.Context, x, y float64) (uuid.UUID, error)
+	// Admin. AddConnection добавляет новое ребро в граф.
+	AddConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (routeentities.Edge, error)
+	// Admin. DeleteNode удаляет узел из графа.
+	// DeleteNode(ctx context.Context, id uuid.UUID) error
 }
 
-func NewAdminAPI(mapService MapService) *AdminAPI {
-	return &AdminAPI{mapService: mapService}
+type AdminAPI struct {
+	mapService   MapService
+	routeService RouteService
+}
+
+func NewAdminAPI(mapService MapService, routeService RouteService) *AdminAPI {
+	return &AdminAPI{mapService: mapService, routeService: routeService}
 }
 
 func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
@@ -27,6 +42,8 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 	{
 		api.PATCH("/objects/:object_id", p.UpdateObjectHandler)
 		api.POST("/buildings", p.CreateBuildingHandler)
+		api.POST("/route/intersections", p.AddIntersection)
+		api.POST("/route/connections", p.AddConnection)
 	}
 }
 
@@ -98,4 +115,52 @@ func (p *AdminAPI) CreateBuildingHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, building)
+}
+
+func (p *AdminAPI) AddIntersection(c *gin.Context) {
+	var input struct {
+		X *float64 `json:"x"`
+		Y *float64 `json:"y"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+
+	if input.X == nil || input.Y == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "x and y must be non-zero"})
+		return
+	}
+
+	nodeID, err := p.routeService.AddIntersection(c.Request.Context(), *input.X, *input.Y)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, routeentities.AddIntersectionResponse{
+		ID: nodeID,
+	})
+}
+
+func (p *AdminAPI) AddConnection(c *gin.Context) {
+	var input struct {
+		FromID uuid.UUID `json:"from_id"`
+		ToID   uuid.UUID `json:"to_id"`
+		Weight float64   `json:"weight"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+
+	result, err := p.routeService.AddConnection(c.Request.Context(), input.FromID, input.ToID, input.Weight)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, result)
 }

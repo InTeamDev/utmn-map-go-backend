@@ -2,18 +2,43 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	"github.com/google/uuid"
 )
 
-type RouteService interface {
-	// GetRoute строит маршрут между точками
-	// (первая точка - начальная, промежуточные, последняя - конечная).
-	// Точки - ID Объектов.
-	BuildRoute(ctx context.Context, start uuid.UUID, end uuid.UUID, waypoints []uuid.UUID) ([]entities.Edge, error)
-	// Admin. SetPoint добавляет новую точку в граф.
-	SetPoint(ctx context.Context, x, y float64) (uuid.UUID, error)
-	// Admin. DeletePoint удаляет точку из графа.
-	DeletePoint(ctx context.Context, id uuid.UUID) error
+type RouteRepository interface {
+	CreateConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (entities.Edge, error)
+	CreateIntersection(ctx context.Context, x, y float64) (entities.Node, error)
+}
+
+type RouteService struct {
+	repo RouteRepository
+}
+
+func NewRoute(repo RouteRepository) *RouteService {
+	return &RouteService{
+		repo: repo,
+	}
+}
+
+func (r *RouteService) AddIntersection(ctx context.Context, x, y float64) (uuid.UUID, error) {
+	node, err := r.repo.CreateIntersection(ctx, x, y)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("create intersection in (%f;%f): %w", x, y, err)
+	}
+	return node.ID, nil
+}
+
+func (r *RouteService) AddConnection(
+	ctx context.Context,
+	fromID, toID uuid.UUID,
+	weight float64,
+) (entities.Edge, error) {
+	conn, err := r.repo.CreateConnection(ctx, fromID, toID, weight)
+	if err != nil {
+		return entities.Edge{}, fmt.Errorf("create connection %w", err)
+	}
+	return entities.Edge{FromID: conn.FromID, ToID: conn.ToID, Weight: conn.Weight}, nil
 }
