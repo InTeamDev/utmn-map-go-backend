@@ -1,0 +1,11 @@
+version: "2"
+
+sql:
+  - engine: "postgresql"
+    queries: "queries"
+    schema: "../../../migrations"
+    gen:
+      go:
+        out: "sqlc"
+        omit_unused_structs: true
+        emit_exported_queries: false

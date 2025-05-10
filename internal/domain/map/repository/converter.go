@@ -66,7 +66,8 @@ func (mc *MapConverterImpl) ObjectSqlcToEntity(
 		Floor: entities.Floor{
 			ID:    object.FloorID,
 			Name:  object.FloorName,
-			Alias: object.FloorName},
+			Alias: object.FloorName,
+		},
 	}
 }
 
