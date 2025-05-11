@@ -8,12 +8,14 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate mockgen -destination=../../repository/mocks/mock_map_repository.go -package=mocks github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service MapRepository
 type MapRepository interface {
 	GetBuildings(ctx context.Context) ([]entities.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
 	GetObjectTypes(ctx context.Context) ([]entities.ObjectType, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (entities.GetObjectsResponse, error)
 	GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error)
+	CreateObject(ctx context.Context, input entities.CreateObjectInput) (entities.Object, error)
 	UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error)
 }
 
@@ -63,6 +65,14 @@ func (m *Map) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]en
 		return nil, fmt.Errorf("get objects: %w", err)
 	}
 	return objects, nil
+}
+
+func (m *Map) CreateObject(ctx context.Context, input entities.CreateObjectInput) (entities.Object, error) {
+	object, err := m.repo.CreateObject(ctx, input)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("create object: %w", err)
+	}
+	return object, nil
 }
 
 func (m *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error) {
