@@ -197,4 +197,25 @@ func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput
 		Doors:       doorsMap[rowObject.ID],
 	}
 	return updatedObject, nil
+
+}
+func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
+	params := sqlc.CreateBuildingParams{
+		ID:      uuid.New(),
+		Name:    input.Name,
+		Address: input.Address,
+	}
+
+	building, err := r.q.CreateBuilding(ctx, params)
+	if err != nil {
+		return entities.Building{}, fmt.Errorf("create building: %w", err)
+	}
+
+	result := entities.Building{
+		ID:      building.ID,
+		Name:    building.Name,
+		Address: building.Address,
+	}
+
+	return result, nil
 }

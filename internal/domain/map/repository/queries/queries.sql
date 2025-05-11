@@ -97,3 +97,8 @@ JOIN floor_polygon_points fpp ON fp.id = fpp.polygon_id
 WHERE fp.floor_id = @floor_id::uuid
 GROUP BY fp.id, fp.label, fp.z_index
 ORDER BY fp.z_index;
+
+-- name: CreateBuilding :one
+INSERT INTO buildings (id, name, address)
+VALUES ($1, $2, $3)
+RETURNING *;

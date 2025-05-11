@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate mockgen -destination=../repository/mocks/mock_map_repository.go -package=mocks github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service MapRepository
 type MapRepository interface {
 	GetBuildings(ctx context.Context) ([]entities.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
@@ -15,6 +16,7 @@ type MapRepository interface {
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (entities.GetObjectsResponse, error)
 	GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error)
 	UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error)
+	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
 }
 
 type Map struct {
@@ -71,4 +73,11 @@ func (m *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput
 		return entities.Object{}, fmt.Errorf("get object: %w", err)
 	}
 	return object, nil
+}
+func (m *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
+	building, err := m.repo.CreateBuilding(ctx, input)
+	if err != nil {
+		return entities.Building{}, fmt.Errorf("create building: %w", err)
+	}
+	return building, nil
 }
