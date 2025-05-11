@@ -26,7 +26,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 	api := router.Group("/api")
 	{
 		api.PATCH("/objects/:object_id", p.UpdateObjectHandler)
-		api.POST("/buildings", p.CreateBuildingHandler) // <--- добавлено
+		api.POST("/buildings", p.CreateBuildingHandler)
 	}
 }
 
