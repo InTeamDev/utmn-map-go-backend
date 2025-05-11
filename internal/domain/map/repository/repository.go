@@ -197,8 +197,8 @@ func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput
 		Doors:       doorsMap[rowObject.ID],
 	}
 	return updatedObject, nil
-
 }
+
 func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
 	params := sqlc.CreateBuildingParams{
 		ID:      uuid.New(),

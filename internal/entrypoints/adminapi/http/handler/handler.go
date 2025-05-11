@@ -4,10 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-
-	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 )
 
 type MapService interface {
@@ -76,6 +75,7 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
 func (p *AdminAPI) CreateBuildingHandler(c *gin.Context) {
 	var input struct {
 		Name    string `json:"name"`

@@ -74,6 +74,7 @@ func (m *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput
 	}
 	return object, nil
 }
+
 func (m *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
 	building, err := m.repo.CreateBuilding(ctx, input)
 	if err != nil {
