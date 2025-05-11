@@ -4,11 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-
 	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 const defaultPageLimit = 30

@@ -4,14 +4,14 @@ import (
 	"context"
 	"net/http"
 
+	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-
-	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 )
 
 type MapService interface {
 	UpdateObject(ctx context.Context, input mapentites.UpdateObjectInput) (mapentites.Object, error)
+	CreateBuilding(ctx context.Context, input mapentites.CreateBuildingInput) (mapentites.Building, error)
 }
 
 type AdminAPI struct {
@@ -26,6 +26,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 	api := router.Group("/api")
 	{
 		api.PATCH("/objects/:object_id", p.UpdateObjectHandler)
+		api.POST("/buildings", p.CreateBuildingHandler)
 	}
 }
 
@@ -73,4 +74,28 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+func (p *AdminAPI) CreateBuildingHandler(c *gin.Context) {
+	var input struct {
+		Name    string `json:"name"`
+		Address string `json:"address"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+
+	buildingInput := mapentites.CreateBuildingInput{
+		Name:    input.Name,
+		Address: input.Address,
+	}
+	building, err := p.mapService.CreateBuilding(c.Request.Context(), buildingInput)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, building)
 }

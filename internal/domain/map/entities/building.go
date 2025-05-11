@@ -7,3 +7,8 @@ type Building struct {
 	Name    string    `json:"name"`
 	Address string    `json:"address"`
 }
+
+type CreateBuildingInput struct {
+	Name    string `json:"name"`
+	Address string `json:"address"`
+}
