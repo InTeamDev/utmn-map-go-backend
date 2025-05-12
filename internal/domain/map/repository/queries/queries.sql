@@ -59,6 +59,30 @@ FROM doors d
 JOIN object_doors od ON d.id = od.door_id
 WHERE od.object_id = ANY(@object_ids::uuid[]);
 
+-- name: CreateObject :one
+INSERT INTO objects (
+    floor_id,
+    name,
+    alias,
+    description,
+    x,
+    y,
+    width,
+    height,
+    object_type_id
+) VALUES (
+    @floor_id,
+    @name,
+    @alias,
+    @description,
+    @x,
+    @y,
+    @width,
+    @height,
+    @object_type_id
+) 
+RETURNING *;
+
 -- name: UpdateObject :one
 UPDATE objects
 SET name = @name,
