@@ -155,6 +155,57 @@ func (r *Map) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([
 	return objects, nil
 }
 
+func (r *Map) CreateObject(ctx context.Context, input entities.CreateObjectInput) (entities.Object, error) {
+	objectType, err := r.q.GetObjectTypeByID(ctx, input.ObjectTypeID)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("failed to get object type: %w", err)
+	}
+
+	params := sqlc.CreateObjectParams{
+		FloorID:      input.FloorID,
+		Name:         input.Name,
+		Alias:        input.Alias,
+		Description:  sql.NullString{String: input.Description, Valid: input.Description != ""},
+		X:            input.X,
+		Y:            input.Y,
+		Width:        input.Width,
+		Height:       input.Height,
+		ObjectTypeID: input.ObjectTypeID,
+	}
+
+	rowObject, err := r.q.CreateObject(ctx, params)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("failed to create object: %w", err)
+	}
+
+	rowDoors, err := r.q.GetDoorsByObjectIDs(ctx, []uuid.UUID{rowObject.ID})
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("failed to get doors: %w", err)
+	}
+	doorsMap := r.converter.DoorsSqlcToEntityMap(rowDoors)
+
+	description := ""
+	if rowObject.Description.Valid {
+		description = rowObject.Description.String
+	}
+
+	createdObject := entities.Object{
+		ID:          rowObject.ID,
+		FloorID:     rowObject.FloorID,
+		Name:        rowObject.Name,
+		Alias:       rowObject.Alias,
+		Description: description,
+		X:           rowObject.X,
+		Y:           rowObject.Y,
+		Width:       rowObject.Width,
+		Height:      rowObject.Height,
+		ObjectType:  entities.ObjectType(objectType.Name),
+		Doors:       doorsMap[rowObject.ID],
+	}
+
+	return createdObject, nil
+}
+
 func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error) {
 	objectType, err := r.q.GetObjectTypeByName(ctx, string(input.ObjectType))
 	if err != nil {
