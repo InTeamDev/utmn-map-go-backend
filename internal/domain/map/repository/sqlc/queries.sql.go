@@ -33,16 +33,6 @@ func (q *Queries) CreateBuilding(ctx context.Context, arg CreateBuildingParams) 
 	return i, err
 }
 
-<<<<<<< HEAD
-const deleteBuilding = `-- name: DeleteBuilding :exec
-DELETE FROM buildings
-WHERE id = $1
-`
-
-func (q *Queries) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, deleteBuilding, id)
-	return err
-=======
 const createObject = `-- name: CreateObject :one
 INSERT INTO objects (
     floor_id,
@@ -106,7 +96,16 @@ func (q *Queries) CreateObject(ctx context.Context, arg CreateObjectParams) (Obj
 		&i.FloorID,
 	)
 	return i, err
->>>>>>> 3e5d741 (object create v.1)
+}
+
+const deleteBuilding = `-- name: DeleteBuilding :exec
+DELETE FROM buildings
+WHERE id = $1
+`
+
+func (q *Queries) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteBuilding, id)
+	return err
 }
 
 const getBuildingByID = `-- name: GetBuildingByID :one
