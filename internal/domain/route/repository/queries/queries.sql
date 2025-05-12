@@ -4,6 +4,6 @@ VALUES (@from_id, @to_id, @weight)
 RETURNING *;
 
 -- name: CreateIntersection :one
-INSERT INTO intersections (id, x, y)
-VALUES (@id, @x, @y)
+INSERT INTO intersections (id, x, y, floor_id)
+VALUES (@id, @x, @y, @floor_id)
 RETURNING *;

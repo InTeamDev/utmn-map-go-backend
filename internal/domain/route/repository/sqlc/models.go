@@ -15,7 +15,8 @@ type Connection struct {
 }
 
 type Intersection struct {
-	ID uuid.UUID
-	X  float64
-	Y  float64
+	ID      uuid.UUID
+	X       float64
+	Y       float64
+	FloorID uuid.UUID
 }

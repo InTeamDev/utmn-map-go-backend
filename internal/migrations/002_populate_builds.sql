@@ -361,364 +361,364 @@ INSERT INTO objects (id, name, alias, description, x, y, width, height, object_t
 INSERT INTO objects (id, name, alias, description, x, y, width, height, object_type_id, floor_id) 
         VALUES ('c6a1fe59-b400-4226-b336-527396c3a383', '421', 'Floor_Fourth_Office_421', NULL, 251.8, 286.8, 145.2, 67.2, 1, '517650f2-3e3a-42d0-b6e9-6c8e7271b096');
 
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('1c3272ba-9123-4a2f-aaa4-68cc8a672516', 167.6, 291.8, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('59ff95f4-deea-4ac4-a9cb-9e3567e8ae13', 368.7, 272.1, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('ba503418-905c-42e7-ab12-ba1d6945f28c', 321.1, 240.9, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('8e560060-73ac-40f3-b934-bcd4bbebd679', 368.7, 240.9, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('0dc023c9-8df9-41e1-8402-426b7bfb9211', 418.8, 240.9, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('171e55fd-5dbf-40f6-98a3-2d719e10f1cc', 617.0, 240.9, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('a311d3a4-f0e4-4353-8b0b-734bc95459ab', 499.3, 240.9, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('a6d10dec-0efc-4c07-aeeb-25923a729ca1', 685.5, 240.9, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('367a90f1-9a4c-4ebe-be0c-d96096c160bb', 999.7, 240.9, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('cba1d206-5873-4d02-aa9b-072f980aac51', 1055.4, 256.1, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('7caf0f41-87a8-4828-ad95-bec524912ec1', 843.9, 407.1, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('d64d3fd9-048c-4b32-bc10-a26407a17561', 963.3, 407.1, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('5bd9818b-90fe-40cb-b647-0e44595b1b0a', 963.3, 638.6, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('c803d76b-192e-4cfd-a771-78d683347d61', 418.8, 272.1, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('0d1cfccf-2f91-4c32-8cd4-efa493bc541a', 472.5, 272.1, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('59d87bb1-766d-44a6-a3b5-04af6de8e0ca', 573.1, 285.2, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('2fd14319-ee21-4b67-be53-4ddd25dbc45e', 712.1, 285.2, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('4157070b-e7f6-4401-897b-84087f28f4ef', 277.2, 1198.1, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('9c235123-f38b-4341-a013-a85df7cd30dd', 217.0, 1198.1, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('25965755-549e-4ccc-9273-f90126330e97', 372.2, 1073.0, 15.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('ba68efb8-6446-423d-a155-3cf38caa3ecd', 559.9, 1051.1, 15.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('71a3f5cc-f469-4431-a685-1f8a52d6a692', 1329.6, 1116.3, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('b59c8f3d-669c-4372-8597-6edbb7504e34', 1374.4, 1116.3, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('f0b70be6-19f9-4115-9b25-b8e0a928940e', 1135.7, 993.3, 15.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('bcd43c9c-8866-4665-b3b8-36a9794c19ad', 1459.8, 993.3, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('737c152e-4220-4205-8511-f126daf5b312', 1547.8, 993.3, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('79478299-7374-4d7f-935b-5683b457f177', 1462.9, 866.1, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('194615e4-d945-4a26-bd98-8e271cdcd7bf', 1517.5, 866.1, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('3c19cd98-f208-483c-92af-ee5fcd592375', 1481.7, 901.5, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('bf3dfb73-5cf4-457b-ae3c-7609beac321f', 905.2, 1292.1, 3.0, 15.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('358b470c-47b8-4029-b97c-0e75033fd24b', 905.2, 1254.8, 3.0, 15.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('35803700-21b5-48a3-8578-053914a5648b', 915.2, 1051.0, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('200e9a17-22e0-451f-9c37-644542a4c7ee', 959.7, 1051.1, 15.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('1f47656b-aa99-4f1f-a3ba-1a6708e1246c', 997.4, 1051.1, 15.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('60178ffc-ecb0-4580-ae2f-c451167e784a', 808.2, 1314.5, 10.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('0bb95304-8110-4fc5-abc6-ecf5daa810e1', 808.2, 1345.4, 10.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('f1320cb3-3a64-448d-8e24-0424ea4fc9dd', 801.8, 1243.1, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('5966c550-3b91-41a3-b211-ea0acb35958b', 608.2, 1051.1, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('15548dce-3b11-418f-899f-6fa5561056b1', 689.0, 1367.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('6542c658-ae45-4ce0-b995-89b85a2acab0', 689.0, 1488.6, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('054a5c05-061f-4fdf-8491-55a9e4e3edf2', 720.7, 1465.5, 10.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('c65d5ad5-98fd-4f45-bd64-65408e93f150', 753.8, 1465.6, 10.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('836827aa-18af-4363-bd1d-2cdc1de5bac1', 801.7, 1478.6, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('271de3e0-195c-4d95-bc24-af42839569a4', 608.2, 1314.5, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('baacfe9b-7657-4227-a401-b61896c6f7d1', 1039.3, 993.3, 15.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('a0029e15-ce19-489a-9507-e9207edd67cc', 952.3, 1026.9, 3.0, 15.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('100e5279-2b8b-4957-bdd0-38d3f05c044a', 195.0, 1166.6, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('97452c2a-b54e-431e-98d9-6f5874e5b42e', 888.3, 1314.5, 10.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('767a854e-5ad3-4d3c-b5b3-09e11047e25d', 888.3, 1345.4, 10.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('1ccccab0-9bac-49ff-899c-4d62b3986749', 207.4, 955.6, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('40ccaede-397e-497a-8813-efd2821fab86', 312.4, 999.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('dd6d3fa7-9c06-47cc-a220-c237a759d516', 1198.0, 890.6, 15.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('2102ce65-c9f4-4315-963b-715585cac6f8', 1690.4, 1022.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('aff65c9e-51a9-41d0-8ac6-8050a906a7b0', 1690.4, 1081.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('3cdb4fcd-265a-41e4-9b30-b54f7a9625b7', 1690.4, 1164.7, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('654192d6-73b8-4d16-8b92-14acc17cd4b6', 1690.4, 1245.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('8b8744fc-3525-4d41-95f8-4921981b4eea', 1741.9, 1325.6, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('be2821b0-9deb-4ab0-945c-5099d846aef4', 1741.9, 1245.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('f8dc639a-4d99-4f19-a2ec-95cb282567d0', 1741.9, 1163.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('320f1980-62a9-4f7e-b776-0bb9ec811434', 1741.9, 1081.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('c891e6e6-c135-4e9c-a4e9-32775cd595fb', 1741.9, 1022.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('e185c798-30ae-4470-89da-0287ecf872e7', 1712.8, 81.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('9857e662-b31e-4945-987c-77f3be4acfa3', 1823.5, 263.5, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('3dcdd3fe-a045-419f-af57-17b385ca4477', 1587.7, 203.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('5fac4a91-266b-4966-a3db-32b9abbf3861', 1587.7, 291.8, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('c52d5ec6-3ed8-4dc5-96d4-e5f78752a84a', 1740.9, 428.6, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('db064dbd-29c0-49bd-b3ef-6c13df094d0d', 1740.9, 595.3, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('f17ecdf0-836e-485d-98b2-ad35a5d2ddd1', 1740.9, 656.1, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('7973634a-bb92-44bf-a44e-f495fbaee441', 1740.9, 786.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('e89fe356-a957-4af1-bf5a-216bac00d89b', 1740.9, 867.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('237c2079-d81c-4590-afce-f8b537c6fda8', 1691.5, 867.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('c722a4ca-f6eb-4fdd-8237-f834ed883249', 1691.5, 786.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('4bdea090-3524-4920-ba2a-1791dd20db6b', 1691.2, 704.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('5c9ac0d7-01b2-41a2-8d2a-0d309ac71261', 1691.5, 548.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('8430c692-0f64-48ef-b26d-dc488bf6b810', 1691.2, 495.6, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('779f4df1-7808-4b0e-835e-e10a159d963d', 1691.5, 378.3, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('a539f61a-c92e-487b-a694-bfb0dcea4a66', 217.4, 1197.7, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('af429833-221a-43c9-a00d-5cd109da0f2f', 272.8, 1197.7, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('47190043-0c75-4fe9-9561-007fd54a5b6a', 194.8, 1146.4, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('c7e6841f-b7cf-4b2d-a8cd-a9fe158011f7', 195.0, 1177.7, 3.0, 15.8);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('a3e57afb-5dba-4126-9da9-5cf538ce6471', 194.7, 853.7, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('a270c38b-c189-4f49-8d0a-b05e88f6d611', 194.8, 681.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('2e4f9abd-781f-4e0e-ae19-a9abc61dbc61', 249.2, 488.7, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('697f7fc5-e293-4db6-ba7d-d11b8d2024e6', 251.3, 611.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('1e4f43c8-02af-4c3e-b6b6-187b0726a193', 194.7, 249.9, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('ecf70dc8-5136-4614-b3e2-75f7cb6c31cc', 329.2, 239.2, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('f8ce0fbf-9937-48dd-a0f5-62cb9590370d', 384.9, 240.1, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('83caf83f-9414-4fcc-b42b-3807564562ab', 585.6, 239.3, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('7f310458-a823-424e-a92c-c3c7e7f5ab0d', 804.3, 239.3, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('0b71b286-c288-45c9-a54e-4585018f3e83', 984.2, 239.3, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('fd7a5e9c-5a60-43d7-9b95-05d2900c00b8', 1048.2, 239.3, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('b1f55ba6-ecc1-41ef-8bc3-e809fef8c6bd', 1098.4, 249.9, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('33eca7cd-e512-42d3-9f06-4423a9bbaca6', 667.9, 284.8, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('ef5f0428-9986-4b49-9590-b38125c032c8', 509.8, 310.3, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('43ed36b1-f10c-45f2-9519-ac0d73342b0e', 193.2, 515.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('b149a726-fea9-43f9-84e2-28a1ad3ad391', 194.7, 358.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('98a9d691-4345-4dc0-9a1d-a81eac8e49bf', 801.8, 1207.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('bfd26a06-e70e-4ceb-825e-977bd55e64c8', 753.6, 1413.4, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('a61d4092-daf4-4499-8149-a16a7bd058ad', 844.8, 1347.9, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('715bb553-0631-4aa1-805d-4e68f022c407', 801.8, 1443.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('16d18739-fc71-49cc-89f5-a410ed1d132a', 531.8, 239.2, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('67b61754-7dae-40ac-8c1c-ea1c20dc2bef', 1414.9, 245.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('2f86a8c4-25d4-4e9e-accc-2c1838ce408a', 1546.5, 276.4, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('fda692d4-2d03-481d-85af-260d99d5a04b', 1432.4, 229.0, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('a0be1970-e406-4f62-ba9b-9f614f998270', 1556.5, 229.0, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('63f090cc-e801-4bf0-86b0-2fcac94d1a59', 1691.4, 465.9, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('2d2144ba-be3b-41ad-ae46-815b1d6a082a', 1691.4, 625.3, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('1fef10aa-2234-47c7-99a9-f515ebca20f1', 1691.4, 695.9, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('2a78b97c-b862-44ac-815e-858d8c0da348', 1691.4, 897.8, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('31d0e272-b083-436b-b22e-defe22aa10e3', 1689.9, 948.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('f88d50fc-eb61-4843-b8bf-ccd697e9c436', 1691.4, 1000.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('cdb75779-50dc-493d-89e3-60f3cf4f4b9a', 1691.4, 1206.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('a54da2ad-4edd-4dc0-b68a-6632fa453a48', 1741.9, 1288.3, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('85b673a9-1193-4760-8f9a-b7304e48d4b1', 1741.9, 1239.7, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('65c68191-7824-4f73-939a-7d51c4a67c83', 1741.9, 1186.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('419d41b7-dd27-4577-a4d3-aa7ca8b28728', 1741.9, 1136.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('3c757bf4-10a4-40ac-af0e-1cc2c2c74096', 1741.9, 1055.1, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('d13f6b9c-c644-466a-a6b9-f2127e359981', 1741.9, 1089.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('926e9cf1-5ab4-4892-ae58-3a09c362a2d6', 1741.9, 1020.9, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('0a7ee355-e414-4aef-8f82-7523388abc0f', 1741.9, 867.7, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('4db8fd63-a659-4ed7-bbda-fe1880ed64fa', 1741.9, 818.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('f0faccb7-4b88-4f6b-aa3e-ec3f1639616a', 1740.9, 776.9, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('b07ed1b4-3f0a-4940-8334-e7d8df20b2f6', 1740.9, 600.8, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('fde7a9bd-7302-46c2-b2dc-809600aef11b', 1740.9, 551.8, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('c38f100c-f5c9-4346-9201-979f64a7983f', 1740.9, 507.4, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('610a98e5-4c0e-435e-a856-f58928d1fd8f', 1740.9, 380.1, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('2a905fc3-eac7-4111-89a0-70d9d6597c75', 1740.9, 331.1, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('8375bdb0-1a78-43e1-b824-cc1d376ef6be', 1740.9, 282.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('00514093-5e72-4a4b-bd9b-bc36876bae0f', 273.0, 1198.2, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('139d7773-9ff0-4b0d-a2af-a93e5a43f38e', 195.0, 1179.4, 3.0, 16.1);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('d1808e62-1572-4c56-a00a-d61456b4f46a', 195.0, 1124.3, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('45be7a71-5c34-4118-ab36-28cf4074d2a0', 194.9, 854.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('6c7ab8c9-67b3-4668-bf5c-27bd922c6437', 195.0, 681.7, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('7ff6d25e-0c06-49f4-af28-d03fbccac567', 251.5, 397.9, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('4944d5d5-5a41-4b89-9c1b-3bc26596e243', 251.5, 489.6, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('3e13da0d-a5cf-41b3-b8c5-f90f54b62fcd', 194.9, 250.4, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('91a3da5f-86c0-46db-90f4-d73adea5d549', 329.4, 239.7, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('e1dadca3-5d42-4340-816d-6ff78d5d81ca', 368.7, 239.8, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('5fdbbd33-19f6-471d-a8db-7046fc58725c', 585.8, 239.8, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('a1462446-e644-4910-bfba-651eca5156ec', 717.2, 239.8, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('cbbffb51-e847-4490-b4c0-080dc902d9dd', 804.5, 239.8, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('eadc520e-1354-49f5-a393-f3d52c571358', 984.4, 239.8, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('bb4ee239-69d1-439d-94cf-0f6679cd32b8', 1048.4, 239.8, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('9aff7e76-9a64-4e32-8756-cecdb8dee977', 1098.6, 264.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('013693d4-b659-4804-b242-630d9d858522', 668.1, 285.3, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('1ce26862-7560-4d42-a818-c175b0298489', 217.6, 1198.2, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('c81f3c54-6cab-471a-b0ea-56b581f3768e', 193.4, 515.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('4536152b-6073-4203-bf32-43034f1dbab2', 194.9, 358.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('76ff00aa-3b57-421e-8911-a0e43e7829ec', 585.8, 285.2, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('c79b532d-5e82-4fae-a4a3-a336745ea5b3', 251.5, 611.7, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('ec508e9e-bf5e-45d0-9d9b-a399aacdd2d7', 266.4, 937.9, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('a237e208-a461-4757-938d-335293d86eee', 219.1, 1198.2, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('e73823db-3104-4b6d-a1e9-7f7b4ad25e76', 274.5, 1198.2, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('538bfc56-094a-43b0-9f7d-50886d67cd82', 195.0, 1146.9, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('5987be62-0393-4dc8-92a6-6a320ba39955', 195.0, 1077.6, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('74d35fd4-8fcc-4463-9cfe-0cb367744a99', 194.9, 817.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('a0eaecda-771f-48a3-9534-c70b1840c68b', 194.9, 635.1, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('d07bc4eb-3abb-40a5-89f8-0c075e5b23ff', 194.9, 515.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('ca57ec6a-3d2e-4225-9bbf-574edaa4863f', 250.3, 474.4, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('2676dc09-6ff1-49c9-ab11-09f46a63e114', 250.3, 583.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('5bd4e4cd-f139-4b7b-82f2-7a6a686ab8d2', 250.3, 686.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('1e7ebb27-8b6b-4828-a55d-44f2df1b58ec', 250.3, 794.1, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('2cd08b8b-b649-4ed3-9037-a66e22dc5eb3', 250.3, 908.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('1ddd8576-4228-443d-99ee-2cfeaab1118c', 195.0, 309.3, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('bbc93f7d-61cb-463f-9ec4-45a8a41b4a6c', 320.4, 239.4, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('4fd43dec-d645-4fb6-90ef-4639875ab604', 461.6, 239.6, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('9015af43-fac8-4e6c-a77f-f3c6e77d92fe', 613.3, 239.6, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('c1dfdda3-cdce-4322-9474-5d418422dfc8', 751.9, 239.6, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('d0e60dcb-9887-4a24-b88f-a7700c6d39f1', 920.3, 239.6, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('8d444317-9005-4ab5-8051-7e3485846079', 1091.6, 239.6, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('8547f38b-2233-4267-a8d7-d2b8c349a527', 1261.1, 239.8, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('ac92d043-bd17-4ef8-86a1-0cd1c2bab23e', 1317.0, 171.0, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('99fa8c29-d6e2-480d-bb5b-81b68188d149', 1395.1, 251.2, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('176f1c8e-d4db-4c22-a61c-1ddbc841eb19', 1150.0, 279.0, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('74e478ef-fa5d-411d-a32b-c6d0b1f2333c', 1056.5, 279.0, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('5b9dd0cd-effe-40ba-9865-45e7bbd79fc9', 950.4, 303.5, 3.0, 20.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('adb86dfd-c338-44f5-8381-305512dd6237', 662.1, 285.3, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('338b4a72-1b57-403b-8080-a9e35091ae44', 573.4, 285.3, 20.0, 3.0);
-INSERT INTO doors (id, x, y, width, height) 
-            VALUES ('c2777c75-5a11-4527-9a9d-28907b5eac1f', 281.4, 285.3, 20.0, 3.0);
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('1c3272ba-9123-4a2f-aaa4-68cc8a672516', 167.6, 291.8, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('59ff95f4-deea-4ac4-a9cb-9e3567e8ae13', 368.7, 272.1, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('ba503418-905c-42e7-ab12-ba1d6945f28c', 321.1, 240.9, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('8e560060-73ac-40f3-b934-bcd4bbebd679', 368.7, 240.9, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('0dc023c9-8df9-41e1-8402-426b7bfb9211', 418.8, 240.9, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('171e55fd-5dbf-40f6-98a3-2d719e10f1cc', 617.0, 240.9, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('a311d3a4-f0e4-4353-8b0b-734bc95459ab', 499.3, 240.9, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('a6d10dec-0efc-4c07-aeeb-25923a729ca1', 685.5, 240.9, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('367a90f1-9a4c-4ebe-be0c-d96096c160bb', 999.7, 240.9, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('cba1d206-5873-4d02-aa9b-072f980aac51', 1055.4, 256.1, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('7caf0f41-87a8-4828-ad95-bec524912ec1', 843.9, 407.1, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('d64d3fd9-048c-4b32-bc10-a26407a17561', 963.3, 407.1, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('5bd9818b-90fe-40cb-b647-0e44595b1b0a', 963.3, 638.6, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('c803d76b-192e-4cfd-a771-78d683347d61', 418.8, 272.1, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('0d1cfccf-2f91-4c32-8cd4-efa493bc541a', 472.5, 272.1, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('59d87bb1-766d-44a6-a3b5-04af6de8e0ca', 573.1, 285.2, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('2fd14319-ee21-4b67-be53-4ddd25dbc45e', 712.1, 285.2, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('4157070b-e7f6-4401-897b-84087f28f4ef', 277.2, 1198.1, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('9c235123-f38b-4341-a013-a85df7cd30dd', 217.0, 1198.1, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('25965755-549e-4ccc-9273-f90126330e97', 372.2, 1073.0, 15.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('ba68efb8-6446-423d-a155-3cf38caa3ecd', 559.9, 1051.1, 15.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('71a3f5cc-f469-4431-a685-1f8a52d6a692', 1329.6, 1116.3, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('b59c8f3d-669c-4372-8597-6edbb7504e34', 1374.4, 1116.3, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('f0b70be6-19f9-4115-9b25-b8e0a928940e', 1135.7, 993.3, 15.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('bcd43c9c-8866-4665-b3b8-36a9794c19ad', 1459.8, 993.3, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('737c152e-4220-4205-8511-f126daf5b312', 1547.8, 993.3, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('79478299-7374-4d7f-935b-5683b457f177', 1462.9, 866.1, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('194615e4-d945-4a26-bd98-8e271cdcd7bf', 1517.5, 866.1, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('3c19cd98-f208-483c-92af-ee5fcd592375', 1481.7, 901.5, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('bf3dfb73-5cf4-457b-ae3c-7609beac321f', 905.2, 1292.1, 3.0, 15.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('358b470c-47b8-4029-b97c-0e75033fd24b', 905.2, 1254.8, 3.0, 15.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('35803700-21b5-48a3-8578-053914a5648b', 915.2, 1051.0, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('200e9a17-22e0-451f-9c37-644542a4c7ee', 959.7, 1051.1, 15.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('1f47656b-aa99-4f1f-a3ba-1a6708e1246c', 997.4, 1051.1, 15.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('60178ffc-ecb0-4580-ae2f-c451167e784a', 808.2, 1314.5, 10.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('0bb95304-8110-4fc5-abc6-ecf5daa810e1', 808.2, 1345.4, 10.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('f1320cb3-3a64-448d-8e24-0424ea4fc9dd', 801.8, 1243.1, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('5966c550-3b91-41a3-b211-ea0acb35958b', 608.2, 1051.1, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('15548dce-3b11-418f-899f-6fa5561056b1', 689.0, 1367.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('6542c658-ae45-4ce0-b995-89b85a2acab0', 689.0, 1488.6, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('054a5c05-061f-4fdf-8491-55a9e4e3edf2', 720.7, 1465.5, 10.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('c65d5ad5-98fd-4f45-bd64-65408e93f150', 753.8, 1465.6, 10.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('836827aa-18af-4363-bd1d-2cdc1de5bac1', 801.7, 1478.6, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('271de3e0-195c-4d95-bc24-af42839569a4', 608.2, 1314.5, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('baacfe9b-7657-4227-a401-b61896c6f7d1', 1039.3, 993.3, 15.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('a0029e15-ce19-489a-9507-e9207edd67cc', 952.3, 1026.9, 3.0, 15.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('100e5279-2b8b-4957-bdd0-38d3f05c044a', 195.0, 1166.6, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('97452c2a-b54e-431e-98d9-6f5874e5b42e', 888.3, 1314.5, 10.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('767a854e-5ad3-4d3c-b5b3-09e11047e25d', 888.3, 1345.4, 10.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('1ccccab0-9bac-49ff-899c-4d62b3986749', 207.4, 955.6, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('40ccaede-397e-497a-8813-efd2821fab86', 312.4, 999.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('dd6d3fa7-9c06-47cc-a220-c237a759d516', 1198.0, 890.6, 15.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('2102ce65-c9f4-4315-963b-715585cac6f8', 1690.4, 1022.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('aff65c9e-51a9-41d0-8ac6-8050a906a7b0', 1690.4, 1081.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('3cdb4fcd-265a-41e4-9b30-b54f7a9625b7', 1690.4, 1164.7, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('654192d6-73b8-4d16-8b92-14acc17cd4b6', 1690.4, 1245.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('8b8744fc-3525-4d41-95f8-4921981b4eea', 1741.9, 1325.6, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('be2821b0-9deb-4ab0-945c-5099d846aef4', 1741.9, 1245.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('f8dc639a-4d99-4f19-a2ec-95cb282567d0', 1741.9, 1163.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('320f1980-62a9-4f7e-b776-0bb9ec811434', 1741.9, 1081.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('c891e6e6-c135-4e9c-a4e9-32775cd595fb', 1741.9, 1022.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('e185c798-30ae-4470-89da-0287ecf872e7', 1712.8, 81.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('9857e662-b31e-4945-987c-77f3be4acfa3', 1823.5, 263.5, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('3dcdd3fe-a045-419f-af57-17b385ca4477', 1587.7, 203.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('5fac4a91-266b-4966-a3db-32b9abbf3861', 1587.7, 291.8, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('c52d5ec6-3ed8-4dc5-96d4-e5f78752a84a', 1740.9, 428.6, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('db064dbd-29c0-49bd-b3ef-6c13df094d0d', 1740.9, 595.3, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('f17ecdf0-836e-485d-98b2-ad35a5d2ddd1', 1740.9, 656.1, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('7973634a-bb92-44bf-a44e-f495fbaee441', 1740.9, 786.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('e89fe356-a957-4af1-bf5a-216bac00d89b', 1740.9, 867.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('237c2079-d81c-4590-afce-f8b537c6fda8', 1691.5, 867.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('c722a4ca-f6eb-4fdd-8237-f834ed883249', 1691.5, 786.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('4bdea090-3524-4920-ba2a-1791dd20db6b', 1691.2, 704.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('5c9ac0d7-01b2-41a2-8d2a-0d309ac71261', 1691.5, 548.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('8430c692-0f64-48ef-b26d-dc488bf6b810', 1691.2, 495.6, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('779f4df1-7808-4b0e-835e-e10a159d963d', 1691.5, 378.3, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('a539f61a-c92e-487b-a694-bfb0dcea4a66', 217.4, 1197.7, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('af429833-221a-43c9-a00d-5cd109da0f2f', 272.8, 1197.7, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('47190043-0c75-4fe9-9561-007fd54a5b6a', 194.8, 1146.4, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('c7e6841f-b7cf-4b2d-a8cd-a9fe158011f7', 195.0, 1177.7, 3.0, 15.8, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('a3e57afb-5dba-4126-9da9-5cf538ce6471', 194.7, 853.7, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('a270c38b-c189-4f49-8d0a-b05e88f6d611', 194.8, 681.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('2e4f9abd-781f-4e0e-ae19-a9abc61dbc61', 249.2, 488.7, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('697f7fc5-e293-4db6-ba7d-d11b8d2024e6', 251.3, 611.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('1e4f43c8-02af-4c3e-b6b6-187b0726a193', 194.7, 249.9, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('ecf70dc8-5136-4614-b3e2-75f7cb6c31cc', 329.2, 239.2, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('f8ce0fbf-9937-48dd-a0f5-62cb9590370d', 384.9, 240.1, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('83caf83f-9414-4fcc-b42b-3807564562ab', 585.6, 239.3, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('7f310458-a823-424e-a92c-c3c7e7f5ab0d', 804.3, 239.3, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('0b71b286-c288-45c9-a54e-4585018f3e83', 984.2, 239.3, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('fd7a5e9c-5a60-43d7-9b95-05d2900c00b8', 1048.2, 239.3, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('b1f55ba6-ecc1-41ef-8bc3-e809fef8c6bd', 1098.4, 249.9, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('33eca7cd-e512-42d3-9f06-4423a9bbaca6', 667.9, 284.8, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('ef5f0428-9986-4b49-9590-b38125c032c8', 509.8, 310.3, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('43ed36b1-f10c-45f2-9519-ac0d73342b0e', 193.2, 515.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('b149a726-fea9-43f9-84e2-28a1ad3ad391', 194.7, 358.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('98a9d691-4345-4dc0-9a1d-a81eac8e49bf', 801.8, 1207.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('bfd26a06-e70e-4ceb-825e-977bd55e64c8', 753.6, 1413.4, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('a61d4092-daf4-4499-8149-a16a7bd058ad', 844.8, 1347.9, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('715bb553-0631-4aa1-805d-4e68f022c407', 801.8, 1443.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('16d18739-fc71-49cc-89f5-a410ed1d132a', 531.8, 239.2, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('67b61754-7dae-40ac-8c1c-ea1c20dc2bef', 1414.9, 245.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('2f86a8c4-25d4-4e9e-accc-2c1838ce408a', 1546.5, 276.4, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('fda692d4-2d03-481d-85af-260d99d5a04b', 1432.4, 229.0, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('a0be1970-e406-4f62-ba9b-9f614f998270', 1556.5, 229.0, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('63f090cc-e801-4bf0-86b0-2fcac94d1a59', 1691.4, 465.9, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('2d2144ba-be3b-41ad-ae46-815b1d6a082a', 1691.4, 625.3, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('1fef10aa-2234-47c7-99a9-f515ebca20f1', 1691.4, 695.9, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('2a78b97c-b862-44ac-815e-858d8c0da348', 1691.4, 897.8, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('31d0e272-b083-436b-b22e-defe22aa10e3', 1689.9, 948.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('f88d50fc-eb61-4843-b8bf-ccd697e9c436', 1691.4, 1000.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('cdb75779-50dc-493d-89e3-60f3cf4f4b9a', 1691.4, 1206.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('a54da2ad-4edd-4dc0-b68a-6632fa453a48', 1741.9, 1288.3, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('85b673a9-1193-4760-8f9a-b7304e48d4b1', 1741.9, 1239.7, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('65c68191-7824-4f73-939a-7d51c4a67c83', 1741.9, 1186.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('419d41b7-dd27-4577-a4d3-aa7ca8b28728', 1741.9, 1136.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('3c757bf4-10a4-40ac-af0e-1cc2c2c74096', 1741.9, 1055.1, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('d13f6b9c-c644-466a-a6b9-f2127e359981', 1741.9, 1089.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('926e9cf1-5ab4-4892-ae58-3a09c362a2d6', 1741.9, 1020.9, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('0a7ee355-e414-4aef-8f82-7523388abc0f', 1741.9, 867.7, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('4db8fd63-a659-4ed7-bbda-fe1880ed64fa', 1741.9, 818.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('f0faccb7-4b88-4f6b-aa3e-ec3f1639616a', 1740.9, 776.9, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('b07ed1b4-3f0a-4940-8334-e7d8df20b2f6', 1740.9, 600.8, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('fde7a9bd-7302-46c2-b2dc-809600aef11b', 1740.9, 551.8, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('c38f100c-f5c9-4346-9201-979f64a7983f', 1740.9, 507.4, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('610a98e5-4c0e-435e-a856-f58928d1fd8f', 1740.9, 380.1, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('2a905fc3-eac7-4111-89a0-70d9d6597c75', 1740.9, 331.1, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('8375bdb0-1a78-43e1-b824-cc1d376ef6be', 1740.9, 282.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('00514093-5e72-4a4b-bd9b-bc36876bae0f', 273.0, 1198.2, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('139d7773-9ff0-4b0d-a2af-a93e5a43f38e', 195.0, 1179.4, 3.0, 16.1, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('d1808e62-1572-4c56-a00a-d61456b4f46a', 195.0, 1124.3, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('45be7a71-5c34-4118-ab36-28cf4074d2a0', 194.9, 854.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('6c7ab8c9-67b3-4668-bf5c-27bd922c6437', 195.0, 681.7, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('7ff6d25e-0c06-49f4-af28-d03fbccac567', 251.5, 397.9, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('4944d5d5-5a41-4b89-9c1b-3bc26596e243', 251.5, 489.6, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('3e13da0d-a5cf-41b3-b8c5-f90f54b62fcd', 194.9, 250.4, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('91a3da5f-86c0-46db-90f4-d73adea5d549', 329.4, 239.7, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('e1dadca3-5d42-4340-816d-6ff78d5d81ca', 368.7, 239.8, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('5fdbbd33-19f6-471d-a8db-7046fc58725c', 585.8, 239.8, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('a1462446-e644-4910-bfba-651eca5156ec', 717.2, 239.8, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('cbbffb51-e847-4490-b4c0-080dc902d9dd', 804.5, 239.8, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('eadc520e-1354-49f5-a393-f3d52c571358', 984.4, 239.8, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('bb4ee239-69d1-439d-94cf-0f6679cd32b8', 1048.4, 239.8, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('9aff7e76-9a64-4e32-8756-cecdb8dee977', 1098.6, 264.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('013693d4-b659-4804-b242-630d9d858522', 668.1, 285.3, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('1ce26862-7560-4d42-a818-c175b0298489', 217.6, 1198.2, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('c81f3c54-6cab-471a-b0ea-56b581f3768e', 193.4, 515.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('4536152b-6073-4203-bf32-43034f1dbab2', 194.9, 358.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('76ff00aa-3b57-421e-8911-a0e43e7829ec', 585.8, 285.2, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('c79b532d-5e82-4fae-a4a3-a336745ea5b3', 251.5, 611.7, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('ec508e9e-bf5e-45d0-9d9b-a399aacdd2d7', 266.4, 937.9, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('a237e208-a461-4757-938d-335293d86eee', 219.1, 1198.2, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('e73823db-3104-4b6d-a1e9-7f7b4ad25e76', 274.5, 1198.2, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('538bfc56-094a-43b0-9f7d-50886d67cd82', 195.0, 1146.9, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('5987be62-0393-4dc8-92a6-6a320ba39955', 195.0, 1077.6, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('74d35fd4-8fcc-4463-9cfe-0cb367744a99', 194.9, 817.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('a0eaecda-771f-48a3-9534-c70b1840c68b', 194.9, 635.1, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('d07bc4eb-3abb-40a5-89f8-0c075e5b23ff', 194.9, 515.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('ca57ec6a-3d2e-4225-9bbf-574edaa4863f', 250.3, 474.4, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('2676dc09-6ff1-49c9-ab11-09f46a63e114', 250.3, 583.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('5bd4e4cd-f139-4b7b-82f2-7a6a686ab8d2', 250.3, 686.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('1e7ebb27-8b6b-4828-a55d-44f2df1b58ec', 250.3, 794.1, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('2cd08b8b-b649-4ed3-9037-a66e22dc5eb3', 250.3, 908.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('1ddd8576-4228-443d-99ee-2cfeaab1118c', 195.0, 309.3, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('bbc93f7d-61cb-463f-9ec4-45a8a41b4a6c', 320.4, 239.4, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('4fd43dec-d645-4fb6-90ef-4639875ab604', 461.6, 239.6, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('9015af43-fac8-4e6c-a77f-f3c6e77d92fe', 613.3, 239.6, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('c1dfdda3-cdce-4322-9474-5d418422dfc8', 751.9, 239.6, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('d0e60dcb-9887-4a24-b88f-a7700c6d39f1', 920.3, 239.6, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('8d444317-9005-4ab5-8051-7e3485846079', 1091.6, 239.6, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('8547f38b-2233-4267-a8d7-d2b8c349a527', 1261.1, 239.8, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('ac92d043-bd17-4ef8-86a1-0cd1c2bab23e', 1317.0, 171.0, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('99fa8c29-d6e2-480d-bb5b-81b68188d149', 1395.1, 251.2, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('176f1c8e-d4db-4c22-a61c-1ddbc841eb19', 1150.0, 279.0, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('74e478ef-fa5d-411d-a32b-c6d0b1f2333c', 1056.5, 279.0, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('5b9dd0cd-effe-40ba-9865-45e7bbd79fc9', 950.4, 303.5, 3.0, 20.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('adb86dfd-c338-44f5-8381-305512dd6237', 662.1, 285.3, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('338b4a72-1b57-403b-8080-a9e35091ae44', 573.4, 285.3, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
+INSERT INTO doors (id, x, y, width, height, floor_id) 
+            VALUES ('c2777c75-5a11-4527-9a9d-28907b5eac1f', 281.4, 285.3, 20.0, 3.0, 'd33d56e3-aca8-4b62-b34a-9e3882276f75');
 
 INSERT INTO object_doors (object_id, door_id) 
             VALUES ('8a84fedb-4db3-42f7-9499-d101749e6122', '1c3272ba-9123-4a2f-aaa4-68cc8a672516');
@@ -1083,13 +1083,7 @@ INSERT INTO object_doors (object_id, door_id)
 
 DELETE FROM object_doors;
 DELETE FROM doors;
-
 DELETE FROM objects;
-
-DELETE FROM floor_polygon_points;
-DELETE FROM floor_polygons;
-
 DELETE FROM floors;
 DELETE FROM buildings;
-
 DELETE FROM object_types;

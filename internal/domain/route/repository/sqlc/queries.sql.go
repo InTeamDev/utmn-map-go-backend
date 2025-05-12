@@ -31,20 +31,31 @@ func (q *Queries) CreateConnection(ctx context.Context, arg CreateConnectionPara
 }
 
 const createIntersection = `-- name: CreateIntersection :one
-INSERT INTO intersections (id, x, y)
-VALUES ($1, $2, $3)
-RETURNING id, x, y
+INSERT INTO intersections (id, x, y, floor_id)
+VALUES ($1, $2, $3, $4)
+RETURNING id, x, y, floor_id
 `
 
 type CreateIntersectionParams struct {
-	ID uuid.UUID
-	X  float64
-	Y  float64
+	ID      uuid.UUID
+	X       float64
+	Y       float64
+	FloorID uuid.UUID
 }
 
 func (q *Queries) CreateIntersection(ctx context.Context, arg CreateIntersectionParams) (Intersection, error) {
-	row := q.db.QueryRowContext(ctx, createIntersection, arg.ID, arg.X, arg.Y)
+	row := q.db.QueryRowContext(ctx, createIntersection,
+		arg.ID,
+		arg.X,
+		arg.Y,
+		arg.FloorID,
+	)
 	var i Intersection
-	err := row.Scan(&i.ID, &i.X, &i.Y)
+	err := row.Scan(
+		&i.ID,
+		&i.X,
+		&i.Y,
+		&i.FloorID,
+	)
 	return i, err
 }
