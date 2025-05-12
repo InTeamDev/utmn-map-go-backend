@@ -50,7 +50,9 @@ CREATE TABLE doors (
     x FLOAT NOT NULL,
     y FLOAT NOT NULL,
     width FLOAT NOT NULL,
-    height FLOAT NOT NULL
+    height FLOAT NOT NULL,
+    floor_id UUID NOT NULL,
+    FOREIGN KEY (floor_id) REFERENCES floors(id) ON DELETE CASCADE
 );
 
 CREATE TABLE object_doors (
