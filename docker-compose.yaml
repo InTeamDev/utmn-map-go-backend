@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:latest
-    container_name: postgres_utmn-map
+    container_name: postgres_utmn_map
     restart: always
     environment:
       POSTGRES_USER: utmn_user
@@ -11,6 +11,11 @@ services:
       - "5432:5432"
     volumes:
       - pg_go_utmn_map_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U utmn_user" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   prometheus:
     image: prom/prometheus
@@ -28,6 +33,36 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  publicapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: publicapi
+    image: utmn-map-go-backend/publicapi:latest
+    ports:
+      - "8000:8000"
+    entrypoint: [ "./publicapi", "--config", "config.yaml" ]
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  adminapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: adminapi
+    image: utmn-map-go-backend/adminapi:latest
+    ports:
+      - "8001:8001"
+    entrypoint: [ "./adminapi", "--config", "config.yaml" ]
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   pg_go_utmn_map_data:
