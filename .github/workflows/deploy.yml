@@ -21,8 +21,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no deployer@94.103.92.242 << 'EOF'
             cd /opt/utmn-map
-            # подтягиваем свежие образы
             docker compose pull
-            # пересоздаём контейнеры (up -d подтягивает изменения)
             docker compose up -d
           EOF
