@@ -23,12 +23,19 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy via SSH
+      - name: Sync migration files to server
+        run: |
+          rsync -avz --delete \
+            --include 'internal/migrations/***'
+            --exclude '*' \
+            . deployer@94.103.92.242:/opt/utmn-map/
+
+      - name: Apply migrations and deploy
         run: |
           ssh -o StrictHostKeyChecking=no deployer@94.103.92.242 << 'EOF'
+            cd /opt/utmn-map/migrations
+            tern migrate --config .tern.conf
             cd /opt/utmn-map
-            git fetch --all
-            git checkout ${{ github.event.inputs.ref }}   # если вы хотите, чтобы compose конфиг тоже был из ветки
             docker compose pull
             docker compose up -d
           EOF
