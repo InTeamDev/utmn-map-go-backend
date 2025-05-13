@@ -1,0 +1,28 @@
+name: Deploy to UTMN Map
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (для docker-compose.yml и nginx-конфигов)
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no deployer@94.103.92.242 << 'EOF'
+            cd /opt/utmn-map
+            # подтягиваем свежие образы
+            docker compose pull
+            # пересоздаём контейнеры (up -d подтягивает изменения)
+            docker compose up -d
+          EOF

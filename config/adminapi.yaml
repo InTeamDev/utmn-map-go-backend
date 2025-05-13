@@ -1,5 +1,0 @@
-server:
-  host: "0.0.0.0"
-  port: 8001
-database:
-  dsn: "postgres://utmn_user:utmn_password@localhost:5432/utmn_map?sslmode=disable"
