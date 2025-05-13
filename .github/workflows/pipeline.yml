@@ -1,0 +1,96 @@
+name: Go Full Pipeline
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+  workflow_dispatch:
+    inputs:
+      push_images:
+        description: "Push images to registry?"
+        required: false
+        default: "false"
+      deploy:
+        description: "Deploy to server?"
+        required: false
+        default: "false"
+
+jobs:
+  ci:
+    name: "CI: lint, tests, test-build"
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Install golangci-lint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
+            | sh -s -- -b "$(go env GOPATH)/bin" v1.64.8
+
+      - name: Run linters
+        run: golangci-lint run --out-format=colored-line-number
+
+      - name: Run tests
+        run: go test ./... -v
+
+      - name: Build test Docker images
+        run: |
+          docker build --build-arg SERVICE=publicapi -t publicapi:ci .
+          docker build --build-arg SERVICE=adminapi  -t adminapi:ci .
+
+  push:
+    name: Push images to registry
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.push_images == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref_name }}
+
+      - name: Build images
+        run: |
+          docker build --build-arg SERVICE=publicapi \
+            -t ${{ secrets.REGISTRY_USER }}/utmn-map-backend-publicapi:latest .
+          docker build --build-arg SERVICE=adminapi \
+            -t ${{ secrets.REGISTRY_USER }}/utmn-map-backend-adminapi:latest .
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+
+      - name: Push images
+        run: |
+          docker push ${{ secrets.REGISTRY_USER }}/utmn-map-backend-publicapi:latest
+          docker push ${{ secrets.REGISTRY_USER }}/utmn-map-backend-adminapi:latest
+
+  deploy:
+    name: Deploy to UTMN Map server
+    runs-on: ubuntu-latest
+    needs: []
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref_name }}
+
+      - name: Setup SSH key
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no deployer@94.103.92.242 << 'EOF'
+            cd /opt/utmn-map
+            docker compose pull
+            docker compose up -d
+          EOF
