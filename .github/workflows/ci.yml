@@ -9,33 +9,28 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version: "1.23"
 
-      - name: Lint & Test
+      - name: Install golangci-lint
         run: |
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
             | sh -s -- -b "$(go env GOPATH)/bin" v1.64.8
-          golangci-lint run --out-format=colored-line-number
-          go test ./... -v
 
-      - name: Build Docker images
+      - name: Run linters
+        run: golangci-lint run --out-format=colored-line-number
+
+      - name: Run tests
+        run: go test ./... -v
+
+      - name: Build test Docker images
         run: |
-          docker build --build-arg SERVICE=publicapi -t ${{ secrets.REGISTRY_USER }}/utmn-map-backend-publicapi:latest .
-          docker build --build-arg SERVICE=adminapi  -t ${{ secrets.REGISTRY_USER }}/utmn-map-backend-adminapi:latest .
-
-      - name: Login to registry
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_TOKEN }}
-
-      - name: Push images
-        run: |
-          docker push ${{ secrets.REGISTRY_USER }}/utmn-map-backend-publicapi:latest
-          docker push ${{ secrets.REGISTRY_USER }}/utmn-map-backend-adminapi:latest
+          docker build --build-arg SERVICE=publicapi -t publicapi:ci .
+          docker build --build-arg SERVICE=adminapi  -t adminapi:ci .
