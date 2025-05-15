@@ -37,14 +37,14 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 
 	var input struct {
-		Name        *string  `json:"name"`
-		Alias       *string  `json:"alias"`
-		Description *string  `json:"description"`
-		X           *float64 `json:"x"`
-		Y           *float64 `json:"y"`
-		Width       *float64 `json:"width"`
-		Height      *float64 `json:"height"`
-		ObjectType  *string  `json:"object_type"`
+		Name         *string  `json:"name"`
+		Alias        *string  `json:"alias"`
+		Description  *string  `json:"description"`
+		X            *float64 `json:"x"`
+		Y            *float64 `json:"y"`
+		Width        *float64 `json:"width"`
+		Height       *float64 `json:"height"`
+		ObjectTypeID *int32   `json:"object_type_id"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -53,19 +53,15 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 
 	updatedObj := mapentites.UpdateObjectInput{
-		ID:          objectID,
-		Name:        input.Name,
-		Alias:       input.Alias,
-		Description: input.Description,
-		X:           input.X,
-		Y:           input.Y,
-		Width:       input.Width,
-		Height:      input.Height,
-	}
-
-	if input.ObjectType != nil {
-		objType := mapentites.ObjectType(*input.ObjectType)
-		updatedObj.ObjectType = &objType
+		ID:           objectID,
+		Name:         input.Name,
+		Alias:        input.Alias,
+		Description:  input.Description,
+		X:            input.X,
+		Y:            input.Y,
+		Width:        input.Width,
+		Height:       input.Height,
+		ObjectTypeID: input.ObjectTypeID,
 	}
 
 	result, err := p.mapService.UpdateObject(c.Request.Context(), updatedObj)

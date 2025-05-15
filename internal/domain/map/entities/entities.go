@@ -29,6 +29,5 @@ type UpdateObjectInput struct {
 	Y            *float64
 	Width        *float64
 	Height       *float64
-	ObjectType   *ObjectType
 	ObjectTypeID *int32
 }
