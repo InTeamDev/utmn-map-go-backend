@@ -33,6 +33,16 @@ func (q *Queries) CreateBuilding(ctx context.Context, arg CreateBuildingParams) 
 	return i, err
 }
 
+const deleteBuilding = `-- name: DeleteBuilding :exec
+DELETE FROM buildings
+WHERE id = $1
+`
+
+func (q *Queries) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteBuilding, id)
+	return err
+}
+
 const getBuildingByID = `-- name: GetBuildingByID :one
 SELECT 
     b.id, 

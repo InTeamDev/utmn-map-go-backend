@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
@@ -17,6 +18,7 @@ type MapRepository interface {
 	GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error)
 	UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error)
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
+	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 }
 
 type Map struct {
@@ -81,4 +83,20 @@ func (m *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingI
 		return entities.Building{}, fmt.Errorf("create building: %w", err)
 	}
 	return building, nil
+}
+
+func (m *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
+	floors, err := m.repo.GetFloors(ctx, id)
+	if err != nil {
+		return fmt.Errorf("get floors: %w", err)
+	}
+
+	if len(floors) == 0 {
+		return errors.New("can't delete building with floors, at first delete all floors")
+	}
+	err = m.repo.DeleteBuilding(ctx, id)
+	if err != nil {
+		return fmt.Errorf("delete building: %w", err)
+	}
+	return nil
 }

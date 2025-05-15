@@ -102,3 +102,7 @@ ORDER BY fp.z_index;
 INSERT INTO buildings (id, name, address)
 VALUES ($1, $2, $3)
 RETURNING *;
+
+-- name: DeleteBuilding :exec
+DELETE FROM buildings
+WHERE id = $1;

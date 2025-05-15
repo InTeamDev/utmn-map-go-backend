@@ -219,3 +219,7 @@ func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingI
 
 	return result, nil
 }
+
+func (r *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
+	return r.q.DeleteBuilding(ctx, id)
+}
