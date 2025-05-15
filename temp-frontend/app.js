@@ -1,6 +1,8 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const infoBox = document.getElementById('info-box');
+const adminApiUrl = 'https://utmn-map.zetoqqq.ru/adminapi';
+const publicApiUrl = 'https://utmn-map.zetoqqq.ru/publicapi';
 
 let allData = null;
 let currentFloor = null;
@@ -13,7 +15,7 @@ let currentBuildingId = null;
 
 async function init() {
     try {
-        const res = await fetch('http://localhost:8000/api/buildings');
+        const res = await fetch(`${publicApiUrl}/api/buildings`);
         const data = await res.json();
         if (!Array.isArray(data.buildings) || data.buildings.length === 0) {
             throw new Error("Нет доступных зданий");
@@ -28,7 +30,7 @@ async function init() {
 }
 
 function loadBuildingObjects(buildingId) {
-    fetch(`http://localhost:8000/api/buildings/${buildingId}/objects`)
+    fetch(`${publicApiUrl}/api/buildings/${buildingId}/objects`)
         .then(res => res.json())
         .then(data => {
             const result = data.objects; // извлекаем объект с building, floors, background
@@ -58,7 +60,7 @@ function saveObject() {
         updatedFields[key] = value;
     });
 
-    fetch(`http://localhost:8001/api/objects/${selectedObject.id}`, {
+    fetch(`${adminApiUrl}/api/objects/${selectedObject.id}`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -170,7 +172,7 @@ async function showObjectInfo(obj) {
 
     let optionsHTML = `<option value="">-- выберите тип --</option>`;
     try {
-        const res = await fetch(`http://localhost:8000/api/categories`);
+        const res = await fetch(`${publicApiUrl}/api/categories`);
         const data = await res.json();
         const categories = data.categories;
         optionsHTML += categories.map(cat =>
