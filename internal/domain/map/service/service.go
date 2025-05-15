@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
@@ -84,5 +85,17 @@ func (m *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingI
 	return building, nil
 }
 func (s *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
-	return s.repo.DeleteBuilding(ctx, id)
+	floors, err := s.repo.GetFloors(ctx, id)
+	if err != nil {
+		return fmt.Errorf("get floors: %w", err)
+	}
+
+	if len(floors) == 0 {
+		return errors.New("can't delete building with floors, at first delete all floors")
+	}
+	err = s.repo.DeleteBuilding(ctx, id)
+	if err != nil {
+		return fmt.Errorf("delete building: %w", err)
+	}
+	return nil
 }
