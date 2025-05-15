@@ -17,6 +17,7 @@ type MapRepository interface {
 	GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error)
 	UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error)
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
+	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 }
 
 type Map struct {
@@ -81,4 +82,7 @@ func (m *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingI
 		return entities.Building{}, fmt.Errorf("create building: %w", err)
 	}
 	return building, nil
+}
+func (s *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
+	return s.repo.DeleteBuilding(ctx, id)
 }

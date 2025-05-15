@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"net/http"
 
 	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
@@ -13,6 +15,7 @@ import (
 type MapService interface {
 	UpdateObject(ctx context.Context, input mapentites.UpdateObjectInput) (mapentites.Object, error)
 	CreateBuilding(ctx context.Context, input mapentites.CreateBuildingInput) (mapentites.Building, error)
+	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 }
 
 type RouteService interface {
@@ -44,6 +47,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 		api.POST("/buildings", p.CreateBuildingHandler)
 		api.POST("/route/intersections", p.AddIntersection)
 		api.POST("/route/connections", p.AddConnection)
+		api.DELETE("/buildings/:building_id", p.DeleteBuildingHandler)
 	}
 }
 
@@ -91,6 +95,29 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+
+func (p *AdminAPI) DeleteBuildingHandler(c *gin.Context) {
+	idParam := c.Param("building_id")
+	id, err := uuid.Parse(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	err = p.mapService.DeleteBuilding(c.Request.Context(), id)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			c.JSON(http.StatusNotFound, gin.H{"error": "building not found"})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func (p *AdminAPI) CreateBuildingHandler(c *gin.Context) {
