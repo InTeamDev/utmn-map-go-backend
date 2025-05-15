@@ -97,7 +97,6 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-
 func (p *AdminAPI) DeleteBuildingHandler(c *gin.Context) {
 	idParam := c.Param("building_id")
 	id, err := uuid.Parse(idParam)

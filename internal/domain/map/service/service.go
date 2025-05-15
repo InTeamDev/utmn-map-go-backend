@@ -84,8 +84,9 @@ func (m *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingI
 	}
 	return building, nil
 }
-func (s *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
-	floors, err := s.repo.GetFloors(ctx, id)
+
+func (m *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
+	floors, err := m.repo.GetFloors(ctx, id)
 	if err != nil {
 		return fmt.Errorf("get floors: %w", err)
 	}
@@ -93,7 +94,7 @@ func (s *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
 	if len(floors) == 0 {
 		return errors.New("can't delete building with floors, at first delete all floors")
 	}
-	err = s.repo.DeleteBuilding(ctx, id)
+	err = m.repo.DeleteBuilding(ctx, id)
 	if err != nil {
 		return fmt.Errorf("delete building: %w", err)
 	}
