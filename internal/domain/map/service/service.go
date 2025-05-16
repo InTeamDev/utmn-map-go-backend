@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 )
 
-//go:generate mockgen -destination=../../repository/mocks/mock_map_repository.go -package=mocks github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service MapRepository
 //go:generate mockgen -destination=../repository/mocks/mock_map_repository.go -package=mocks github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service MapRepository
 type MapRepository interface {
 	GetBuildings(ctx context.Context) ([]entities.Building, error)

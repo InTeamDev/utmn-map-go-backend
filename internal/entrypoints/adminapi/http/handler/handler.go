@@ -4,18 +4,19 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log"
 	"net/http"
 
-	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
+	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 type MapService interface {
-	CreateObject(ctx context.Context, input mapentites.CreateObjectInput) (mapentites.Object, error)
-	UpdateObject(ctx context.Context, input mapentites.UpdateObjectInput) (mapentites.Object, error)
-	CreateBuilding(ctx context.Context, input mapentites.CreateBuildingInput) (mapentites.Building, error)
+	CreateObject(ctx context.Context, input mapentities.CreateObjectInput) (mapentities.Object, error)
+	UpdateObject(ctx context.Context, input mapentities.UpdateObjectInput) (mapentities.Object, error)
+	CreateBuilding(ctx context.Context, input mapentities.CreateBuildingInput) (mapentities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 }
 
@@ -78,7 +79,7 @@ func (p *AdminAPI) CreateObjectHandler(c *gin.Context) {
 		return
 	}
 
-	createInput := mapentites.CreateObjectInput{
+	createInput := mapentities.CreateObjectInput{
 		FloorID:      floorID,
 		Name:         input.Name,
 		Alias:        input.Alias,
@@ -92,7 +93,19 @@ func (p *AdminAPI) CreateObjectHandler(c *gin.Context) {
 
 	result, err := p.mapService.CreateObject(c.Request.Context(), createInput)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		switch {
+		case errors.Is(err, mapentities.ErrFloorNotFound):
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		case errors.Is(err, mapentities.ErrObjectTypeNotFound):
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		case errors.Is(err, mapentities.ErrInvalidDimensions):
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		case errors.Is(err, mapentities.ErrPositionConflict):
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		default:
+			log.Printf("Internal server error: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": mapentities.ErrInternalServer.Error()})
+		}
 		return
 	}
 
@@ -119,7 +132,7 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 		return
 	}
 
-	updatedObj := mapentites.UpdateObjectInput{
+	updatedObj := mapentities.UpdateObjectInput{
 		ID: objectID,
 	}
 
@@ -133,7 +146,7 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 		updatedObj.Description = *input.Description
 	}
 	if input.ObjectType != nil {
-		updatedObj.ObjectType = mapentites.ObjectType(*input.ObjectType)
+		updatedObj.ObjectType = mapentities.ObjectType(*input.ObjectType)
 	}
 
 	result, err := p.mapService.UpdateObject(c.Request.Context(), updatedObj)
@@ -178,7 +191,7 @@ func (p *AdminAPI) CreateBuildingHandler(c *gin.Context) {
 		return
 	}
 
-	buildingInput := mapentites.CreateBuildingInput{
+	buildingInput := mapentities.CreateBuildingInput{
 		Name:    input.Name,
 		Address: input.Address,
 	}
