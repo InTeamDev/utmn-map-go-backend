@@ -39,4 +39,5 @@ type Object struct {
 	ObjectType  ObjectType `json:"object_type"`
 	Doors       []Door     `json:"doors"`
 	Floor       Floor      `json:"floor"`
+	FloorID     uuid.UUID  `json:"floor_id"`
 }

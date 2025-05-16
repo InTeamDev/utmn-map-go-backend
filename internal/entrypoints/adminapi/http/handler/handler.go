@@ -4,17 +4,19 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log"
 	"net/http"
 
-	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
+	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 type MapService interface {
-	UpdateObject(ctx context.Context, input mapentites.UpdateObjectInput) (mapentites.Object, error)
-	CreateBuilding(ctx context.Context, input mapentites.CreateBuildingInput) (mapentites.Building, error)
+	CreateObject(ctx context.Context, input mapentities.CreateObjectInput) (mapentities.Object, error)
+	UpdateObject(ctx context.Context, input mapentities.UpdateObjectInput) (mapentities.Object, error)
+	CreateBuilding(ctx context.Context, input mapentities.CreateBuildingInput) (mapentities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 }
 
@@ -43,12 +45,71 @@ func NewAdminAPI(mapService MapService, routeService RouteService) *AdminAPI {
 func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 	api := router.Group("/api")
 	{
+		api.POST("/floors/:floor_id/objects", p.CreateObjectHandler)
 		api.PATCH("/objects/:object_id", p.UpdateObjectHandler)
 		api.POST("/buildings", p.CreateBuildingHandler)
 		api.POST("/route/intersections", p.AddIntersection)
 		api.POST("/route/connections", p.AddConnection)
 		api.DELETE("/buildings/:building_id", p.DeleteBuildingHandler)
 	}
+}
+
+func (p *AdminAPI) CreateObjectHandler(c *gin.Context) {
+	floorIDStr := c.Param("floor_id")
+	floorID, err := uuid.Parse(floorIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid floor_id"})
+		return
+	}
+
+	var input struct {
+		Name         string  `json:"name" binding:"required,max=255"`
+		Alias        string  `json:"alias" binding:"required,max=255"`
+		Description  string  `json:"description" binding:"max=255"`
+		X            float64 `json:"x" binding:"required"`
+		Y            float64 `json:"y" binding:"required"`
+		Width        float64 `json:"width" binding:"required,gte=1"`
+		Height       float64 `json:"height" binding:"required,gte=1"`
+		ObjectTypeID int32   `json:"object_type_id" binding:"required"`
+		FloorID      int32   `json:"floor_id" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	createInput := mapentities.CreateObjectInput{
+		FloorID:      floorID,
+		Name:         input.Name,
+		Alias:        input.Alias,
+		Description:  input.Description,
+		X:            input.X,
+		Y:            input.Y,
+		Width:        input.Width,
+		Height:       input.Height,
+		ObjectTypeID: input.ObjectTypeID,
+	}
+
+	result, err := p.mapService.CreateObject(c.Request.Context(), createInput)
+	if err != nil {
+		switch {
+		case errors.Is(err, mapentities.ErrFloorNotFound):
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		case errors.Is(err, mapentities.ErrObjectTypeNotFound):
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		case errors.Is(err, mapentities.ErrInvalidDimensions):
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		case errors.Is(err, mapentities.ErrPositionConflict):
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		default:
+			log.Printf("Internal server error: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": mapentities.ErrInternalServer.Error()})
+		}
+		return
+	}
+
+	c.JSON(http.StatusCreated, result)
 }
 
 func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
@@ -71,7 +132,7 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 		return
 	}
 
-	updatedObj := mapentites.UpdateObjectInput{
+	updatedObj := mapentities.UpdateObjectInput{
 		ID: objectID,
 	}
 
@@ -85,7 +146,7 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 		updatedObj.Description = *input.Description
 	}
 	if input.ObjectType != nil {
-		updatedObj.ObjectType = mapentites.ObjectType(*input.ObjectType)
+		updatedObj.ObjectType = mapentities.ObjectType(*input.ObjectType)
 	}
 
 	result, err := p.mapService.UpdateObject(c.Request.Context(), updatedObj)
@@ -130,7 +191,7 @@ func (p *AdminAPI) CreateBuildingHandler(c *gin.Context) {
 		return
 	}
 
-	buildingInput := mapentites.CreateBuildingInput{
+	buildingInput := mapentities.CreateBuildingInput{
 		Name:    input.Name,
 		Address: input.Address,
 	}
