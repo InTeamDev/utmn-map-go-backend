@@ -378,6 +378,27 @@ func (q *Queries) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID
 	return items, nil
 }
 
+const updateBuilding = `-- name: UpdateBuilding :one
+UPDATE buildings
+SET name = COALESCE($1, name),
+address = COALESCE($2, address)
+WHERE id = $3::uuid
+RETURNING id, name, address
+`
+
+type UpdateBuildingParams struct {
+	Name    sql.NullString
+	Address sql.NullString
+	ID      uuid.UUID
+}
+
+func (q *Queries) UpdateBuilding(ctx context.Context, arg UpdateBuildingParams) (Building, error) {
+	row := q.db.QueryRowContext(ctx, updateBuilding, arg.Name, arg.Address, arg.ID)
+	var i Building
+	err := row.Scan(&i.ID, &i.Name, &i.Address)
+	return i, err
+}
+
 const updateObject = `-- name: UpdateObject :one
 UPDATE objects
 SET name = $1,

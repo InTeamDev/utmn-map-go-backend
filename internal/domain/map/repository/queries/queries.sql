@@ -106,3 +106,10 @@ RETURNING *;
 -- name: DeleteBuilding :exec
 DELETE FROM buildings
 WHERE id = $1;
+
+-- name: UpdateBuilding :one
+UPDATE buildings
+SET name = COALESCE(sqlc.narg('name'), name),
+address = COALESCE(sqlc.narg('address'), address)
+WHERE id = sqlc.arg('id')::uuid
+RETURNING id, name, address;
