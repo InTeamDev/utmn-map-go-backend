@@ -16,6 +16,7 @@ type MapService interface {
 	UpdateObject(ctx context.Context, input mapentites.UpdateObjectInput) (mapentites.Object, error)
 	CreateBuilding(ctx context.Context, input mapentites.CreateBuildingInput) (mapentites.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
+	UpdateBuilding(ctx context.Context, id uuid.UUID, input mapentites.UpdateBuildingInput) (mapentites.Building, error)
 }
 
 type RouteService interface {
@@ -48,6 +49,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 		api.POST("/route/intersections", p.AddIntersection)
 		api.POST("/route/connections", p.AddConnection)
 		api.DELETE("/buildings/:building_id", p.DeleteBuildingHandler)
+		api.PATCH("/buildings/:building_id", p.UpdateBuilding)
 	}
 }
 
@@ -189,4 +191,24 @@ func (p *AdminAPI) AddConnection(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, result)
+}
+
+func (p *AdminAPI) UpdateBuilding(c *gin.Context) {
+	idParam := c.Param("building_id")
+	id, err := uuid.Parse(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+	var input mapentites.UpdateBuildingInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+	building, err := p.mapService.UpdateBuilding(c.Request.Context(), id, input)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, building)
 }

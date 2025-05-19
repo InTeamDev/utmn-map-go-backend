@@ -223,3 +223,24 @@ func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingI
 func (r *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
 	return r.q.DeleteBuilding(ctx, id)
 }
+
+func (r *Map) UpdateBuilding(
+	ctx context.Context,
+	id uuid.UUID,
+	input entities.UpdateBuildingInput,
+) (entities.Building, error) {
+	params := sqlc.UpdateBuildingParams{
+		ID:      id,
+		Name:    sql.NullString{String: input.Name, Valid: input.Name != ""},
+		Address: sql.NullString{String: input.Address, Valid: input.Address != ""},
+	}
+	b, err := r.q.UpdateBuilding(ctx, params)
+	if err != nil {
+		return entities.Building{}, fmt.Errorf("update building: %w", err)
+	}
+	return entities.Building{
+		ID:      b.ID,
+		Name:    b.Name,
+		Address: b.Address,
+	}, nil
+}
