@@ -60,7 +60,7 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 
 	var input struct {
-		Name         *string  `json:"name"`
+		Name         *string  `json:"name,omitempty"`
 		Alias        *string  `json:"alias"`
 		Description  *string  `json:"description"`
 		X            *float64 `json:"x"`
