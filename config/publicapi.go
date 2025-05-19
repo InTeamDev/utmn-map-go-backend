@@ -1,42 +1,47 @@
 package config
 
 import (
-	"errors"
-	"os"
+	"io/ioutil"
 
 	"gopkg.in/yaml.v2"
 )
 
-type PublicAPI struct {
-	Server struct {
-		Host string `yaml:"host"`
-		Port int    `yaml:"port"`
-	} `yaml:"server"`
-	Database struct {
-		DSN string `yaml:"dsn"`
-	} `yaml:"database"`
+type Config struct {
+	Database Database `yaml:"database"`
+	HTTP     HTTP     `yaml:"http"`
+	TGBot    TGBot    `yaml:"tgbot"`
+	JWT      JWT      `yaml:"jwt"`
 }
 
-func LoadPublicAPI(path string) (*PublicAPI, error) {
-	data, err := os.ReadFile(path)
+type Database struct {
+	DSN string `yaml:"dsn"`
+}
+
+type HTTP struct {
+	Port int `yaml:"port"`
+}
+
+type TGBot struct {
+	Token            string `yaml:"token"`
+	DevelopersChatID int64  `yaml:"developers_chat_id"`
+}
+
+type JWT struct {
+	Secret          string `yaml:"secret"`
+	ExpirationHours int    `yaml:"expiration_hours"`
+}
+
+func New(path string) (*Config, error) {
+	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var cfg PublicAPI
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
+	var c Config
+	err = yaml.Unmarshal(bytes, &c)
+	if err != nil {
 		return nil, err
 	}
 
-	if cfg.Server.Host == "" {
-		return nil, errors.New("server.host is required")
-	}
-	if cfg.Server.Port == 0 {
-		return nil, errors.New("server.port is required")
-	}
-	if cfg.Database.DSN == "" {
-		return nil, errors.New("database.dsn is required")
-	}
-
-	return &cfg, nil
+	return &c, nil
 }

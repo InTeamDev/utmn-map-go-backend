@@ -1,15 +1,17 @@
 package main
 
 import (
-	"flag"
+	"math/rand"
+	"time"
 
-	"github.com/InTeamDev/utmn-map-go-backend/internal/entrypoints/publicapi/app"
+	"github.com/InTeamDev/utmn-map-go-backend/internal/entrypoints/publicapi"
 )
 
-func main() {
-	var configPath string
-	flag.StringVar(&configPath, "config", "config/publicapi.yaml", "Path to config file")
-	flag.Parse()
+func init() {
+	// Seed random number generator for auth codes
+	rand.Seed(time.Now().UnixNano())
+}
 
-	app.Run(configPath)
+func main() {
+	publicapi.Run()
 }
