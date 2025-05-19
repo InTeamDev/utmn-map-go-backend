@@ -158,7 +158,7 @@ func (r *Map) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([
 
 func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error) {
 	if input.ObjectTypeID != nil {
-		objectType, err := r.q.GetObjectTypeByName(ctx, string(*input.ObjectTypeID))
+		objectType, err := r.q.GetObjectTypeByID(ctx, int32(*input.ObjectTypeID))
 		if err != nil {
 			return entities.Object{}, fmt.Errorf("failed to get object type: %w", err)
 		}
