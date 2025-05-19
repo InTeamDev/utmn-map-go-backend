@@ -61,16 +61,7 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 		return
 	}
 
-	var input struct {
-		Name         *string  `json:"name,omitempty"`
-		Alias        *string  `json:"alias"`
-		Description  *string  `json:"description"`
-		X            *float64 `json:"x"`
-		Y            *float64 `json:"y"`
-		Width        *float64 `json:"width"`
-		Height       *float64 `json:"height"`
-		ObjectTypeID *int32   `json:"object_type_id"`
-	}
+	var input *mapentites.UpdateObjectInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
