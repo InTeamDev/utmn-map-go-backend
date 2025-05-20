@@ -70,7 +70,11 @@ func (m *Map) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]en
 	return objects, nil
 }
 
-func (m *Map) UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error) {
+func (m *Map) UpdateObject(
+	ctx context.Context,
+	id uuid.UUID,
+	input entities.UpdateObjectInput,
+) (entities.Object, error) {
 	object, err := m.repo.UpdateObject(ctx, id, input)
 	if err != nil {
 		return entities.Object{}, fmt.Errorf("get object: %w", err)

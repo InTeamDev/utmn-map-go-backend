@@ -156,7 +156,11 @@ func (r *Map) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([
 	return objects, nil
 }
 
-func (r *Map) UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error) {
+func (r *Map) UpdateObject(
+	ctx context.Context,
+	id uuid.UUID,
+	input entities.UpdateObjectInput,
+) (entities.Object, error) {
 	if input.ObjectTypeID != nil {
 		objectType, err := r.q.GetObjectTypeByID(ctx, *input.ObjectTypeID)
 		if err != nil {
