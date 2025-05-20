@@ -101,6 +101,21 @@ func (mr *MockMapRepositoryMockRecorder) GetFloors(ctx, buildID any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFloors", reflect.TypeOf((*MockMapRepository)(nil).GetFloors), ctx, buildID)
 }
 
+// GetObjectTypeByID mocks base method.
+func (m *MockMapRepository) GetObjectTypeByID(ctx context.Context, input entities.GetObjectTypeInput) (entities.ObjectTypeInfo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetObjectTypeByID", ctx, input)
+	ret0, _ := ret[0].(entities.ObjectTypeInfo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetObjectTypeByID indicates an expected call of GetObjectTypeByID.
+func (mr *MockMapRepositoryMockRecorder) GetObjectTypeByID(ctx, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjectTypeByID", reflect.TypeOf((*MockMapRepository)(nil).GetObjectTypeByID), ctx, input)
+}
+
 // GetObjectTypes mocks base method.
 func (m *MockMapRepository) GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error) {
 	m.ctrl.T.Helper()

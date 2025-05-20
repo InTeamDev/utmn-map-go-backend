@@ -156,19 +156,20 @@ func (r *Map) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([
 	return objects, nil
 }
 
+func (r *Map) GetObjectTypeByID(ctx context.Context, input entities.GetObjectTypeInput) (entities.ObjectTypeInfo, error) {
+	dbObjectType, err := r.q.GetObjectTypeByID(ctx, input.ID)
+	if err != nil {
+		return entities.ObjectTypeInfo{}, fmt.Errorf("database query failed: %w", err)
+	}
+
+	return r.converter.ObjectTypeSqlcToEntity(dbObjectType), nil
+}
+
 func (r *Map) UpdateObject(
 	ctx context.Context,
 	id uuid.UUID,
 	input entities.UpdateObjectInput,
 ) (entities.Object, error) {
-	if input.ObjectTypeID != nil {
-		objectType, err := r.q.GetObjectTypeByID(ctx, *input.ObjectTypeID)
-		if err != nil {
-			return entities.Object{}, fmt.Errorf("failed to get object type: %w", err)
-		}
-		input.ObjectTypeID = &objectType.ID
-	}
-
 	params := sqlc.UpdateObjectParams{
 		ID:           id,
 		Name:         sqlNullString(input.Name),
