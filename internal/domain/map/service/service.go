@@ -16,7 +16,7 @@ type MapRepository interface {
 	GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (entities.GetObjectsResponse, error)
 	GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error)
-	UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error)
+	UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error)
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 	UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error)
@@ -70,8 +70,8 @@ func (m *Map) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]en
 	return objects, nil
 }
 
-func (m *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error) {
-	object, err := m.repo.UpdateObject(ctx, input)
+func (m *Map) UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error) {
+	object, err := m.repo.UpdateObject(ctx, id, input)
 	if err != nil {
 		return entities.Object{}, fmt.Errorf("get object: %w", err)
 	}
