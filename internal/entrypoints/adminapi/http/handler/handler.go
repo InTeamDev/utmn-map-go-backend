@@ -13,7 +13,7 @@ import (
 )
 
 type MapService interface {
-	UpdateObject(ctx context.Context, input mapentites.UpdateObjectInput) (mapentites.Object, error)
+	UpdateObject(ctx context.Context, id uuid.UUID, input mapentites.UpdateObjectInput) (mapentites.Object, error)
 	CreateBuilding(ctx context.Context, input mapentites.CreateBuildingInput) (mapentites.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 }
@@ -67,7 +67,6 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 
 	updatedObj := mapentites.UpdateObjectInput{
-		ID:           objectID,
 		Name:         input.Name,
 		Alias:        input.Alias,
 		Description:  input.Description,
@@ -78,7 +77,7 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 		ObjectTypeID: input.ObjectTypeID,
 	}
 
-	result, err := p.mapService.UpdateObject(c.Request.Context(), updatedObj)
+	result, err := p.mapService.UpdateObject(c.Request.Context(), objectID, updatedObj)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
