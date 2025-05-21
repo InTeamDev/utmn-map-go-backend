@@ -57,7 +57,7 @@ func (r *Map) GetFloors(ctx context.Context, buildingID uuid.UUID) ([]entities.F
 func (r *Map) GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error) {
 	objectTypes, err := r.q.GetObjectTypes(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get object types: %w", err)
+		return nil, fmt.Errorf("get object types: %w", err)
 	}
 	return r.converter.ObjectTypesSqlcToEntity(objectTypes), nil
 }
