@@ -186,7 +186,7 @@ func (r *Map) UpdateObject(
 	}
 	rowObject, err := r.q.UpdateObject(ctx, params)
 	if err != nil {
-		return entities.Object{}, fmt.Errorf("failed to update object: %w", err)
+		return entities.Object{}, fmt.Errorf("update object: %w", err)
 	}
 
 	description := ""
