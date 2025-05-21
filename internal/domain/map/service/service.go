@@ -72,9 +72,9 @@ func (m *Map) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]en
 }
 
 func (m *Map) GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectTypeInfo, error) {
-	input_id := id
+	inputID := id
 
-	objectType, err := m.repo.GetObjectTypeByID(ctx, input_id)
+	objectType, err := m.repo.GetObjectTypeByID(ctx, inputID)
 	if err != nil {
 		return entities.ObjectTypeInfo{}, fmt.Errorf("get object type by id: %w", err)
 	}
