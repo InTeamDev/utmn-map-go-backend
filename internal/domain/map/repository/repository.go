@@ -156,11 +156,6 @@ func (r *Map) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([
 }
 
 func (r *Map) CreateObject(ctx context.Context, input entities.CreateObjectInput) (entities.Object, error) {
-	objectType, err := r.q.GetObjectTypeByID(ctx, input.ObjectTypeID)
-	if err != nil {
-		return entities.Object{}, fmt.Errorf("get object type: %w", err)
-	}
-
 	params := sqlc.CreateObjectParams{
 		FloorID:      input.FloorID,
 		Name:         input.Name,
@@ -178,12 +173,6 @@ func (r *Map) CreateObject(ctx context.Context, input entities.CreateObjectInput
 		return entities.Object{}, fmt.Errorf("create object: %w", err)
 	}
 
-	rowDoors, err := r.q.GetDoorsByObjectIDs(ctx, []uuid.UUID{rowObject.ID})
-	if err != nil {
-		return entities.Object{}, fmt.Errorf("get doors: %w", err)
-	}
-	doorsMap := r.converter.DoorsSqlcToEntityMap(rowDoors)
-
 	description := ""
 	if rowObject.Description.Valid {
 		description = rowObject.Description.String
@@ -199,8 +188,6 @@ func (r *Map) CreateObject(ctx context.Context, input entities.CreateObjectInput
 		Y:           rowObject.Y,
 		Width:       rowObject.Width,
 		Height:      rowObject.Height,
-		ObjectType:  entities.ObjectType(objectType.Name),
-		Doors:       doorsMap[rowObject.ID],
 	}
 
 	return createdObject, nil

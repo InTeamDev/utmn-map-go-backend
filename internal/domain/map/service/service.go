@@ -71,10 +71,19 @@ func (m *Map) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]en
 }
 
 func (m *Map) CreateObject(ctx context.Context, input entities.CreateObjectInput) (entities.Object, error) {
+	floors, err := m.repo.GetFloors(ctx, input.FloorID)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("get floors: %w", err)
+	}
+	if len(floors) == 0 {
+		return entities.Object{}, entities.ErrFloorNotFound
+	}
+
 	object, err := m.repo.CreateObject(ctx, input)
 	if err != nil {
-		return entities.Object{}, fmt.Errorf("create object: %w", err)
+		return entities.Object{}, fmt.Errorf("failed to create object: %w", err)
 	}
+
 	return object, nil
 }
 
