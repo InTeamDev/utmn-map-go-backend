@@ -158,9 +158,9 @@ func (r *Map) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([
 
 func (r *Map) GetObjectTypeByID(
 	ctx context.Context,
-	input entities.GetObjectTypeInput,
+	id int32,
 ) (entities.ObjectTypeInfo, error) {
-	dbObjectType, err := r.q.GetObjectTypeByID(ctx, input.ID)
+	dbObjectType, err := r.q.GetObjectTypeByID(ctx, id)
 	if err != nil {
 		return entities.ObjectTypeInfo{}, fmt.Errorf("database query failed: %w", err)
 	}

@@ -30,7 +30,3 @@ type UpdateObjectInput struct {
 	Height       *float64 `json:"height,omitempty"`
 	ObjectTypeID *int32   `json:"object_type_id,omitempty"`
 }
-
-type GetObjectTypeInput struct {
-	ID int32 `json:"object_type_id"`
-}

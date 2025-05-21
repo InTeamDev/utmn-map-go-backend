@@ -16,7 +16,7 @@ type MapRepository interface {
 	GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (entities.GetObjectsResponse, error)
 	GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error)
-	GetObjectTypeByID(ctx context.Context, input entities.GetObjectTypeInput) (entities.ObjectTypeInfo, error)
+	GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectTypeInfo, error)
 	UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error)
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
@@ -72,11 +72,9 @@ func (m *Map) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]en
 }
 
 func (m *Map) GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectTypeInfo, error) {
-	input := entities.GetObjectTypeInput{
-		ID: id,
-	}
+	input_id := id
 
-	objectType, err := m.repo.GetObjectTypeByID(ctx, input)
+	objectType, err := m.repo.GetObjectTypeByID(ctx, input_id)
 	if err != nil {
 		return entities.ObjectTypeInfo{}, fmt.Errorf("get object type by id: %w", err)
 	}
@@ -98,7 +96,7 @@ func (m *Map) UpdateObject(
 
 	object, err := m.repo.UpdateObject(ctx, id, input)
 	if err != nil {
-		return entities.Object{}, fmt.Errorf("failed to update object: %w", err)
+		return entities.Object{}, fmt.Errorf("update object: %w", err)
 	}
 	return object, nil
 }
