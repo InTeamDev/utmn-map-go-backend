@@ -21,9 +21,12 @@ type FloorWithData struct {
 }
 
 type UpdateObjectInput struct {
-	ID          uuid.UUID
-	Name        string
-	Alias       string
-	Description string
-	ObjectType  ObjectType
+	Name         *string  `json:"name,omitempty"`
+	Alias        *string  `json:"alias,omitempty"`
+	Description  *string  `json:"description,omitempty"`
+	X            *float64 `json:"x,omitempty"`
+	Y            *float64 `json:"y,omitempty"`
+	Width        *float64 `json:"width,omitempty"`
+	Height       *float64 `json:"height,omitempty"`
+	ObjectTypeID *int32   `json:"object_type_id,omitempty"`
 }

@@ -13,7 +13,7 @@ import (
 )
 
 type MapService interface {
-	UpdateObject(ctx context.Context, input mapentites.UpdateObjectInput) (mapentites.Object, error)
+	UpdateObject(ctx context.Context, id uuid.UUID, input mapentites.UpdateObjectInput) (mapentites.Object, error)
 	CreateBuilding(ctx context.Context, input mapentites.CreateBuildingInput) (mapentites.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 	UpdateBuilding(ctx context.Context, id uuid.UUID, input mapentites.UpdateBuildingInput) (mapentites.Building, error)
@@ -61,12 +61,7 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 		return
 	}
 
-	var input struct {
-		Name        *string `json:"name"`
-		Alias       *string `json:"alias"`
-		Description *string `json:"description"`
-		ObjectType  *string `json:"object_type"`
-	}
+	var input *mapentites.UpdateObjectInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
@@ -74,23 +69,17 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 
 	updatedObj := mapentites.UpdateObjectInput{
-		ID: objectID,
+		Name:         input.Name,
+		Alias:        input.Alias,
+		Description:  input.Description,
+		X:            input.X,
+		Y:            input.Y,
+		Width:        input.Width,
+		Height:       input.Height,
+		ObjectTypeID: input.ObjectTypeID,
 	}
 
-	if input.Name != nil {
-		updatedObj.Name = *input.Name
-	}
-	if input.Alias != nil {
-		updatedObj.Alias = *input.Alias
-	}
-	if input.Description != nil {
-		updatedObj.Description = *input.Description
-	}
-	if input.ObjectType != nil {
-		updatedObj.ObjectType = mapentites.ObjectType(*input.ObjectType)
-	}
-
-	result, err := p.mapService.UpdateObject(c.Request.Context(), updatedObj)
+	result, err := p.mapService.UpdateObject(c.Request.Context(), objectID, updatedObj)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

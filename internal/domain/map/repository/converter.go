@@ -53,16 +53,16 @@ func (mc *MapConverterImpl) ObjectSqlcToEntity(
 	doors []entities.Door,
 ) entities.Object {
 	return entities.Object{
-		ID:          object.ID,
-		Name:        object.Name,
-		Alias:       object.Alias,
-		Description: object.Description.String,
-		X:           object.X,
-		Y:           object.Y,
-		Width:       object.Width,
-		Height:      object.Height,
-		ObjectType:  entities.ObjectType(object.ObjectType),
-		Doors:       doors,
+		ID:           object.ID,
+		Name:         object.Name,
+		Alias:        object.Alias,
+		Description:  object.Description.String,
+		X:            object.X,
+		Y:            object.Y,
+		Width:        object.Width,
+		Height:       object.Height,
+		ObjectTypeID: object.ObjectType,
+		Doors:        doors,
 		Floor: entities.Floor{
 			ID:    object.FloorID,
 			Name:  object.FloorName,
@@ -100,10 +100,18 @@ func (mc *MapConverterImpl) ObjectsSqlcToEntityByBuilding(
 	return result
 }
 
-func (mc *MapConverterImpl) ObjectTypesSqlcToEntity(objectTypes []sqlc.ObjectType) []entities.ObjectType {
-	result := make([]entities.ObjectType, 0, len(objectTypes))
+func (mc *MapConverterImpl) ObjectTypeSqlcToEntity(objectType sqlc.ObjectType) entities.ObjectTypeInfo {
+	return entities.ObjectTypeInfo{
+		ID:    objectType.ID,
+		Name:  objectType.Name,
+		Alias: objectType.Alias,
+	}
+}
+
+func (mc *MapConverterImpl) ObjectTypesSqlcToEntity(objectTypes []sqlc.ObjectType) []entities.ObjectTypeInfo {
+	result := make([]entities.ObjectTypeInfo, 0, len(objectTypes))
 	for _, objectType := range objectTypes {
-		result = append(result, entities.ObjectType(objectType.Name))
+		result = append(result, mc.ObjectTypeSqlcToEntity(objectType))
 	}
 	return result
 }

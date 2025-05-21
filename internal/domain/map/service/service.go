@@ -13,10 +13,11 @@ import (
 type MapRepository interface {
 	GetBuildings(ctx context.Context) ([]entities.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
-	GetObjectTypes(ctx context.Context) ([]entities.ObjectType, error)
+	GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (entities.GetObjectsResponse, error)
 	GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error)
-	UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error)
+	GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectTypeInfo, error)
+	UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error)
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 	UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error)
@@ -46,7 +47,7 @@ func (m *Map) GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floo
 	return floors, nil
 }
 
-func (m *Map) GetObjectCategories(ctx context.Context) ([]entities.ObjectType, error) {
+func (m *Map) GetObjectCategories(ctx context.Context) ([]entities.ObjectTypeInfo, error) {
 	objectTypes, err := m.repo.GetObjectTypes(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get object categories: %w", err)
@@ -70,10 +71,32 @@ func (m *Map) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]en
 	return objects, nil
 }
 
-func (m *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error) {
-	object, err := m.repo.UpdateObject(ctx, input)
+func (m *Map) GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectTypeInfo, error) {
+	inputID := id
+
+	objectType, err := m.repo.GetObjectTypeByID(ctx, inputID)
 	if err != nil {
-		return entities.Object{}, fmt.Errorf("get object: %w", err)
+		return entities.ObjectTypeInfo{}, fmt.Errorf("get object type by id: %w", err)
+	}
+	return objectType, nil
+}
+
+func (m *Map) UpdateObject(
+	ctx context.Context,
+	id uuid.UUID,
+	input entities.UpdateObjectInput,
+) (entities.Object, error) {
+	if input.ObjectTypeID != nil {
+		objectType, err := m.GetObjectTypeByID(ctx, *input.ObjectTypeID)
+		if err != nil {
+			return entities.Object{}, fmt.Errorf("object type validation failed: %w", err)
+		}
+		input.ObjectTypeID = &objectType.ID
+	}
+
+	object, err := m.repo.UpdateObject(ctx, id, input)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("update object: %w", err)
 	}
 	return object, nil
 }
