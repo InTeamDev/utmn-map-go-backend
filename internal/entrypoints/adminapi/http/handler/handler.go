@@ -13,11 +13,19 @@ import (
 )
 
 type MapService interface {
-	CreateObject(ctx context.Context, floorID uuid.UUID, input mapentities.CreateObjectInput) (mapentities.Object, error)
+	CreateObject(
+		ctx context.Context,
+		floorID uuid.UUID,
+		input mapentities.CreateObjectInput,
+	) (mapentities.Object, error)
 	UpdateObject(ctx context.Context, id uuid.UUID, input mapentities.UpdateObjectInput) (mapentities.Object, error)
 	CreateBuilding(ctx context.Context, input mapentities.CreateBuildingInput) (mapentities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
-	UpdateBuilding(ctx context.Context, id uuid.UUID, input mapentities.UpdateBuildingInput) (mapentities.Building, error)
+	UpdateBuilding(
+		ctx context.Context,
+		id uuid.UUID,
+		input mapentities.UpdateBuildingInput,
+	) (mapentities.Building, error)
 }
 
 type RouteService interface {
