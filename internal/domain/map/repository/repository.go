@@ -173,7 +173,7 @@ func (r *Map) CreateObject(
 	floorID uuid.UUID,
 	input entities.CreateObjectInput) (entities.Object, error) {
 	params := sqlc.CreateObjectParams{
-		FloorID:      input.FloorID,
+		FloorID:      floorID,
 		Name:         input.Name,
 		Alias:        input.Alias,
 		Description:  sql.NullString{String: input.Description, Valid: input.Description != ""},
