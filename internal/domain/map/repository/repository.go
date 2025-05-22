@@ -168,7 +168,10 @@ func (r *Map) GetObjectTypeByID(
 	return r.converter.ObjectTypeSqlcToEntity(dbObjectType), nil
 }
 
-func (r *Map) CreateObject(ctx context.Context, input entities.CreateObjectInput) (entities.Object, error) {
+func (r *Map) CreateObject(
+	ctx context.Context,
+	floorID uuid.UUID,
+	input entities.CreateObjectInput) (entities.Object, error) {
 	params := sqlc.CreateObjectParams{
 		FloorID:      input.FloorID,
 		Name:         input.Name,
