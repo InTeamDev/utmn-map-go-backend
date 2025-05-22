@@ -84,7 +84,11 @@ func (m *Map) GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectT
 	return objectType, nil
 }
 
-func (m *Map) CreateObject(ctx context.Context, floorID uuid.UUID, input entities.CreateObjectInput) (entities.Object, error) {
+func (m *Map) CreateObject(
+	ctx context.Context,
+	floorID uuid.UUID,
+	input entities.CreateObjectInput,
+) (entities.Object, error) {
 	_, err := m.GetObjectTypeByID(ctx, input.ObjectTypeID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
