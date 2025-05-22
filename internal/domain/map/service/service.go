@@ -139,5 +139,5 @@ func (m *Map) UpdateBuilding(
 }
 
 func (m *Map) GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Building, error) {
-    return m.repo.GetBuildingByID(ctx, id)
+	return m.repo.GetBuildingByID(ctx, id)
 }
