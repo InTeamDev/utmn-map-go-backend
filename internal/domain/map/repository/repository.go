@@ -254,6 +254,18 @@ func (r *Map) UpdateBuilding(
 	}, nil
 }
 
+func (r *Map) GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Building, error) {
+	b, err := r.q.GetBuildingByID(ctx, id)
+	if err != nil {
+		return entities.Building{}, fmt.Errorf("get building by id: %w", err)
+	}
+	return entities.Building{
+		ID:      b.ID,
+		Name:    b.Name,
+		Address: b.Address,
+	}, nil
+}
+
 func sqlNullString(s *string) sql.NullString {
 	if s == nil {
 		return sql.NullString{Valid: false}
