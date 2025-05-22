@@ -33,6 +33,71 @@ func (q *Queries) CreateBuilding(ctx context.Context, arg CreateBuildingParams) 
 	return i, err
 }
 
+const createObject = `-- name: CreateObject :one
+INSERT INTO objects (
+    floor_id,
+    name,
+    alias,
+    description,
+    x,
+    y,
+    width,
+    height,
+    object_type_id
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9
+) 
+RETURNING id, name, alias, description, x, y, width, height, object_type_id, floor_id
+`
+
+type CreateObjectParams struct {
+	FloorID      uuid.UUID
+	Name         string
+	Alias        string
+	Description  sql.NullString
+	X            float64
+	Y            float64
+	Width        float64
+	Height       float64
+	ObjectTypeID int32
+}
+
+func (q *Queries) CreateObject(ctx context.Context, arg CreateObjectParams) (Object, error) {
+	row := q.db.QueryRowContext(ctx, createObject,
+		arg.FloorID,
+		arg.Name,
+		arg.Alias,
+		arg.Description,
+		arg.X,
+		arg.Y,
+		arg.Width,
+		arg.Height,
+		arg.ObjectTypeID,
+	)
+	var i Object
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Alias,
+		&i.Description,
+		&i.X,
+		&i.Y,
+		&i.Width,
+		&i.Height,
+		&i.ObjectTypeID,
+		&i.FloorID,
+	)
+	return i, err
+}
+
 const deleteBuilding = `-- name: DeleteBuilding :exec
 DELETE FROM buildings
 WHERE id = $1

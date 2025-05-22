@@ -73,6 +73,30 @@ SET name = COALESCE(sqlc.narg('name'), name),
 WHERE id = @id
 RETURNING *;
 
+-- name: CreateObject :one
+INSERT INTO objects (
+    floor_id,
+    name,
+    alias,
+    description,
+    x,
+    y,
+    width,
+    height,
+    object_type_id
+) VALUES (
+    @floor_id,
+    @name,
+    @alias,
+    @description,
+    @x,
+    @y,
+    @width,
+    @height,
+    @object_type_id
+) 
+RETURNING *;
+
 -- name: GetFloorByID :one
 SELECT * FROM floors
 WHERE id = @id::uuid;
