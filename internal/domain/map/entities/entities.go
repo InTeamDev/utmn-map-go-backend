@@ -31,7 +31,6 @@ type UpdateObjectInput struct {
 	ObjectTypeID *int32   `json:"object_type_id,omitempty"`
 }
 
-// Модель создания (структура данных и валидация полей).
 type CreateObjectInput struct {
 	Name         string    `json:"name" binding:"required,max=255"`
 	Alias        string    `json:"alias" binding:"required,max=255"`

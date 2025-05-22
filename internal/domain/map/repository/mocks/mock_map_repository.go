@@ -58,18 +58,18 @@ func (mr *MockMapRepositoryMockRecorder) CreateBuilding(ctx, input any) *gomock.
 }
 
 // CreateObject mocks base method.
-func (m *MockMapRepository) CreateObject(ctx context.Context, input entities.CreateObjectInput) (entities.Object, error) {
+func (m *MockMapRepository) CreateObject(ctx context.Context, floorID uuid.UUID, input entities.CreateObjectInput) (entities.Object, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateObject", ctx, input)
+	ret := m.ctrl.Call(m, "CreateObject", ctx, floorID, input)
 	ret0, _ := ret[0].(entities.Object)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateObject indicates an expected call of CreateObject.
-func (mr *MockMapRepositoryMockRecorder) CreateObject(ctx, input any) *gomock.Call {
+func (mr *MockMapRepositoryMockRecorder) CreateObject(ctx, floorID, input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateObject", reflect.TypeOf((*MockMapRepository)(nil).CreateObject), ctx, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateObject", reflect.TypeOf((*MockMapRepository)(nil).CreateObject), ctx, floorID, input)
 }
 
 // DeleteBuilding mocks base method.

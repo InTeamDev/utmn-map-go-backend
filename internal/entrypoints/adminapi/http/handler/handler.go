@@ -13,7 +13,7 @@ import (
 )
 
 type MapService interface {
-	CreateObject(ctx context.Context, input mapentities.CreateObjectInput) (mapentities.Object, error)
+	CreateObject(ctx context.Context, floorID uuid.UUID, input mapentities.CreateObjectInput) (mapentities.Object, error)
 	UpdateObject(ctx context.Context, id uuid.UUID, input mapentities.UpdateObjectInput) (mapentities.Object, error)
 	CreateBuilding(ctx context.Context, input mapentities.CreateBuildingInput) (mapentities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
@@ -56,43 +56,19 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 }
 
 func (p *AdminAPI) CreateObjectHandler(c *gin.Context) {
-	floorIDStr := c.Param("floor_id")
-	floorID, err := uuid.Parse(floorIDStr)
+	floorID, err := uuid.Parse(c.Param("floor_id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid floor_id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid floor_id format"})
 		return
 	}
 
-	var input struct {
-		Name         string    `json:"name" binding:"required,max=255"`
-		Alias        string    `json:"alias" binding:"required,max=255"`
-		Description  string    `json:"description" binding:"max=255"`
-		X            float64   `json:"x" binding:"required"`
-		Y            float64   `json:"y" binding:"required"`
-		Width        float64   `json:"width" binding:"required,gte=1"`
-		Height       float64   `json:"height" binding:"required,gte=1"`
-		ObjectTypeID int32     `json:"object_type_id" binding:"required"`
-		FloorID      uuid.UUID `json:"floor_id" binding:"required"`
-	}
-
+	var input mapentities.CreateObjectInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	createInput := mapentities.CreateObjectInput{
-		FloorID:      floorID,
-		Name:         input.Name,
-		Alias:        input.Alias,
-		Description:  input.Description,
-		X:            input.X,
-		Y:            input.Y,
-		Width:        input.Width,
-		Height:       input.Height,
-		ObjectTypeID: input.ObjectTypeID,
-	}
-
-	result, err := p.mapService.CreateObject(c.Request.Context(), createInput)
+	result, err := p.mapService.CreateObject(c.Request.Context(), floorID, input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
