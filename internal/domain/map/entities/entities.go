@@ -32,7 +32,7 @@ type UpdateObjectInput struct {
 }
 
 type CreateObjectInput struct {
-	ID           uuid.UUID `json:"id" 			  binding:"required"`
+	ID           uuid.UUID `json:"id"`
 	Name         string    `json:"name"           binding:"required,max=255"`
 	Alias        string    `json:"alias"          binding:"required,max=255"`
 	Description  string    `json:"description"    binding:"max=255"`
@@ -41,5 +41,4 @@ type CreateObjectInput struct {
 	Width        float64   `json:"width"          binding:"required,gte=1"`
 	Height       float64   `json:"height"         binding:"required,gte=1"`
 	ObjectTypeID int32     `json:"object_type_id" binding:"required"`
-	FloorID      uuid.UUID `json:"floor_id"       binding:"required"`
 }
