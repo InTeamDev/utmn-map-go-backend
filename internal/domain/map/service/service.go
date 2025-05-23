@@ -18,7 +18,11 @@ type MapRepository interface {
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (entities.GetObjectsResponse, error)
 	GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error)
 	GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectTypeInfo, error)
-	CreateObject(ctx context.Context, buildingID uuid.UUID, floorID uuid.UUID, input entities.CreateObjectInput) (entities.Object, error)
+	CreateObject(
+		ctx context.Context,
+		floorID uuid.UUID,
+		input entities.CreateObjectInput,
+	) (entities.Object, error)
 	UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error)
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
@@ -86,7 +90,6 @@ func (m *Map) GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectT
 
 func (m *Map) CreateObject(
 	ctx context.Context,
-	buildingID uuid.UUID,
 	floorID uuid.UUID,
 	input entities.CreateObjectInput,
 ) (entities.Object, error) {
@@ -98,15 +101,7 @@ func (m *Map) CreateObject(
 		return entities.Object{}, fmt.Errorf("get object type: %w", err)
 	}
 
-	floors, err := m.repo.GetFloors(ctx, buildingID)
-	if err != nil {
-		return entities.Object{}, fmt.Errorf("get floors: %w", err)
-	}
-	if len(floors) == 0 {
-		return entities.Object{}, entities.ErrFloorNotFound
-	}
-
-	object, err := m.repo.CreateObject(ctx, buildingID, floorID, input)
+	object, err := m.repo.CreateObject(ctx, floorID, input)
 	if err != nil {
 		return entities.Object{}, fmt.Errorf("create object: %w", err)
 	}

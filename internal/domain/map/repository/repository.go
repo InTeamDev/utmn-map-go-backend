@@ -170,7 +170,6 @@ func (r *Map) GetObjectTypeByID(
 
 func (r *Map) CreateObject(
 	ctx context.Context,
-	buildingID uuid.UUID,
 	floorID uuid.UUID,
 	input entities.CreateObjectInput) (entities.Object, error) {
 

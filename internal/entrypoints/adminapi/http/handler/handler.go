@@ -15,7 +15,6 @@ import (
 type MapService interface {
 	CreateObject(
 		ctx context.Context,
-		buildingID uuid.UUID,
 		floorID uuid.UUID,
 		input mapentities.CreateObjectInput,
 	) (mapentities.Object, error)
@@ -71,19 +70,13 @@ func (p *AdminAPI) CreateObjectHandler(c *gin.Context) {
 		return
 	}
 
-	buildingID, err := uuid.Parse(c.Param("building_id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
-		return
-	}
-
 	var input mapentities.CreateObjectInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	result, err := p.mapService.CreateObject(c.Request.Context(), buildingID, floorID, input)
+	result, err := p.mapService.CreateObject(c.Request.Context(), floorID, input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
