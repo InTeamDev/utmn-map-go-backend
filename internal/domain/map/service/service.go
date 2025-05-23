@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 
@@ -17,6 +18,11 @@ type MapRepository interface {
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (entities.GetObjectsResponse, error)
 	GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error)
 	GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectTypeInfo, error)
+	CreateObject(
+		ctx context.Context,
+		floorID uuid.UUID,
+		input entities.CreateObjectInput,
+	) (entities.Object, error)
 	UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error)
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
@@ -80,6 +86,27 @@ func (m *Map) GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectT
 		return entities.ObjectTypeInfo{}, fmt.Errorf("get object type by id: %w", err)
 	}
 	return objectType, nil
+}
+
+func (m *Map) CreateObject(
+	ctx context.Context,
+	floorID uuid.UUID,
+	input entities.CreateObjectInput,
+) (entities.Object, error) {
+	_, err := m.GetObjectTypeByID(ctx, input.ObjectTypeID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return entities.Object{}, entities.ErrObjectTypeNotFound
+		}
+		return entities.Object{}, fmt.Errorf("get object type: %w", err)
+	}
+
+	object, err := m.repo.CreateObject(ctx, floorID, input)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("create object: %w", err)
+	}
+
+	return object, nil
 }
 
 func (m *Map) UpdateObject(

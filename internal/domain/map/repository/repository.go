@@ -168,6 +168,52 @@ func (r *Map) GetObjectTypeByID(
 	return r.converter.ObjectTypeSqlcToEntity(dbObjectType), nil
 }
 
+func (r *Map) CreateObject(
+	ctx context.Context,
+	floorID uuid.UUID,
+	input entities.CreateObjectInput,
+) (entities.Object, error) {
+	objectID := uuid.New()
+
+	params := sqlc.CreateObjectParams{
+		ID:           objectID,
+		FloorID:      floorID,
+		Name:         input.Name,
+		Alias:        input.Alias,
+		Description:  sql.NullString{String: input.Description, Valid: input.Description != ""},
+		X:            input.X,
+		Y:            input.Y,
+		Width:        input.Width,
+		Height:       input.Height,
+		ObjectTypeID: input.ObjectTypeID,
+	}
+
+	rowObject, err := r.q.CreateObject(ctx, params)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("create object: %w", err)
+	}
+
+	description := ""
+	if rowObject.Description.Valid {
+		description = rowObject.Description.String
+	}
+
+	createdObject := entities.Object{
+		ID:           rowObject.ID,
+		Name:         rowObject.Name,
+		Alias:        rowObject.Alias,
+		Description:  description,
+		X:            rowObject.X,
+		Y:            rowObject.Y,
+		Width:        rowObject.Width,
+		Height:       rowObject.Height,
+		ObjectTypeID: rowObject.ObjectTypeID,
+		Doors:        nil,
+	}
+
+	return createdObject, nil
+}
+
 func (r *Map) UpdateObject(
 	ctx context.Context,
 	id uuid.UUID,

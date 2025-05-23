@@ -30,3 +30,15 @@ type UpdateObjectInput struct {
 	Height       *float64 `json:"height,omitempty"`
 	ObjectTypeID *int32   `json:"object_type_id,omitempty"`
 }
+
+type CreateObjectInput struct {
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name"           binding:"required,max=255"`
+	Alias        string    `json:"alias"          binding:"required,max=255"`
+	Description  string    `json:"description"    binding:"max=255"`
+	X            float64   `json:"x"              binding:"required"`
+	Y            float64   `json:"y"              binding:"required"`
+	Width        float64   `json:"width"          binding:"required,gte=1"`
+	Height       float64   `json:"height"         binding:"required,gte=1"`
+	ObjectTypeID int32     `json:"object_type_id" binding:"required"`
+}
