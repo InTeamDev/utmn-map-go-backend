@@ -15,6 +15,7 @@ import (
 type MapService interface {
 	CreateObject(
 		ctx context.Context,
+		buildingID uuid.UUID,
 		floorID uuid.UUID,
 		input mapentities.CreateObjectInput,
 	) (mapentities.Object, error)
@@ -53,7 +54,7 @@ func NewAdminAPI(mapService MapService, routeService RouteService) *AdminAPI {
 func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 	api := router.Group("/api")
 	{
-		api.POST("/floors/:floor_id/objects", p.CreateObjectHandler)
+		api.POST("/buildings/:building_id/floors/:floor_id/objects", p.CreateObjectHandler)
 		api.PATCH("/objects/:object_id", p.UpdateObjectHandler)
 		api.POST("/buildings", p.CreateBuildingHandler)
 		api.POST("/route/intersections", p.AddIntersection)
@@ -66,7 +67,13 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 func (p *AdminAPI) CreateObjectHandler(c *gin.Context) {
 	floorID, err := uuid.Parse(c.Param("floor_id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid floor_id format"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid floor_id"})
+		return
+	}
+
+	buildingID, err := uuid.Parse(c.Param("building_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
 		return
 	}
 
@@ -76,7 +83,7 @@ func (p *AdminAPI) CreateObjectHandler(c *gin.Context) {
 		return
 	}
 
-	result, err := p.mapService.CreateObject(c.Request.Context(), floorID, input)
+	result, err := p.mapService.CreateObject(c.Request.Context(), buildingID, floorID, input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

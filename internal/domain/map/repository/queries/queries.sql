@@ -75,6 +75,7 @@ RETURNING *;
 
 -- name: CreateObject :one
 INSERT INTO objects (
+    id,
     floor_id,
     name,
     alias,
@@ -85,6 +86,7 @@ INSERT INTO objects (
     height,
     object_type_id
 ) VALUES (
+    @id,
     @floor_id,
     @name,
     @alias,

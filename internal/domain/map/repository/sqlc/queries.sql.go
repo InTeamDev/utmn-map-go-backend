@@ -35,6 +35,7 @@ func (q *Queries) CreateBuilding(ctx context.Context, arg CreateBuildingParams) 
 
 const createObject = `-- name: CreateObject :one
 INSERT INTO objects (
+    id,
     floor_id,
     name,
     alias,
@@ -53,12 +54,14 @@ INSERT INTO objects (
     $6,
     $7,
     $8,
-    $9
+    $9,
+    $10
 ) 
 RETURNING id, name, alias, description, x, y, width, height, object_type_id, floor_id
 `
 
 type CreateObjectParams struct {
+	ID           uuid.UUID
 	FloorID      uuid.UUID
 	Name         string
 	Alias        string
@@ -72,6 +75,7 @@ type CreateObjectParams struct {
 
 func (q *Queries) CreateObject(ctx context.Context, arg CreateObjectParams) (Object, error) {
 	row := q.db.QueryRowContext(ctx, createObject,
+		arg.ID,
 		arg.FloorID,
 		arg.Name,
 		arg.Alias,
