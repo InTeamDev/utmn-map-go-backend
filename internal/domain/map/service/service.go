@@ -28,6 +28,7 @@ type MapRepository interface {
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 	UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error)
 	GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Building, error)
+	CreatePolygon(ctx context.Context, floorID uuid.UUID, label string, zIndex int32) (entities.Polygon, error)
 }
 
 type Map struct {
@@ -167,4 +168,7 @@ func (m *Map) UpdateBuilding(
 
 func (m *Map) GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Building, error) {
 	return m.repo.GetBuildingByID(ctx, id)
+}
+func (s *Map) CreatePolygon(ctx context.Context, floorID uuid.UUID, label string, zIndex int32) (entities.Polygon, error) {
+	return s.repo.CreatePolygon(ctx, floorID, label, zIndex)
 }

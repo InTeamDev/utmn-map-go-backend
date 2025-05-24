@@ -26,6 +26,7 @@ type MapService interface {
 		id uuid.UUID,
 		input mapentities.UpdateBuildingInput,
 	) (mapentities.Building, error)
+	CreatePolygon(ctx context.Context, floorID uuid.UUID, label string, zIndex int32) (mapentities.Polygon, error)
 }
 
 type RouteService interface {
@@ -60,6 +61,8 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 		api.POST("/route/connections", p.AddConnection)
 		api.DELETE("/buildings/:building_id", p.DeleteBuildingHandler)
 		api.PATCH("/buildings/:building_id", p.UpdateBuilding)
+		api.POST("/floors/:floor_id/poligons", p.CreatePolygonHandler)
+
 	}
 }
 
@@ -232,4 +235,31 @@ func (p *AdminAPI) UpdateBuilding(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, building)
+}
+
+type CreatePolygonRequest struct {
+	Label  string `json:"label" binding:"required"`
+	ZIndex int32  `json:"z_index"`
+}
+
+func (p *AdminAPI) CreatePolygonHandler(c *gin.Context) {
+	floorID, err := uuid.Parse(c.Param("floor_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid floor_id"})
+		return
+	}
+
+	var req CreatePolygonRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	polygon, err := p.mapService.CreatePolygon(c.Request.Context(), floorID, req.Label, req.ZIndex)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, polygon)
 }
