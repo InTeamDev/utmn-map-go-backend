@@ -144,3 +144,8 @@ SET name = COALESCE(sqlc.narg('name'), name),
 address = COALESCE(sqlc.narg('address'), address)
 WHERE id = sqlc.arg('id')::uuid
 RETURNING id, name, address;
+
+-- name: CreatePolygon :one
+INSERT INTO floor_polygons (id, floor_id, label, z_index)
+VALUES (@id::uuid, @floor_id::uuid, @label, @z_index)
+RETURNING id, floor_id, label, z_index;
