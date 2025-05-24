@@ -335,7 +335,7 @@ func sqlNullFloat64(i *float64) sql.NullFloat64 {
 
 func (r *Map) CreatePolygon(ctx context.Context, floorID uuid.UUID, label string, zIndex int32) (entities.Polygon, error) {
 	polygon, err := r.q.CreatePolygon(ctx, sqlc.CreatePolygonParams{
-		ID:      uuid.New(),
+		
 		FloorID: floorID,
 		Label:   sql.NullString{String: label, Valid: true},
 		ZIndex:  sql.NullInt32{Int32: zIndex, Valid: true},
