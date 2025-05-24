@@ -62,7 +62,6 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 		api.DELETE("/buildings/:building_id", p.DeleteBuildingHandler)
 		api.PATCH("/buildings/:building_id", p.UpdateBuilding)
 		api.POST("/floors/:floor_id/poligons", p.CreatePolygonHandler)
-
 	}
 }
 
@@ -238,7 +237,7 @@ func (p *AdminAPI) UpdateBuilding(c *gin.Context) {
 }
 
 type CreatePolygonRequest struct {
-	Label  string `json:"label" binding:"required"`
+	Label  string `json:"label"   binding:"required"`
 	ZIndex int32  `json:"z_index"`
 }
 
