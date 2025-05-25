@@ -87,6 +87,21 @@ func (mr *MockMapRepositoryMockRecorder) CreatePolygon(ctx, floorID, label, zInd
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePolygon", reflect.TypeOf((*MockMapRepository)(nil).CreatePolygon), ctx, floorID, label, zIndex)
 }
 
+// CreatePolygonPoint mocks base method.
+func (m *MockMapRepository) CreatePolygonPoint(ctx context.Context, polygonID uuid.UUID, order int32, x, y float64) (entities.PolygonPoint, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePolygonPoint", ctx, polygonID, order, x, y)
+	ret0, _ := ret[0].(entities.PolygonPoint)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreatePolygonPoint indicates an expected call of CreatePolygonPoint.
+func (mr *MockMapRepositoryMockRecorder) CreatePolygonPoint(ctx, polygonID, order, x, y any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePolygonPoint", reflect.TypeOf((*MockMapRepository)(nil).CreatePolygonPoint), ctx, polygonID, order, x, y)
+}
+
 // DeleteBuilding mocks base method.
 func (m *MockMapRepository) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
 	m.ctrl.T.Helper()

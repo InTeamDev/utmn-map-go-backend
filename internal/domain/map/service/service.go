@@ -29,6 +29,12 @@ type MapRepository interface {
 	UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error)
 	GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Building, error)
 	CreatePolygon(ctx context.Context, floorID uuid.UUID, label string, zIndex int32) (entities.Polygon, error)
+	CreatePolygonPoint(
+		ctx context.Context,
+		polygonID uuid.UUID,
+		order int32,
+		x, y float64,
+	) (entities.PolygonPoint, error)
 }
 
 type Map struct {
@@ -177,4 +183,13 @@ func (m *Map) CreatePolygon(
 	zIndex int32,
 ) (entities.Polygon, error) {
 	return m.repo.CreatePolygon(ctx, floorID, label, zIndex)
+}
+
+func (m *Map) CreatePolygonPoint(
+	ctx context.Context,
+	polygonID uuid.UUID,
+	order int32,
+	x, y float64,
+) (entities.PolygonPoint, error) {
+	return m.repo.CreatePolygonPoint(ctx, polygonID, order, x, y)
 }

@@ -30,6 +30,14 @@ type FloorPolygon struct {
 	ZIndex  sql.NullInt32
 }
 
+type FloorPolygonPoint struct {
+	ID         int32
+	PolygonID  uuid.UUID
+	PointOrder int32
+	X          float64
+	Y          float64
+}
+
 type Object struct {
 	ID           uuid.UUID
 	Name         string
