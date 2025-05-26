@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"strings"
 	"sync"
 
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/auth/service"
@@ -201,7 +200,7 @@ func (t *TelegramBot) handlePromoteCommand(message *tgbotapi.Message) {
 	}
 
 	// Promote user
-	promotedUser, err := t.userService.PromoteUser(ctx, curator.ID, targetUsername)
+	_, err = t.userService.PromoteUser(ctx, curator.ID, targetUsername)
 	if err != nil {
 		var errorMsg string
 		switch err {
@@ -243,7 +242,7 @@ func (t *TelegramBot) handleDemoteCommand(message *tgbotapi.Message) {
 	}
 
 	// Demote user
-	demotedUser, err := t.userService.DemoteUser(ctx, curator.ID, targetUsername)
+	_, err = t.userService.DemoteUser(ctx, curator.ID, targetUsername)
 	if err != nil {
 		var errorMsg string
 		switch err {
@@ -267,8 +266,6 @@ func (t *TelegramBot) handleDemoteCommand(message *tgbotapi.Message) {
 
 // SendAuthCode sends an authentication code to a user
 func (t *TelegramBot) SendAuthCode(ctx context.Context, username string, code string) error {
-	// Extract clean username without @
-	cleanUsername := strings.TrimPrefix(username, "@")
 
 	// Get user by username
 	user, err := t.userService.GetUserByUsername(ctx, username)

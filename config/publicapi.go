@@ -18,7 +18,8 @@ type Database struct {
 }
 
 type HTTP struct {
-	Port int `yaml:"port"`
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
 }
 
 type TGBot struct {

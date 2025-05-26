@@ -46,7 +46,7 @@ func Run(configPath string) int {
 }
 
 func runApp(ctx context.Context, configPath string) error {
-	cfg, err := config.LoadPublicAPI(configPath)
+	cfg, err := config.New(configPath)
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
@@ -82,7 +82,7 @@ func runApp(ctx context.Context, configPath string) error {
 	publicAPI.RegisterRoutes(router)
 
 	srv := &http.Server{
-		Addr:              fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),
+		Addr:              fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port),
 		Handler:           router,
 		ReadHeaderTimeout: readHeaderTimeout,
 	}
