@@ -132,6 +132,37 @@ func (q *Queries) CreatePolygon(ctx context.Context, arg CreatePolygonParams) (F
 	return i, err
 }
 
+const createPolygonPoint = `-- name: CreatePolygonPoint :one
+INSERT INTO floor_polygon_points (polygon_id, point_order, x, y)
+VALUES ($1::uuid, $2, $3, $4)
+RETURNING id, polygon_id, point_order, x, y
+`
+
+type CreatePolygonPointParams struct {
+	PolygonID  uuid.UUID
+	PointOrder int32
+	X          float64
+	Y          float64
+}
+
+func (q *Queries) CreatePolygonPoint(ctx context.Context, arg CreatePolygonPointParams) (FloorPolygonPoint, error) {
+	row := q.db.QueryRowContext(ctx, createPolygonPoint,
+		arg.PolygonID,
+		arg.PointOrder,
+		arg.X,
+		arg.Y,
+	)
+	var i FloorPolygonPoint
+	err := row.Scan(
+		&i.ID,
+		&i.PolygonID,
+		&i.PointOrder,
+		&i.X,
+		&i.Y,
+	)
+	return i, err
+}
+
 const deleteBuilding = `-- name: DeleteBuilding :exec
 DELETE FROM buildings
 WHERE id = $1

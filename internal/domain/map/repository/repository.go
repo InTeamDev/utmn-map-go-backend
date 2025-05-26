@@ -356,3 +356,27 @@ func (r *Map) CreatePolygon(
 		ZIndex:  polygon.ZIndex.Int32,
 	}, nil
 }
+
+func (r *Map) CreatePolygonPoint(
+	ctx context.Context,
+	polygonID uuid.UUID,
+	order int32,
+	x, y float64,
+) (entities.PolygonPoint, error) {
+	point, err := r.q.CreatePolygonPoint(ctx, sqlc.CreatePolygonPointParams{
+		PolygonID:  polygonID,
+		PointOrder: order,
+		X:          x,
+		Y:          y,
+	})
+	if err != nil {
+		return entities.PolygonPoint{}, fmt.Errorf("create polygon point: %w", err)
+	}
+	return entities.PolygonPoint{
+		ID:        point.ID,
+		PolygonID: point.PolygonID,
+		Order:     point.PointOrder,
+		X:         point.X,
+		Y:         point.Y,
+	}, nil
+}

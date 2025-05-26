@@ -149,3 +149,8 @@ RETURNING id, name, address;
 INSERT INTO floor_polygons (id, floor_id, label, z_index)
 VALUES (@id::uuid, @floor_id::uuid, @label, @z_index)
 RETURNING id, floor_id, label, z_index;
+
+-- name: CreatePolygonPoint :one
+INSERT INTO floor_polygon_points (polygon_id, point_order, x, y)
+VALUES (@polygon_id::uuid, @point_order, @x, @y)
+RETURNING id, polygon_id, point_order, x, y;

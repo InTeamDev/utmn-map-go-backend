@@ -27,6 +27,12 @@ type MapService interface {
 		input mapentities.UpdateBuildingInput,
 	) (mapentities.Building, error)
 	CreatePolygon(ctx context.Context, floorID uuid.UUID, label string, zIndex int32) (mapentities.Polygon, error)
+	CreatePolygonPoint(
+		ctx context.Context,
+		polygonID uuid.UUID,
+		order int32,
+		x, y float64,
+	) (mapentities.PolygonPoint, error)
 }
 
 type RouteService interface {
@@ -62,6 +68,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 		api.DELETE("/buildings/:building_id", p.DeleteBuildingHandler)
 		api.PATCH("/buildings/:building_id", p.UpdateBuilding)
 		api.POST("/floors/:floor_id/poligons", p.CreatePolygonHandler)
+		api.POST("/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
 	}
 }
 
@@ -261,4 +268,30 @@ func (p *AdminAPI) CreatePolygonHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, polygon)
+}
+
+func (p *AdminAPI) CreatePolygonPointsHandler(c *gin.Context) {
+	polygonID, err := uuid.Parse(c.Param("p_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid polygon_id"})
+		return
+	}
+
+	var points []mapentities.PolygonPointRequest
+	if err := c.ShouldBindJSON(&points); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var result []mapentities.PolygonPoint
+	for _, pt := range points {
+		res, err := p.mapService.CreatePolygonPoint(c.Request.Context(), polygonID, pt.PointOrder, pt.X, pt.Y)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		result = append(result, res)
+	}
+
+	c.JSON(http.StatusCreated, result)
 }
