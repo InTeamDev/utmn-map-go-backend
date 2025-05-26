@@ -24,7 +24,8 @@ WHERE f.building_id = @building_id::uuid;
 
 -- name: GetObjectTypes :many
 SELECT DISTINCT ot.*
-FROM object_types ot;
+FROM object_types ot
+ORDER BY ot.id;
 
 -- name: GetObjectsByBuilding :many
 SELECT 
@@ -36,7 +37,7 @@ SELECT
     o.y, 
     o.width, 
     o.height, 
-    ot.name AS object_type, 
+    ot.id AS object_type, 
     f.id AS floor_id, 
     f.name AS floor_name, 
     b.id AS building_id, 
@@ -61,11 +62,41 @@ WHERE od.object_id = ANY(@object_ids::uuid[]);
 
 -- name: UpdateObject :one
 UPDATE objects
-SET name = @name,
-    alias = @alias,
-    description = @description,
-    object_type_id = @object_type_id
+SET name = COALESCE(sqlc.narg('name'), name),
+    alias = COALESCE(sqlc.narg('alias'), alias),
+    description = COALESCE(sqlc.narg('description'), description),
+    x = COALESCE(sqlc.narg('x'), x),
+    y = COALESCE(sqlc.narg('y'), y),
+    width = COALESCE(sqlc.narg('width'), width),
+    height = COALESCE(sqlc.narg('height'), height),
+    object_type_id = COALESCE(sqlc.narg('object_type_id'), object_type_id)
 WHERE id = @id
+RETURNING *;
+
+-- name: CreateObject :one
+INSERT INTO objects (
+    id,
+    floor_id,
+    name,
+    alias,
+    description,
+    x,
+    y,
+    width,
+    height,
+    object_type_id
+) VALUES (
+    @id,
+    @floor_id,
+    @name,
+    @alias,
+    @description,
+    @x,
+    @y,
+    @width,
+    @height,
+    @object_type_id
+) 
 RETURNING *;
 
 -- name: GetFloorByID :one
@@ -97,3 +128,24 @@ JOIN floor_polygon_points fpp ON fp.id = fpp.polygon_id
 WHERE fp.floor_id = @floor_id::uuid
 GROUP BY fp.id, fp.label, fp.z_index
 ORDER BY fp.z_index;
+
+-- name: CreateBuilding :one
+INSERT INTO buildings (id, name, address)
+VALUES ($1, $2, $3)
+RETURNING *;
+
+-- name: DeleteBuilding :exec
+DELETE FROM buildings
+WHERE id = $1;
+
+-- name: UpdateBuilding :one
+UPDATE buildings
+SET name = COALESCE(sqlc.narg('name'), name),
+address = COALESCE(sqlc.narg('address'), address)
+WHERE id = sqlc.arg('id')::uuid
+RETURNING id, name, address;
+
+-- name: CreatePolygon :one
+INSERT INTO floor_polygons (id, floor_id, label, z_index)
+VALUES (@id::uuid, @floor_id::uuid, @label, @z_index)
+RETURNING id, floor_id, label, z_index;

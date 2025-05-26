@@ -1,0 +1,32 @@
+name: Deploy to UTMN Map
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git branch or tag to deploy"
+        required: true
+        default: "master"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout infra (docker-compose, nginx)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref }}
+
+      - name: Setup SSH key
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy
+        run: |
+          ssh -o StrictHostKeyChecking=no deployer@94.103.92.242 << 'EOF'
+            cd /opt/utmn-map
+            docker compose pull
+            docker compose up -d
+          EOF

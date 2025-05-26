@@ -20,7 +20,8 @@ type MapConverter interface {
 	FloorSqlcToEntity(f sqlc.Floor) entities.Floor
 	FloorsSqlcToEntity(floors []sqlc.Floor) []entities.Floor
 	BuildingsSqlcToEntity(buildings []sqlc.Building) []entities.Building
-	ObjectTypesSqlcToEntity(objectTypes []sqlc.ObjectType) []entities.ObjectType
+	ObjectTypeSqlcToEntity(objectType sqlc.ObjectType) entities.ObjectTypeInfo
+	ObjectTypesSqlcToEntity(objectTypes []sqlc.ObjectType) []entities.ObjectTypeInfo
 	// Новая функция для конвертации background этажа
 	FloorBackgroundSqlcToEntityMany(rows []sqlc.GetFloorBackgroundRow) []entities.FloorBackgroundElement
 }
@@ -53,10 +54,10 @@ func (r *Map) GetFloors(ctx context.Context, buildingID uuid.UUID) ([]entities.F
 	return r.converter.FloorsSqlcToEntity(floors), nil
 }
 
-func (r *Map) GetObjectTypes(ctx context.Context) ([]entities.ObjectType, error) {
+func (r *Map) GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error) {
 	objectTypes, err := r.q.GetObjectTypes(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get object types: %w", err)
+		return nil, fmt.Errorf("get object types: %w", err)
 	}
 	return r.converter.ObjectTypesSqlcToEntity(objectTypes), nil
 }
@@ -155,29 +156,84 @@ func (r *Map) GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([
 	return objects, nil
 }
 
-func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error) {
-	objectType, err := r.q.GetObjectTypeByName(ctx, string(input.ObjectType))
+func (r *Map) GetObjectTypeByID(
+	ctx context.Context,
+	id int32,
+) (entities.ObjectTypeInfo, error) {
+	dbObjectType, err := r.q.GetObjectTypeByID(ctx, id)
 	if err != nil {
-		return entities.Object{}, fmt.Errorf("failed to get object type: %w", err)
+		return entities.ObjectTypeInfo{}, fmt.Errorf("database query failed: %w", err)
 	}
 
-	params := sqlc.UpdateObjectParams{
+	return r.converter.ObjectTypeSqlcToEntity(dbObjectType), nil
+}
+
+func (r *Map) CreateObject(
+	ctx context.Context,
+	floorID uuid.UUID,
+	input entities.CreateObjectInput,
+) (entities.Object, error) {
+	objectID := uuid.New()
+
+	params := sqlc.CreateObjectParams{
+		ID:           objectID,
+		FloorID:      floorID,
 		Name:         input.Name,
 		Alias:        input.Alias,
 		Description:  sql.NullString{String: input.Description, Valid: input.Description != ""},
-		ObjectTypeID: objectType.ID,
-		ID:           input.ID,
+		X:            input.X,
+		Y:            input.Y,
+		Width:        input.Width,
+		Height:       input.Height,
+		ObjectTypeID: input.ObjectTypeID,
+	}
+
+	rowObject, err := r.q.CreateObject(ctx, params)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("create object: %w", err)
+	}
+
+	description := ""
+	if rowObject.Description.Valid {
+		description = rowObject.Description.String
+	}
+
+	createdObject := entities.Object{
+		ID:           rowObject.ID,
+		Name:         rowObject.Name,
+		Alias:        rowObject.Alias,
+		Description:  description,
+		X:            rowObject.X,
+		Y:            rowObject.Y,
+		Width:        rowObject.Width,
+		Height:       rowObject.Height,
+		ObjectTypeID: rowObject.ObjectTypeID,
+		Doors:        nil,
+	}
+
+	return createdObject, nil
+}
+
+func (r *Map) UpdateObject(
+	ctx context.Context,
+	id uuid.UUID,
+	input entities.UpdateObjectInput,
+) (entities.Object, error) {
+	params := sqlc.UpdateObjectParams{
+		ID:           id,
+		Name:         sqlNullString(input.Name),
+		Alias:        sqlNullString(input.Alias),
+		Description:  sqlNullString(input.Description),
+		X:            sqlNullFloat64(input.X),
+		Y:            sqlNullFloat64(input.Y),
+		Width:        sqlNullFloat64(input.Width),
+		Height:       sqlNullFloat64(input.Height),
+		ObjectTypeID: sqlNullInt32(input.ObjectTypeID),
 	}
 	rowObject, err := r.q.UpdateObject(ctx, params)
 	if err != nil {
-		return entities.Object{}, fmt.Errorf("failed to update object: %w", err)
+		return entities.Object{}, fmt.Errorf("update object: %w", err)
 	}
-
-	rowDoors, err := r.q.GetDoorsByObjectIDs(ctx, []uuid.UUID{rowObject.ID})
-	if err != nil {
-		return entities.Object{}, fmt.Errorf("failed to get doors: %w", err)
-	}
-	doorsMap := r.converter.DoorsSqlcToEntityMap(rowDoors)
 
 	description := ""
 	if rowObject.Description.Valid {
@@ -185,16 +241,118 @@ func (r *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput
 	}
 
 	updatedObject := entities.Object{
-		ID:          rowObject.ID,
-		Name:        rowObject.Name,
-		Alias:       rowObject.Alias,
-		Description: description,
-		X:           rowObject.X,
-		Y:           rowObject.Y,
-		Width:       rowObject.Width,
-		Height:      rowObject.Height,
-		ObjectType:  entities.ObjectType(objectType.Name),
-		Doors:       doorsMap[rowObject.ID],
+		ID:           rowObject.ID,
+		Name:         rowObject.Name,
+		Alias:        rowObject.Alias,
+		Description:  description,
+		X:            rowObject.X,
+		Y:            rowObject.Y,
+		Width:        rowObject.Width,
+		Height:       rowObject.Height,
+		ObjectTypeID: rowObject.ObjectTypeID,
 	}
 	return updatedObject, nil
+}
+
+func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
+	params := sqlc.CreateBuildingParams{
+		ID:      uuid.New(),
+		Name:    input.Name,
+		Address: input.Address,
+	}
+
+	building, err := r.q.CreateBuilding(ctx, params)
+	if err != nil {
+		return entities.Building{}, fmt.Errorf("create building: %w", err)
+	}
+
+	result := entities.Building{
+		ID:      building.ID,
+		Name:    building.Name,
+		Address: building.Address,
+	}
+
+	return result, nil
+}
+
+func (r *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
+	return r.q.DeleteBuilding(ctx, id)
+}
+
+func (r *Map) UpdateBuilding(
+	ctx context.Context,
+	id uuid.UUID,
+	input entities.UpdateBuildingInput,
+) (entities.Building, error) {
+	params := sqlc.UpdateBuildingParams{
+		ID:      id,
+		Name:    sql.NullString{String: input.Name, Valid: input.Name != ""},
+		Address: sql.NullString{String: input.Address, Valid: input.Address != ""},
+	}
+	b, err := r.q.UpdateBuilding(ctx, params)
+	if err != nil {
+		return entities.Building{}, fmt.Errorf("update building: %w", err)
+	}
+	return entities.Building{
+		ID:      b.ID,
+		Name:    b.Name,
+		Address: b.Address,
+	}, nil
+}
+
+func (r *Map) GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Building, error) {
+	b, err := r.q.GetBuildingByID(ctx, id)
+	if err != nil {
+		return entities.Building{}, fmt.Errorf("get building by id: %w", err)
+	}
+	return entities.Building{
+		ID:      b.ID,
+		Name:    b.Name,
+		Address: b.Address,
+	}, nil
+}
+
+func sqlNullString(s *string) sql.NullString {
+	if s == nil {
+		return sql.NullString{Valid: false}
+	}
+	return sql.NullString{String: *s, Valid: true}
+}
+
+func sqlNullInt32(i *int32) sql.NullInt32 {
+	if i == nil {
+		return sql.NullInt32{Valid: false}
+	}
+	return sql.NullInt32{Int32: *i, Valid: true}
+}
+
+func sqlNullFloat64(i *float64) sql.NullFloat64 {
+	if i == nil {
+		return sql.NullFloat64{Valid: false}
+	}
+	return sql.NullFloat64{Float64: *i, Valid: true}
+}
+
+func (r *Map) CreatePolygon(
+	ctx context.Context,
+	floorID uuid.UUID,
+	label string,
+	zIndex int32,
+) (entities.Polygon, error) {
+	polygon, err := r.q.CreatePolygon(ctx, sqlc.CreatePolygonParams{
+		ID:      uuid.New(),
+		FloorID: floorID,
+		Label:   sql.NullString{String: label, Valid: true},
+		ZIndex:  sql.NullInt32{Int32: zIndex, Valid: true},
+	})
+	if err != nil {
+		return entities.Polygon{}, fmt.Errorf("create polygon: %w", err)
+	}
+
+	return entities.Polygon{
+		ID:      polygon.ID,
+		FloorID: polygon.FloorID,
+		Label:   polygon.Label.String,
+		ZIndex:  polygon.ZIndex.Int32,
+	}, nil
 }

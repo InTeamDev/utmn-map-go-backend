@@ -10,17 +10,18 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-
 	"github.com/InTeamDev/utmn-map-go-backend/config"
 	maprepository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository"
 	mapservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service"
+	routerepository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/repository"
+	routeservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/service"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/entrypoints/adminapi/http/handler"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/middleware"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/server"
 	"github.com/InTeamDev/utmn-map-go-backend/pkg/database"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (
@@ -59,6 +60,8 @@ func runApp(ctx context.Context, configPath string) error {
 	mapConverter := maprepository.NewMapConverter()
 	mapRepository := maprepository.NewMap(db, mapConverter)
 	mapService := mapservice.NewMap(mapRepository)
+	routeRepository := routerepository.NewRoute(db)
+	routeService := routeservice.NewRoute(routeRepository)
 
 	metrics := middleware.NewMetrics()
 	router := gin.Default()
@@ -74,7 +77,7 @@ func runApp(ctx context.Context, configPath string) error {
 	router.Use(metrics.Middleware())
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
-	adminAPI := handler.NewAdminAPI(mapService)
+	adminAPI := handler.NewAdminAPI(mapService, routeService)
 	adminAPI.RegisterRoutes(router)
 
 	srv := &http.Server{

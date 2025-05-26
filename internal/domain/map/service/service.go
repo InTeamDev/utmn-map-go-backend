@@ -2,19 +2,33 @@ package service
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/google/uuid"
 )
 
+//go:generate mockgen -destination=../repository/mocks/mock_map_repository.go -package=mocks github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service MapRepository
 type MapRepository interface {
 	GetBuildings(ctx context.Context) ([]entities.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
-	GetObjectTypes(ctx context.Context) ([]entities.ObjectType, error)
+	GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (entities.GetObjectsResponse, error)
 	GetObjectsByBuilding(ctx context.Context, buildingID uuid.UUID) ([]entities.Object, error)
-	UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error)
+	GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectTypeInfo, error)
+	CreateObject(
+		ctx context.Context,
+		floorID uuid.UUID,
+		input entities.CreateObjectInput,
+	) (entities.Object, error)
+	UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error)
+	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
+	DeleteBuilding(ctx context.Context, id uuid.UUID) error
+	UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error)
+	GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Building, error)
+	CreatePolygon(ctx context.Context, floorID uuid.UUID, label string, zIndex int32) (entities.Polygon, error)
 }
 
 type Map struct {
@@ -41,7 +55,7 @@ func (m *Map) GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floo
 	return floors, nil
 }
 
-func (m *Map) GetObjectCategories(ctx context.Context) ([]entities.ObjectType, error) {
+func (m *Map) GetObjectCategories(ctx context.Context) ([]entities.ObjectTypeInfo, error) {
 	objectTypes, err := m.repo.GetObjectTypes(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get object categories: %w", err)
@@ -65,10 +79,102 @@ func (m *Map) GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]en
 	return objects, nil
 }
 
-func (m *Map) UpdateObject(ctx context.Context, input entities.UpdateObjectInput) (entities.Object, error) {
-	object, err := m.repo.UpdateObject(ctx, input)
+func (m *Map) GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectTypeInfo, error) {
+	inputID := id
+
+	objectType, err := m.repo.GetObjectTypeByID(ctx, inputID)
 	if err != nil {
-		return entities.Object{}, fmt.Errorf("get object: %w", err)
+		return entities.ObjectTypeInfo{}, fmt.Errorf("get object type by id: %w", err)
+	}
+	return objectType, nil
+}
+
+func (m *Map) CreateObject(
+	ctx context.Context,
+	floorID uuid.UUID,
+	input entities.CreateObjectInput,
+) (entities.Object, error) {
+	_, err := m.GetObjectTypeByID(ctx, input.ObjectTypeID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return entities.Object{}, entities.ErrObjectTypeNotFound
+		}
+		return entities.Object{}, fmt.Errorf("get object type: %w", err)
+	}
+
+	object, err := m.repo.CreateObject(ctx, floorID, input)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("create object: %w", err)
+	}
+
+	return object, nil
+}
+
+func (m *Map) UpdateObject(
+	ctx context.Context,
+	id uuid.UUID,
+	input entities.UpdateObjectInput,
+) (entities.Object, error) {
+	if input.ObjectTypeID != nil {
+		objectType, err := m.GetObjectTypeByID(ctx, *input.ObjectTypeID)
+		if err != nil {
+			return entities.Object{}, fmt.Errorf("object type validation failed: %w", err)
+		}
+		input.ObjectTypeID = &objectType.ID
+	}
+
+	object, err := m.repo.UpdateObject(ctx, id, input)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("update object: %w", err)
 	}
 	return object, nil
+}
+
+func (m *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
+	building, err := m.repo.CreateBuilding(ctx, input)
+	if err != nil {
+		return entities.Building{}, fmt.Errorf("create building: %w", err)
+	}
+	return building, nil
+}
+
+func (m *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
+	floors, err := m.repo.GetFloors(ctx, id)
+	if err != nil {
+		return fmt.Errorf("get floors: %w", err)
+	}
+
+	if len(floors) == 0 {
+		return errors.New("can't delete building with floors, at first delete all floors")
+	}
+	err = m.repo.DeleteBuilding(ctx, id)
+	if err != nil {
+		return fmt.Errorf("delete building: %w", err)
+	}
+	return nil
+}
+
+func (m *Map) UpdateBuilding(
+	ctx context.Context,
+	id uuid.UUID,
+	input entities.UpdateBuildingInput,
+) (entities.Building, error) {
+	building, err := m.repo.UpdateBuilding(ctx, id, input)
+	if err != nil {
+		return entities.Building{}, fmt.Errorf("get building: %w", err)
+	}
+	return building, nil
+}
+
+func (m *Map) GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Building, error) {
+	return m.repo.GetBuildingByID(ctx, id)
+}
+
+func (m *Map) CreatePolygon(
+	ctx context.Context,
+	floorID uuid.UUID,
+	label string,
+	zIndex int32,
+) (entities.Polygon, error) {
+	return m.repo.CreatePolygon(ctx, floorID, label, zIndex)
 }
