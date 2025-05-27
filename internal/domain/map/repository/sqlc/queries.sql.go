@@ -173,6 +173,16 @@ func (q *Queries) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const deleteObject = `-- name: DeleteObject :exec
+DELETE FROM objects
+WHERE id = $1::uuid
+`
+
+func (q *Queries) DeleteObject(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteObject, id)
+	return err
+}
+
 const getBuildingByID = `-- name: GetBuildingByID :one
 SELECT 
     b.id, 

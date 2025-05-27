@@ -131,6 +131,20 @@ func (mr *MockMapRepositoryMockRecorder) GetBuildingByID(ctx, id any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBuildingByID", reflect.TypeOf((*MockMapRepository)(nil).GetBuildingByID), ctx, id)
 }
 
+// DeleteObject mocks base method.
+func (m *MockMapRepository) DeleteObject(ctx context.Context, objectID uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteObject", ctx, objectID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteObject indicates an expected call of DeleteObject.
+func (mr *MockMapRepositoryMockRecorder) DeleteObject(ctx, objectID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteObject", reflect.TypeOf((*MockMapRepository)(nil).DeleteObject), ctx, objectID)
+}
+
 // GetBuildings mocks base method.
 func (m *MockMapRepository) GetBuildings(ctx context.Context) ([]entities.Building, error) {
 	m.ctrl.T.Helper()

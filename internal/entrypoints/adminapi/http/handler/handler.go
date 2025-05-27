@@ -19,6 +19,7 @@ type MapService interface {
 		input mapentities.CreateObjectInput,
 	) (mapentities.Object, error)
 	UpdateObject(ctx context.Context, id uuid.UUID, input mapentities.UpdateObjectInput) (mapentities.Object, error)
+	DeleteObject(ctx context.Context, objectID uuid.UUID) error
 	CreateBuilding(ctx context.Context, input mapentities.CreateBuildingInput) (mapentities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 	UpdateBuilding(
@@ -66,6 +67,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 		api.POST("/route/intersections", p.AddIntersection)
 		api.POST("/route/connections", p.AddConnection)
 		api.DELETE("/buildings/:building_id", p.DeleteBuildingHandler)
+		api.DELETE("/buildings/:building_id/objects/:object_id", p.DeleteObjectHandler)
 		api.PATCH("/buildings/:building_id", p.UpdateBuilding)
 		api.POST("/floors/:floor_id/poligons", p.CreatePolygonHandler)
 		api.POST("/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
@@ -92,6 +94,28 @@ func (p *AdminAPI) CreateObjectHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, result)
+}
+
+func (p *AdminAPI) DeleteObjectHandler(c *gin.Context) {
+	objectIDStr := c.Param("object_id")
+	objectID, err := uuid.Parse(objectIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid object_id"})
+		return
+	}
+
+	err = p.mapService.DeleteObject(c.Request.Context(), objectID)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			c.JSON(http.StatusNotFound, gin.H{"error": "object not found"})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
