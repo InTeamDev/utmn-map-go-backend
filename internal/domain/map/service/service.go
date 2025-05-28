@@ -12,6 +12,7 @@ import (
 
 //go:generate mockgen -destination=../repository/mocks/mock_map_repository.go -package=mocks github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service MapRepository
 type MapRepository interface {
+	GetObjectByID(ctx context.Context, objectID uuid.UUID) (entities.Object, error)
 	GetBuildings(ctx context.Context) ([]entities.Building, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
 	GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error)
@@ -93,6 +94,21 @@ func (m *Map) GetObjectTypeByID(ctx context.Context, id int32) (entities.ObjectT
 		return entities.ObjectTypeInfo{}, fmt.Errorf("get object type by id: %w", err)
 	}
 	return objectType, nil
+}
+
+func (m *Map) GetObjectByID(
+	ctx context.Context,
+	objectID uuid.UUID,
+) (entities.Object, error) {
+	object, err := m.repo.GetObjectByID(ctx, objectID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return entities.Object{}, entities.ErrObjectNotFound
+		}
+		return entities.Object{}, fmt.Errorf("get object by id: %w", err)
+	}
+
+	return object, nil
 }
 
 func (m *Map) CreateObject(

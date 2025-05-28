@@ -168,6 +168,51 @@ func (r *Map) GetObjectTypeByID(
 	return r.converter.ObjectTypeSqlcToEntity(dbObjectType), nil
 }
 
+func (r *Map) GetObjectByID(
+	ctx context.Context,
+	objectID uuid.UUID,
+) (entities.Object, error) {
+	// 1. Получаем объект из базы
+	dbObject, err := r.q.GetObjectByID(ctx, objectID)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("get object: %w", err)
+	}
+
+	// 2. Получаем двери для этого объекта
+	// Создаем слайс с одним ID
+	objectIDs := []uuid.UUID{objectID}
+	dbDoors, err := r.q.GetDoorsByObjectIDs(ctx, objectIDs)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("get doors: %w", err)
+	}
+
+	// 3. Конвертируем данные
+	doorsMap := r.converter.DoorsSqlcToEntityMap(dbDoors)
+
+	dbfloor, err := r.q.GetFloorByID(ctx, dbObject.FloorID)
+	if err != nil {
+		return entities.Object{}, fmt.Errorf("get floor: %w", err)
+	}
+
+	// Создаем временный объект нужного типа для конвертера
+	tempObj := sqlc.GetObjectsByBuildingRow{
+		ID:          dbObject.ID,
+		Name:        dbObject.Name,
+		Alias:       dbObject.Alias,
+		Description: dbObject.Description,
+		X:           dbObject.X,
+		Y:           dbObject.Y,
+		Width:       dbObject.Width,
+		Height:      dbObject.Height,
+		ObjectType:  dbObject.ObjectTypeID,
+		FloorID:     dbfloor.ID,
+		FloorName:   dbfloor.Name,
+	}
+
+	// 4. Вызываем конвертер
+	return r.converter.ObjectSqlcToEntity(tempObj, doorsMap[objectID]), nil
+}
+
 func (r *Map) CreateObject(
 	ctx context.Context,
 	floorID uuid.UUID,

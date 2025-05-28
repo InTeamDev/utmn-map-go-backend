@@ -381,6 +381,68 @@ func (q *Queries) GetFloorsByBuilding(ctx context.Context, buildingID uuid.UUID)
 	return items, nil
 }
 
+const getObjectByID = `-- name: GetObjectByID :one
+SELECT 
+    o.id, o.name, o.alias, o.description, o.x, o.y, o.width, o.height, o.object_type_id, o.floor_id, 
+    f.id, f.name, f.alias, f.building_id, 
+    (
+        SELECT json_agg(json_build_object(
+            'id', d.id,
+            'x', d.x,
+            'y', d.y,
+            'width', d.width,
+            'height', d.height
+        ))
+        FROM doors d
+        JOIN object_doors od ON d.id = od.door_id
+        WHERE od.object_id = o.id
+    ) AS doors
+FROM objects o
+JOIN floors f ON o.floor_id = f.id
+WHERE o.id = $1
+`
+
+type GetObjectByIDRow struct {
+	ID           uuid.UUID
+	Name         string
+	Alias        string
+	Description  sql.NullString
+	X            float64
+	Y            float64
+	Width        float64
+	Height       float64
+	ObjectTypeID int32
+	FloorID      uuid.UUID
+	ID_2         uuid.UUID
+	Name_2       string
+	Alias_2      string
+	BuildingID   uuid.UUID
+	Doors        json.RawMessage
+}
+
+func (q *Queries) GetObjectByID(ctx context.Context, id uuid.UUID) (GetObjectByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getObjectByID, id)
+	var i GetObjectByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Alias,
+		&i.Description,
+		&i.X,
+		&i.Y,
+		&i.Width,
+		&i.Height,
+		&i.ObjectTypeID,
+		&i.FloorID,
+		&i.ID_2,
+		&i.Name_2,
+		&i.Alias_2,
+		&i.BuildingID,
+		&i.Doors,
+	)
+	return i, err
+}
+
 const getObjectTypeByID = `-- name: GetObjectTypeByID :one
 SELECT id, name, alias FROM object_types
 WHERE id = $1::int
