@@ -6,7 +6,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	"github.com/gin-gonic/gin"
@@ -84,7 +83,7 @@ func (p *AdminAPI) GetObjectByIDHandler(c *gin.Context) {
 
 	result, err := p.mapService.GetObjectByID(c.Request.Context(), objectID)
 	if err != nil {
-		if errors.Is(err, entities.ErrObjectNotFound) {
+		if errors.Is(err, mapentities.ErrObjectNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
