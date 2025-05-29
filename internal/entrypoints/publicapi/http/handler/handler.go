@@ -10,6 +10,8 @@ import (
 	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 const defaultPageLimit = 30
@@ -37,20 +39,15 @@ func NewPublicAPI(mapService MapService, searchService SearchService) *PublicAPI
 }
 
 func (p *PublicAPI) RegisterRoutes(router *gin.Engine) {
-	// GET получить информацию об объекте (для отображения информации об объекте)
-	// GET получение маршрута
+	// Swagger документация
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := router.Group("/api")
 	{
-		// GET получить все корпуса (просто список корпусов, id;name;address)
 		api.GET("/buildings", p.GetBuildingsHandler)
-		// GET получить все этажи корпуса
 		api.GET("/buildings/:build_id/floors", p.GetFloorsHandler)
-		// GET получить объекты этажа корпуса (для отрисовки объектов на карте)
 		api.GET("/buildings/:build_id/objects", p.GetObjectsByBuildingHandler)
-		// GET поиск объектов
 		api.GET("/buildings/:build_id/search", p.SearchHandler)
-		// GET получить все категории объектов корпуса (для фильтрации объектов на карте)
 		api.GET("/categories", p.GetObjectCategories)
 		api.GET("/buildings/:build_id", p.GetBuildingByIDHandler)
 	}
