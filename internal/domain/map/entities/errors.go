@@ -7,6 +7,7 @@ var (
 	ErrInvalidRequest  = errors.New("invalid request format")
 	ErrInternalServer  = errors.New("internal server error")
 
+	ErrObjectNotFound     = errors.New("object not found")
 	ErrFloorNotFound      = errors.New("floor not found")
 	ErrObjectTypeNotFound = errors.New("object type not found")
 	ErrInvalidDimensions  = errors.New("invalid object dimensions")

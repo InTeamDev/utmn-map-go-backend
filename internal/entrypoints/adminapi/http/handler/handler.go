@@ -13,6 +13,7 @@ import (
 )
 
 type MapService interface {
+	GetObjectByID(ctx context.Context, objectID uuid.UUID) (mapentities.Object, error)
 	CreateObject(
 		ctx context.Context,
 		floorID uuid.UUID,
@@ -61,6 +62,7 @@ func NewAdminAPI(mapService MapService, routeService RouteService) *AdminAPI {
 func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 	api := router.Group("/api")
 	{
+		api.GET("/buildings/:building_id/floors/:floor_id/objects/:object_id", p.GetObjectByIDHandler)
 		api.POST("/buildings/:building_id/floors/:floor_id/objects", p.CreateObjectHandler)
 		api.PATCH("/objects/:object_id", p.UpdateObjectHandler)
 		api.POST("/buildings", p.CreateBuildingHandler)
@@ -72,6 +74,26 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 		api.POST("/floors/:floor_id/poligons", p.CreatePolygonHandler)
 		api.POST("/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
 	}
+}
+
+func (p *AdminAPI) GetObjectByIDHandler(c *gin.Context) {
+	objectID, err := uuid.Parse(c.Param("object_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid object_id"})
+		return
+	}
+
+	result, err := p.mapService.GetObjectByID(c.Request.Context(), objectID)
+	if err != nil {
+		if errors.Is(err, mapentities.ErrObjectNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
 }
 
 func (p *AdminAPI) CreateObjectHandler(c *gin.Context) {

@@ -60,6 +60,26 @@ FROM doors d
 JOIN object_doors od ON d.id = od.door_id
 WHERE od.object_id = ANY(@object_ids::uuid[]);
 
+-- name: GetObjectByID :one
+SELECT 
+    o.*, 
+    f.*, 
+    (
+        SELECT json_agg(json_build_object(
+            'id', d.id,
+            'x', d.x,
+            'y', d.y,
+            'width', d.width,
+            'height', d.height
+        ))
+        FROM doors d
+        JOIN object_doors od ON d.id = od.door_id
+        WHERE od.object_id = o.id
+    ) AS doors
+FROM objects o
+JOIN floors f ON o.floor_id = f.id
+WHERE o.id = $1;
+
 -- name: UpdateObject :one
 UPDATE objects
 SET name = COALESCE(sqlc.narg('name'), name),
