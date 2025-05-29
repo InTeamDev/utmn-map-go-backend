@@ -99,6 +99,10 @@ INSERT INTO objects (
 ) 
 RETURNING *;
 
+-- name: DeleteObject :exec
+DELETE FROM objects
+WHERE id = @id::uuid;
+
 -- name: GetFloorByID :one
 SELECT * FROM floors
 WHERE id = @id::uuid;

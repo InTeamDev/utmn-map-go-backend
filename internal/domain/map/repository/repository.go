@@ -254,6 +254,10 @@ func (r *Map) UpdateObject(
 	return updatedObject, nil
 }
 
+func (r *Map) DeleteObject(ctx context.Context, objectID uuid.UUID) error {
+	return r.q.DeleteObject(ctx, objectID)
+}
+
 func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
 	params := sqlc.CreateBuildingParams{
 		ID:      uuid.New(),

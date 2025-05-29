@@ -24,6 +24,7 @@ type MapRepository interface {
 		input entities.CreateObjectInput,
 	) (entities.Object, error)
 	UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error)
+	DeleteObject(ctx context.Context, objectID uuid.UUID) error
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 	UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error)
@@ -134,6 +135,14 @@ func (m *Map) UpdateObject(
 		return entities.Object{}, fmt.Errorf("update object: %w", err)
 	}
 	return object, nil
+}
+
+func (m *Map) DeleteObject(ctx context.Context, objectID uuid.UUID) error {
+	err := m.repo.DeleteObject(ctx, objectID)
+	if err != nil {
+		return fmt.Errorf("delete object: %w", err)
+	}
+	return nil
 }
 
 func (m *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
