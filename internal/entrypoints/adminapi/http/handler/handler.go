@@ -10,7 +10,14 @@ import (
 	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+type CreatePolygonRequest struct {
+	Label  string `json:"label" binding:"required"`
+	ZIndex int32  `json:"z_index" binding:"required"`
+}
 
 type MapService interface {
 	CreateObject(
@@ -30,16 +37,8 @@ type MapService interface {
 }
 
 type RouteService interface {
-	// GetRoute строит маршрут между точками
-	// (первая точка - начальная, промежуточные, последняя - конечная).
-	// Точки - ID Объектов.
-	// BuildRoute(ctx context.Context, start uuid.UUID, end uuid.UUID, waypoints []uuid.UUID) ([]entities.Edge, error)
-	// Admin. AddIntersection добавляет новый узел в граф.
 	AddIntersection(ctx context.Context, x, y float64) (uuid.UUID, error)
-	// Admin. AddConnection добавляет новое ребро в граф.
 	AddConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (routeentities.Edge, error)
-	// Admin. DeleteNode удаляет узел из графа.
-	// DeleteNode(ctx context.Context, id uuid.UUID) error
 }
 
 type AdminAPI struct {
@@ -52,6 +51,9 @@ func NewAdminAPI(mapService MapService, routeService RouteService) *AdminAPI {
 }
 
 func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
+	// Swagger документация
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	api := router.Group("/api")
 	{
 		api.POST("/buildings/:building_id/floors/:floor_id/objects", p.CreateObjectHandler)
@@ -165,7 +167,7 @@ func (p *AdminAPI) CreateBuildingHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, building)
+	c.JSON(http.StatusCreated, building)
 }
 
 func (p *AdminAPI) AddIntersection(c *gin.Context) {
@@ -236,11 +238,6 @@ func (p *AdminAPI) UpdateBuilding(c *gin.Context) {
 	c.JSON(http.StatusOK, building)
 }
 
-type CreatePolygonRequest struct {
-	Label  string `json:"label"   binding:"required"`
-	ZIndex int32  `json:"z_index"`
-}
-
 func (p *AdminAPI) CreatePolygonHandler(c *gin.Context) {
 	floorID, err := uuid.Parse(c.Param("floor_id"))
 	if err != nil {
@@ -260,5 +257,5 @@ func (p *AdminAPI) CreatePolygonHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, polygon)
+	c.JSON(http.StatusCreated, polygon)
 }

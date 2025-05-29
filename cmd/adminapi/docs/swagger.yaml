@@ -1,0 +1,481 @@
+basePath: /api
+host: localhost:8081
+info:
+  contact: {}
+  description: This is an admin API for UTMN Map management
+  title: Admin API
+  version: "1.0"
+paths:
+  /buildings:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список всех зданий.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить список зданий.
+      tags:
+      - Buildings
+    post:
+      consumes:
+      - application/json
+      description: Создает новое здание.
+      parameters:
+      - description: Данные здания
+        in: body
+        name: input
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: '{'
+          schema:
+            type: object
+        "400":
+          description: '{\"error\": \"invalid JSON\"}'
+          schema:
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            type: object
+      security:
+      - BasicAuth: []
+      summary: Создать здание.
+      tags:
+      - Buildings
+  /buildings/{build_id}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает информацию о здании по его ID.
+      parameters:
+      - description: ID здания
+        in: path
+        name: build_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: '{\"error\": \"invalid build_id\"}'
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: '{\"error\": \"build not found\"}'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить здание по ID.
+      tags:
+      - Buildings
+  /buildings/{build_id}/floors:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список этажей указанного здания.
+      parameters:
+      - description: ID здания
+        in: path
+        name: build_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: '{\"error\": \"invalid build_id\"}'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить этажи здания.
+      tags:
+      - Buildings
+  /buildings/{build_id}/objects:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает все объекты указанного здания.
+      parameters:
+      - description: ID здания
+        in: path
+        name: build_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: '{\"error\": \"invalid build_id\"}'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить объекты здания.
+      tags:
+      - Objects
+  /buildings/{build_id}/search:
+    get:
+      consumes:
+      - application/json
+      description: Поиск объектов по названию и категории.
+      parameters:
+      - description: ID здания
+        in: path
+        name: build_id
+        required: true
+        type: string
+      - description: Поисковый запрос
+        in: query
+        name: query
+        type: string
+      - collectionFormat: multi
+        description: Фильтр по категориям
+        in: query
+        items:
+          type: string
+        name: category
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: '{\"error\": \"invalid building_id\"}'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Поиск объектов.
+      tags:
+      - Search
+  /buildings/{building_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет здание по его ID
+      parameters:
+      - description: ID здания
+        in: path
+        name: building_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BasicAuth: []
+      summary: Удалить здание
+      tags:
+      - Buildings
+    patch:
+      consumes:
+      - application/json
+      description: Обновляет данные здания.
+      parameters:
+      - description: ID здания
+        in: path
+        name: building_id
+        required: true
+        type: string
+      - description: Обновленные данные здания
+        in: body
+        name: input
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{'
+          schema:
+            type: object
+        "400":
+          description: '{\"error\": \"invalid building_id\"}'
+          schema:
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            type: object
+      security:
+      - BasicAuth: []
+      summary: Обновить здание.
+      tags:
+      - Buildings
+  /buildings/{building_id}/floors/{floor_id}/objects:
+    post:
+      consumes:
+      - application/json
+      description: Создает новый объект на указанном этаже здания.
+      parameters:
+      - description: ID здания
+        in: path
+        name: building_id
+        required: true
+        type: string
+      - description: ID этажа
+        in: path
+        name: floor_id
+        required: true
+        type: string
+      - description: Данные объекта
+        in: body
+        name: input
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: '{'
+          schema:
+            type: object
+        "400":
+          description: '{\"error\": \"invalid floor_id\"}'
+          schema:
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            type: object
+      security:
+      - BasicAuth: []
+      summary: Создать объект.
+      tags:
+      - Objects
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список всех категорий объектов.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить категории объектов.
+      tags:
+      - Objects
+  /floors/{floor_id}/poligons:
+    post:
+      consumes:
+      - application/json
+      description: Создает новый полигон на указанном этаже.
+      parameters:
+      - description: ID этажа
+        in: path
+        name: floor_id
+        required: true
+        type: string
+      - description: Данные полигона
+        in: body
+        name: input
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: '{'
+          schema:
+            type: object
+        "400":
+          description: '{\"error\": \"invalid floor_id\"}'
+          schema:
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            type: object
+      security:
+      - BasicAuth: []
+      summary: Создать полигон.
+      tags:
+      - Polygons
+  /objects/{object_id}:
+    patch:
+      consumes:
+      - application/json
+      description: Обновляет данные объекта.
+      parameters:
+      - description: ID объекта
+        in: path
+        name: object_id
+        required: true
+        type: string
+      - description: Обновленные данные объекта
+        in: body
+        name: input
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{'
+          schema:
+            type: object
+        "400":
+          description: '{\"error\": \"invalid object_id\"}'
+          schema:
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            type: object
+      security:
+      - BasicAuth: []
+      summary: Обновить объект.
+      tags:
+      - Objects
+  /route/connections:
+    post:
+      consumes:
+      - application/json
+      description: Добавляет соединение между точками пересечения.
+      parameters:
+      - description: Данные соединения
+        in: body
+        name: input
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: '{'
+          schema:
+            type: object
+        "400":
+          description: '{\"error\": \"invalid JSON\"}'
+          schema:
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            type: object
+      security:
+      - BasicAuth: []
+      summary: Добавить соединение.
+      tags:
+      - Route
+  /route/intersections:
+    post:
+      consumes:
+      - application/json
+      description: Добавляет новую точку пересечения для маршрутизации.
+      parameters:
+      - description: Координаты точки
+        in: body
+        name: input
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: '{'
+          schema:
+            type: object
+        "400":
+          description: '{\"error\": \"x and y must be non-zero\"}'
+          schema:
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            type: object
+      security:
+      - BasicAuth: []
+      summary: Добавить точку пересечения.
+      tags:
+      - Route
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

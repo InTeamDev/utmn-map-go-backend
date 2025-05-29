@@ -1,0 +1,211 @@
+basePath: /api
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a public API for UTMN Map
+  title: Public API
+  version: "1.0"
+paths:
+  /buildings:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список всех зданий
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{\"buildings\": [ { \"id\": \"uuid\", \"name\": \"string\",
+            \"address\": \"string\" } ] }'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить список зданий
+      tags:
+      - Buildings
+  /buildings/{build_id}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает информацию о здании по его ID
+      parameters:
+      - description: ID здания
+        in: path
+        name: build_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{\"id\": \"uuid\", \"name\": \"string\", \"address\": \"string\"}'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: '{\"error\": \"invalid build_id\"}'
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: '{\"error\": \"build not found\"}'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить здание по ID
+      tags:
+      - Buildings
+  /buildings/{build_id}/floors:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список этажей указанного здания
+      parameters:
+      - description: ID здания
+        in: path
+        name: build_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{\"floors\": [ { \"id\": \"uuid\", \"name\": \"string\", \"alias\":
+            \"string\" } ] }'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: '{\"error\": \"invalid build_id\"}'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить этажи здания
+      tags:
+      - Buildings
+  /buildings/{build_id}/objects:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает все объекты указанного здания
+      parameters:
+      - description: ID здания
+        in: path
+        name: build_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{\"objects\": { \"building\": { \"id\": \"uuid\", \"name\":
+            \"string\", \"address\": \"string\" }, \"floors\": [ { \"floor\": { \"id\":
+            \"uuid\", \"name\": \"string\", \"alias\": \"string\" }, \"objects\":
+            [ { \"id\": \"uuid\", \"name\": \"string\", \"alias\": \"string\", \"description\":
+            \"string\", \"x\": 0, \"y\": 0, \"width\": 0, \"height\": 0, \"object_type_id\":
+            0, \"doors\": [ { \"id\": \"uuid\", \"x\": 0, \"y\": 0, \"width\": 0,
+            \"height\": 0, \"floor_id\": \"uuid\" } ], \"floor\": { \"id\": \"uuid\",
+            \"name\": \"string\", \"alias\": \"string\" } } ], \"background\": [ {
+            \"id\": \"uuid\", \"label\": \"string\", \"z_index\": 0, \"points\": [
+            { \"order\": 0, \"x\": 0, \"y\": 0 } ] } ] } ] } }'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: '{\"error\": \"invalid build_id\"}'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить объекты здания
+      tags:
+      - Objects
+  /buildings/{build_id}/search:
+    get:
+      consumes:
+      - application/json
+      description: Поиск объектов по названию и категории
+      parameters:
+      - description: ID здания
+        in: path
+        name: build_id
+        required: true
+        type: string
+      - description: Поисковый запрос
+        in: query
+        name: query
+        type: string
+      - collectionFormat: multi
+        description: Фильтр по категориям
+        in: query
+        items:
+          type: string
+        name: category
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{\"results\": [ { \"id\": \"uuid\", \"name\": \"string\",
+            \"alias\": \"string\", \"description\": \"string\", \"object_type\": \"string\",
+            \"floor\": { \"id\": \"uuid\", \"name\": \"string\", \"alias\": \"string\"
+            }, \"building\": { \"id\": \"uuid\", \"name\": \"string\", \"address\":
+            \"string\" } } ] }'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: '{\"error\": \"invalid building_id\"}'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Поиск объектов
+      tags:
+      - Search
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список всех категорий объектов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{\"categories\": [ { \"id\": 0, \"name\": \"string\", \"alias\":
+            \"string\" } ] }'
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: '{\"error\": \"internal server error\"}'
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить категории объектов
+      tags:
+      - Objects
+swagger: "2.0"

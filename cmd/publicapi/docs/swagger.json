@@ -1,0 +1,286 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a public API for UTMN Map",
+        "title": "Public API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api",
+    "paths": {
+        "/buildings": {
+            "get": {
+                "description": "Возвращает список всех зданий",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Buildings"
+                ],
+                "summary": "Получить список зданий",
+                "responses": {
+                    "200": {
+                        "description": "{\\\"buildings\\\": [ { \\\"id\\\": \\\"uuid\\\", \\\"name\\\": \\\"string\\\", \\\"address\\\": \\\"string\\\" } ] }",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "{\\\"error\\\": \\\"internal server error\\\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/buildings/{build_id}": {
+            "get": {
+                "description": "Возвращает информацию о здании по его ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Buildings"
+                ],
+                "summary": "Получить здание по ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID здания",
+                        "name": "build_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\\\"id\\\": \\\"uuid\\\", \\\"name\\\": \\\"string\\\", \\\"address\\\": \\\"string\\\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "{\\\"error\\\": \\\"invalid build_id\\\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "{\\\"error\\\": \\\"build not found\\\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "{\\\"error\\\": \\\"internal server error\\\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/buildings/{build_id}/floors": {
+            "get": {
+                "description": "Возвращает список этажей указанного здания",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Buildings"
+                ],
+                "summary": "Получить этажи здания",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID здания",
+                        "name": "build_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\\\"floors\\\": [ { \\\"id\\\": \\\"uuid\\\", \\\"name\\\": \\\"string\\\", \\\"alias\\\": \\\"string\\\" } ] }",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "{\\\"error\\\": \\\"invalid build_id\\\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "{\\\"error\\\": \\\"internal server error\\\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/buildings/{build_id}/objects": {
+            "get": {
+                "description": "Возвращает все объекты указанного здания",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Objects"
+                ],
+                "summary": "Получить объекты здания",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID здания",
+                        "name": "build_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\\\"objects\\\": { \\\"building\\\": { \\\"id\\\": \\\"uuid\\\", \\\"name\\\": \\\"string\\\", \\\"address\\\": \\\"string\\\" }, \\\"floors\\\": [ { \\\"floor\\\": { \\\"id\\\": \\\"uuid\\\", \\\"name\\\": \\\"string\\\", \\\"alias\\\": \\\"string\\\" }, \\\"objects\\\": [ { \\\"id\\\": \\\"uuid\\\", \\\"name\\\": \\\"string\\\", \\\"alias\\\": \\\"string\\\", \\\"description\\\": \\\"string\\\", \\\"x\\\": 0, \\\"y\\\": 0, \\\"width\\\": 0, \\\"height\\\": 0, \\\"object_type_id\\\": 0, \\\"doors\\\": [ { \\\"id\\\": \\\"uuid\\\", \\\"x\\\": 0, \\\"y\\\": 0, \\\"width\\\": 0, \\\"height\\\": 0, \\\"floor_id\\\": \\\"uuid\\\" } ], \\\"floor\\\": { \\\"id\\\": \\\"uuid\\\", \\\"name\\\": \\\"string\\\", \\\"alias\\\": \\\"string\\\" } } ], \\\"background\\\": [ { \\\"id\\\": \\\"uuid\\\", \\\"label\\\": \\\"string\\\", \\\"z_index\\\": 0, \\\"points\\\": [ { \\\"order\\\": 0, \\\"x\\\": 0, \\\"y\\\": 0 } ] } ] } ] } }",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "{\\\"error\\\": \\\"invalid build_id\\\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "{\\\"error\\\": \\\"internal server error\\\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/buildings/{build_id}/search": {
+            "get": {
+                "description": "Поиск объектов по названию и категории",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "summary": "Поиск объектов",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID здания",
+                        "name": "build_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Поисковый запрос",
+                        "name": "query",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "Фильтр по категориям",
+                        "name": "category",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\\\"results\\\": [ { \\\"id\\\": \\\"uuid\\\", \\\"name\\\": \\\"string\\\", \\\"alias\\\": \\\"string\\\", \\\"description\\\": \\\"string\\\", \\\"object_type\\\": \\\"string\\\", \\\"floor\\\": { \\\"id\\\": \\\"uuid\\\", \\\"name\\\": \\\"string\\\", \\\"alias\\\": \\\"string\\\" }, \\\"building\\\": { \\\"id\\\": \\\"uuid\\\", \\\"name\\\": \\\"string\\\", \\\"address\\\": \\\"string\\\" } } ] }",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "{\\\"error\\\": \\\"invalid building_id\\\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "{\\\"error\\\": \\\"internal server error\\\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/categories": {
+            "get": {
+                "description": "Возвращает список всех категорий объектов",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Objects"
+                ],
+                "summary": "Получить категории объектов",
+                "responses": {
+                    "200": {
+                        "description": "{\\\"categories\\\": [ { \\\"id\\\": 0, \\\"name\\\": \\\"string\\\", \\\"alias\\\": \\\"string\\\" } ] }",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "{\\\"error\\\": \\\"internal server error\\\"}",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

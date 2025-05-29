@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 
+	_ "github.com/InTeamDev/utmn-map-go-backend/cmd/adminapi/docs" // Импорт сгенерированной документации
 	"github.com/InTeamDev/utmn-map-go-backend/internal/entrypoints/adminapi/app"
 )
 
