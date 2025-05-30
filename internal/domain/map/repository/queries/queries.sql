@@ -178,3 +178,11 @@ RETURNING id, floor_id, label, z_index;
 INSERT INTO floor_polygon_points (polygon_id, point_order, x, y)
 VALUES (@polygon_id::uuid, @point_order, @x, @y)
 RETURNING id, polygon_id, point_order, x, y;
+
+-- name: DeletePolygonPoint :exec
+DELETE FROM floor_polygon_points
+WHERE id = @id::uuid;
+
+-- name: DeletePolygonPoints :exec
+DELETE FROM floor_polygon_points
+WHERE id = ANY(@ids::uuid[]);

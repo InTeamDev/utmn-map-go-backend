@@ -35,6 +35,8 @@ type MapService interface {
 		order int32,
 		x, y float64,
 	) (mapentities.PolygonPoint, error)
+	DeletePolygonPoint(ctx context.Context, id uuid.UUID) error
+	DeletePolygonPoints(ctx context.Context, ids []uuid.UUID) error
 }
 
 type RouteService interface {
@@ -73,6 +75,8 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 		api.PATCH("/buildings/:building_id", p.UpdateBuilding)
 		api.POST("/floors/:floor_id/poligons", p.CreatePolygonHandler)
 		api.POST("/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
+		api.DELETE("/floors/:floor_id/poligons/:polygon_id/points/:point_id", p.DeletePolygonPointHandler)
+		api.DELETE("/floors/:floor_id/poligons/:polygon_id/points", p.DeletePolygonPointsHandler)
 	}
 }
 
@@ -340,4 +344,38 @@ func (p *AdminAPI) CreatePolygonPointsHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, result)
+}
+
+func (p *AdminAPI) DeletePolygonPointHandler(c *gin.Context) {
+	pointID, err := uuid.Parse(c.Param("point_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid point_id"})
+		return
+	}
+
+	if err := p.mapService.DeletePolygonPoint(c.Request.Context(), pointID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+type DeletePointsRequest struct {
+	Points []uuid.UUID `json:"points" binding:"required"`
+}
+
+func (p *AdminAPI) DeletePolygonPointsHandler(c *gin.Context) {
+	var req DeletePointsRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := p.mapService.DeletePolygonPoints(c.Request.Context(), req.Points); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }

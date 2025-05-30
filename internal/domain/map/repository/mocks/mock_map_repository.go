@@ -116,6 +116,34 @@ func (mr *MockMapRepositoryMockRecorder) DeleteBuilding(ctx, id any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteBuilding", reflect.TypeOf((*MockMapRepository)(nil).DeleteBuilding), ctx, id)
 }
 
+// DeletePolygonPoint mocks base method.
+func (m *MockMapRepository) DeletePolygonPoint(ctx context.Context, id uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePolygonPoint", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePolygonPoint indicates an expected call of DeletePolygonPoint.
+func (mr *MockMapRepositoryMockRecorder) DeletePolygonPoint(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePolygonPoint", reflect.TypeOf((*MockMapRepository)(nil).DeletePolygonPoint), ctx, id)
+}
+
+// DeletePolygonPoints mocks base method.
+func (m *MockMapRepository) DeletePolygonPoints(ctx context.Context, ids []uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePolygonPoints", ctx, ids)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePolygonPoints indicates an expected call of DeletePolygonPoints.
+func (mr *MockMapRepositoryMockRecorder) DeletePolygonPoints(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePolygonPoints", reflect.TypeOf((*MockMapRepository)(nil).DeletePolygonPoints), ctx, ids)
+}
+
 // GetBuildingByID mocks base method.
 func (m *MockMapRepository) GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Building, error) {
 	m.ctrl.T.Helper()

@@ -429,3 +429,11 @@ func (r *Map) CreatePolygonPoint(
 		Y:         point.Y,
 	}, nil
 }
+
+func (r *Map) DeletePolygonPoint(ctx context.Context, id uuid.UUID) error {
+	return r.q.DeletePolygonPoint(ctx, id)
+}
+
+func (r *Map) DeletePolygonPoints(ctx context.Context, ids []uuid.UUID) error {
+	return r.q.DeletePolygonPoints(ctx, ids)
+}
