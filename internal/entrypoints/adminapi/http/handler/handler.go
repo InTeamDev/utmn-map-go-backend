@@ -360,13 +360,8 @@ func (p *AdminAPI) DeletePolygonPointHandler(c *gin.Context) {
 
 	c.Status(http.StatusNoContent)
 }
-
-type DeletePointsRequest struct {
-	Points []uuid.UUID `json:"points" binding:"required"`
-}
-
 func (p *AdminAPI) DeletePolygonPointsHandler(c *gin.Context) {
-	var req DeletePointsRequest
+	var req mapentities.DeletePointsRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

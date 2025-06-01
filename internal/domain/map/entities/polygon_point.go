@@ -15,3 +15,7 @@ type PolygonPointRequest struct {
 	X          float64 `json:"x"`
 	Y          float64 `json:"y"`
 }
+
+type DeletePointsRequest struct {
+	Points []uuid.UUID `json:"points" binding:"required"`
+}
