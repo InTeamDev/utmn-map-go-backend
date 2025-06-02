@@ -60,7 +60,8 @@ func runApp(ctx context.Context, configPath string) error {
 	mapConverter := maprepository.NewMapConverter()
 	mapRepository := maprepository.NewMap(db, mapConverter)
 	mapService := mapservice.NewMap(mapRepository)
-	routeRepository := routerepository.NewRoute(db)
+	routeConverter := routerepository.NewRouteConverter()
+	routeRepository := routerepository.NewRoute(db, routeConverter)
 	routeService := routeservice.NewRoute(routeRepository)
 
 	metrics := middleware.NewMetrics()

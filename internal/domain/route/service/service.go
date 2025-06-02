@@ -11,6 +11,7 @@ import (
 type RouteRepository interface {
 	CreateConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (entities.Edge, error)
 	CreateIntersection(ctx context.Context, x, y float64) (entities.Node, error)
+	GetConnections(ctx context.Context, buildingID uuid.UUID) ([]entities.Connection, error)
 }
 
 type RouteService struct {
@@ -41,4 +42,12 @@ func (r *RouteService) AddConnection(
 		return entities.Edge{}, fmt.Errorf("create connection %w", err)
 	}
 	return entities.Edge{FromID: conn.FromID, ToID: conn.ToID, Weight: conn.Weight}, nil
+}
+
+func (r *RouteService) GetConnections(ctx context.Context, buildingID uuid.UUID) ([]entities.Connection, error) {
+	connections, err := r.repo.GetConnections(ctx, buildingID)
+	if err != nil {
+		return nil, fmt.Errorf("get connections for building %s: %w", buildingID, err)
+	}
+	return connections, nil
 }
