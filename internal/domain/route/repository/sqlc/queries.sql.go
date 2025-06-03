@@ -59,3 +59,37 @@ func (q *Queries) CreateIntersection(ctx context.Context, arg CreateIntersection
 	)
 	return i, err
 }
+
+const getConnections = `-- name: GetConnections :many
+SELECT c.from_id, c.to_id, c.weight 
+FROM connections c
+WHERE EXISTS (
+    SELECT 1 FROM intersections i
+    JOIN floors f ON i.floor_id = f.id
+    WHERE (i.id = c.from_id OR i.id = c.to_id)
+    AND f.building_id = $1
+)
+`
+
+func (q *Queries) GetConnections(ctx context.Context, buildingID uuid.UUID) ([]Connection, error) {
+	rows, err := q.db.QueryContext(ctx, getConnections, buildingID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Connection
+	for rows.Next() {
+		var i Connection
+		if err := rows.Scan(&i.FromID, &i.ToID, &i.Weight); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

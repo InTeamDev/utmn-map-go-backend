@@ -48,6 +48,7 @@ type RouteService interface {
 	AddConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (routeentities.Edge, error)
 	// Admin. DeleteNode удаляет узел из графа.
 	// DeleteNode(ctx context.Context, id uuid.UUID) error
+	GetConnections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Connection, error)
 }
 
 type AdminAPI struct {
@@ -68,6 +69,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 		api.POST("/buildings", p.CreateBuildingHandler)
 		api.POST("/route/intersections", p.AddIntersection)
 		api.POST("/route/connections", p.AddConnection)
+		api.GET("/buildings/:building_id/connections", p.GetConnectionsHandler)
 		api.DELETE("/buildings/:building_id", p.DeleteBuildingHandler)
 		api.DELETE("/buildings/:building_id/objects/:object_id", p.DeleteObjectHandler)
 		api.PATCH("/buildings/:building_id", p.UpdateBuilding)
@@ -267,6 +269,22 @@ func (p *AdminAPI) AddConnection(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, result)
+}
+
+func (p *AdminAPI) GetConnectionsHandler(c *gin.Context) {
+	buildingID, err := uuid.Parse(c.Param("building_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	connections, err := p.routeService.GetConnections(c.Request.Context(), buildingID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"connections": connections})
 }
 
 func (p *AdminAPI) UpdateBuilding(c *gin.Context) {

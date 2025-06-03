@@ -9,13 +9,19 @@ import (
 	"github.com/google/uuid"
 )
 
-type RouteRepository struct {
-	q *sqlc.Queries
+type RouteConverter interface {
+	ConnectionSqlcToEntity(i sqlc.Connection) entities.Connection
 }
 
-func NewRoute(db *sql.DB) *RouteRepository {
+type RouteRepository struct {
+	q         *sqlc.Queries
+	converter *RouteConverterImpl
+}
+
+func NewRoute(db *sql.DB, converter RouteConverter) *RouteRepository {
 	return &RouteRepository{
-		q: sqlc.New(db),
+		q:         sqlc.New(db),
+		converter: NewRouteConverter(),
 	}
 }
 
@@ -57,4 +63,13 @@ func (r *RouteRepository) CreateIntersection(ctx context.Context, x, y float64) 
 		Type: entities.NodeTypeIntersection,
 	}
 	return node, nil
+}
+
+func (r *RouteRepository) GetConnections(ctx context.Context, buildingID uuid.UUID) ([]entities.Connection, error) {
+	sqlcConnections, err := r.q.GetConnections(ctx, buildingID)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.converter.ConnectionsSqlcToEntity(sqlcConnections), nil
 }
