@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 
@@ -82,11 +82,15 @@ func registerCommands(bot *telebot.Bot, cfg *config.Bot) {
 		if cfg.Backend.URL == "" {
 			return c.Send("Backend URL not configured")
 		}
-		payload := map[string]string{
-			"tg_id":       strconv.FormatInt(c.Sender().ID, 10),
+		payload := map[string]any{
+			"tg_id":       c.Sender().ID,
 			"tg_username": "@" + c.Sender().Username,
 		}
-		data, _ := json.Marshal(payload)
+		data, err := json.Marshal(payload)
+		if err != nil {
+			slog.Error("failed to marshal registration data", "error", err, "payload", payload)
+			return c.Send("failed to prepare registration data")
+		}
 		req, err := http.NewRequest("POST", cfg.Backend.URL+"/api/auth/save_tg_user", bytes.NewReader(data))
 		if err != nil {
 			return c.Send("request error")

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -45,7 +46,8 @@ func (a *AuthAPI) SaveUser(c *gin.Context) {
 		TGUsername string `json:"tg_username"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil || req.TGUsername == "" {
-		c.Status(http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		slog.Error("Failed to bind request", "error", err)
 		return
 	}
 	if err := a.svc.RegisterUser(req.TGID, req.TGUsername); err != nil {

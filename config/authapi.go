@@ -13,11 +13,11 @@ type AuthAPI struct {
 		Port int    `yaml:"port"`
 	} `yaml:"server"`
 	JWTSecret string `yaml:"jwt_secret"`
-	Bot       struct {
+	BotClient struct {
 		URL         string `yaml:"url"`
 		ClientID    string `yaml:"client_id"`
 		AccessToken string `yaml:"access_token"`
-	} `yaml:"bot"`
+	} `yaml:"bot_client"`
 	Auth struct {
 		ClientID    string `yaml:"client_id"`
 		AccessToken string `yaml:"access_token"`

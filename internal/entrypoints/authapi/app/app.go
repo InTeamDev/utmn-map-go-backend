@@ -68,7 +68,7 @@ func runApp(ctx context.Context, configPath string) error {
 	}
 
 	repo := repository.NewInMemory()
-	bot := &BotClient{url: cfg.Bot.URL, clientID: cfg.Bot.ClientID, token: cfg.Bot.AccessToken}
+	bot := &BotClient{url: cfg.BotClient.URL, clientID: cfg.BotClient.ClientID, token: cfg.BotClient.AccessToken}
 	svc := authservice.New(repo, bot, []byte(cfg.JWTSecret))
 
 	r := gin.Default()

@@ -19,7 +19,7 @@ type Bot struct {
 		URL         string `yaml:"url"`
 		ClientID    string `yaml:"client_id"`
 		AccessToken string `yaml:"access_token"`
-	} `yaml:"backend"`
+	} `yaml:"authapi_client"`
 	Auth struct {
 		ClientID    string `yaml:"client_id"`
 		AccessToken string `yaml:"access_token"`
