@@ -30,9 +30,18 @@ func (rc *RouteConverterImpl) ConnectionSqlcToEntity(i sqlc.Connection) entities
 	}
 }
 
-func (rc *RouteConverterImpl) IntersectionsSqlcToEntity(intersections []sqlc.Intersection) []entities.Intersection {
+func (rc *RouteConverterImpl) IntersectionsSqlcToEntity(
+	intersections []sqlc.GetIntersectionsRow,
+) []entities.Intersection {
 	result := make([]entities.Intersection, 0, len(intersections))
 	for _, intersection := range intersections {
+		intersection := sqlc.Intersection{
+			ID:      intersection.ID,
+			X:       intersection.X,
+			Y:       intersection.Y,
+			FloorID: intersection.FloorID,
+		}
+
 		result = append(result, rc.IntersectionSqlcToEntity(intersection))
 	}
 	return result

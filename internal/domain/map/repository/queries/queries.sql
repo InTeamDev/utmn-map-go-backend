@@ -22,6 +22,22 @@ SELECT
 FROM floors f 
 WHERE f.building_id = @building_id::uuid;
 
+-- name: GetDoorsByBuilding :many
+SELECT
+    d.id,
+    d.x,
+    d.y,
+    d.width,
+    d.height,
+    b.id AS building_id,
+    o.id AS object_id
+FROM doors d
+JOIN object_doors od ON d.id = od.door_id
+JOIN objects o ON o.id = od.object_id
+JOIN floors f ON f.id = o.floor_id
+JOIN buildings b ON f.building_id = b.id
+WHERE b.id = @building_id::uuid;
+
 -- name: GetObjectTypes :many
 SELECT DISTINCT ot.*
 FROM object_types ot

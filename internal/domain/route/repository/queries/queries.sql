@@ -29,3 +29,15 @@ WHERE EXISTS (
     WHERE (i.id = c.from_id OR i.id = c.to_id)
     AND f.building_id = $1
 );
+
+-- name: GetIntersections :many
+SELECT 
+    i.id,
+    i.x,
+    i.y,
+    f.id AS floor_id,
+    b.id AS building_id
+FROM intersections i
+JOIN floors f ON i.floor_id = f.id
+JOIN buildings b ON f.building_id = b.id
+WHERE b.id = @building_id::uuid;

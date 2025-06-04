@@ -28,6 +28,7 @@ type MapService interface {
 		id uuid.UUID,
 		input mapentities.UpdateBuildingInput,
 	) (mapentities.Building, error)
+	GetDoors(ctx context.Context, buildID uuid.UUID) ([]mapentities.GetDoorsResponse, error)
 	CreatePolygon(ctx context.Context, floorID uuid.UUID, label string, zIndex int32) (mapentities.Polygon, error)
 	CreatePolygonPoint(
 		ctx context.Context,
@@ -44,6 +45,7 @@ type RouteService interface {
 	// BuildRoute(ctx context.Context, start uuid.UUID, end uuid.UUID, waypoints []uuid.UUID) ([]entities.Edge, error)
 	// Admin. AddIntersection добавляет новый узел в граф.
 	AddIntersection(ctx context.Context, x, y float64, floorID uuid.UUID) (uuid.UUID, error)
+	GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Intersection, error)
 	// Admin. AddConnection добавляет новое ребро в граф.
 	AddConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (routeentities.Edge, error)
 	// Admin. DeleteNode удаляет узел из графа.
@@ -69,6 +71,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 		api.PATCH("/objects/:object_id", p.UpdateObjectHandler)
 		api.POST("/buildings", p.CreateBuildingHandler)
 		api.POST("/route/intersections", p.AddIntersection)
+		api.GET("/buildings/:building_id/intersections", p.GetIntersectionsHandler)
 		api.POST("/route/connections", p.AddConnection)
 		api.GET("/buildings/:building_id/connections", p.GetConnectionsHandler)
 		api.DELETE("/buildings/:building_id", p.DeleteBuildingHandler)
@@ -77,6 +80,8 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 		api.POST("/floors/:floor_id/poligons", p.CreatePolygonHandler)
 		api.POST("/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
 		api.DELETE("/buildings/:building_id/intersections/:intersection_id", p.DeleteIntersectionHandler)
+		api.GET("/buildings/:building_id/doors", p.GetDoorsHandler)
+		api.GET("/buildings/:building_id/graph/nodes", p.GetNodesHandler)
 	}
 }
 
@@ -390,4 +395,81 @@ func (p *AdminAPI) CreatePolygonPointsHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, result)
+}
+
+func (p *AdminAPI) GetIntersectionsHandler(c *gin.Context) {
+	buildIDStr := c.Param("building_id")
+	buildID, err := uuid.Parse(buildIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	intersections, err := p.routeService.GetIntersections(c.Request.Context(), buildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"intersections": intersections})
+}
+
+func (p *AdminAPI) GetDoorsHandler(c *gin.Context) {
+	buildIDStr := c.Param("building_id")
+	buildID, err := uuid.Parse(buildIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	doors, err := p.mapService.GetDoors(c.Request.Context(), buildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"doors": doors})
+}
+
+func (p *AdminAPI) GetNodesHandler(c *gin.Context) {
+	buildIDStr := c.Param("building_id")
+	buildID, err := uuid.Parse(buildIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	intersections, err := p.routeService.GetIntersections(c.Request.Context(), buildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	doors, err := p.mapService.GetDoors(c.Request.Context(), buildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	nodes := make([]routeentities.Node, 0, len(intersections)+len(doors))
+	for _, node := range doors {
+		node := routeentities.Node{
+			ID:   node.ID,
+			Type: routeentities.NodeTypeDoor,
+			X:    node.X,
+			Y:    node.Y,
+		}
+		nodes = append(nodes, node)
+	}
+	for _, node := range intersections {
+		node := routeentities.Node{
+			ID:   node.ID,
+			Type: routeentities.NodeTypeIntersection,
+			X:    node.X,
+			Y:    node.Y,
+		}
+		nodes = append(nodes, node)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"nodes": nodes})
 }

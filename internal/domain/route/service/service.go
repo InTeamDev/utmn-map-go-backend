@@ -14,6 +14,7 @@ type RouteRepository interface {
 	CreateIntersection(ctx context.Context, x, y float64, floorID uuid.UUID) (entities.Node, error)
 	GetConnections(ctx context.Context, buildingID uuid.UUID) ([]entities.Connection, error)
 	DeleteIntersection(ctx context.Context, buildingID uuid.UUID, id uuid.UUID) error
+	GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]entities.Intersection, error)
 }
 
 type RouteService struct {
@@ -32,6 +33,14 @@ func (r *RouteService) AddIntersection(ctx context.Context, x, y float64, floorI
 		return uuid.Nil, fmt.Errorf("create intersection in (%f;%f): %w", x, y, err)
 	}
 	return node.ID, nil
+}
+
+func (r *RouteService) GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]entities.Intersection, error) {
+	intersections, err := r.repo.GetIntersections(ctx, buildingID)
+	if err != nil {
+		return []entities.Intersection{}, fmt.Errorf("get intersection: %w", err)
+	}
+	return intersections, nil
 }
 
 func (r *RouteService) AddConnection(
