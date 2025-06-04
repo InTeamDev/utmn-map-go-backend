@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
@@ -73,7 +74,10 @@ func (s *Service) SendCode(username string) (time.Time, error) {
 	expires := time.Now().Add(5 * time.Minute)
 	s.repo.SaveCode(username, code, expires)
 	if s.bot != nil {
-		_ = s.bot.SendMessage(user.TGID, fmt.Sprintf("Ваш код: %s", code))
+		err = s.bot.SendMessage(user.TGID, fmt.Sprintf("Ваш код: %s", code))
+		if err != nil {
+			slog.Warn("failed to send code via bot", "username", username, "error", err)
+		}
 	}
 	return expires, nil
 }
@@ -112,11 +116,18 @@ func (s *Service) RefreshToken(refreshToken string) (string, string, error) {
 	if err != nil {
 		return "", "", ErrUnauthorized
 	}
-	rt, ok := s.repo.GetRefreshToken(payload["jti"].(string))
+	jti, ok := payload["jti"].(string)
+	if !ok {
+		return "", "", errors.New("invalid token payload: missing jti")
+	}
+	rt, ok := s.repo.GetRefreshToken(jti)
 	if !ok || rt.Revoked || rt.ExpiresAt.Before(time.Now()) {
 		return "", "", ErrUnauthorized
 	}
-	userID := payload["sub"].(string)
+	userID, ok := payload["sub"].(string)
+	if !ok {
+		return "", "", errors.New("invalid token payload: missing sub")
+	}
 	access, newRefresh, err := s.generateTokens(userID, nil)
 	if err != nil {
 		return "", "", err
@@ -191,7 +202,10 @@ func (s *Service) generateTokens(userID string, roles []string) (string, string,
 
 func (s *Service) sign(payload map[string]interface{}) (string, error) {
 	header := base64.RawURLEncoding.EncodeToString([]byte(`{"alg":"HS256","typ":"JWT"}`))
-	bodyBytes, _ := json.Marshal(payload)
+	bodyBytes, err := json.Marshal(payload)
+	if err != nil {
+		return "", fmt.Errorf("marshal payload: %w", err)
+	}
 	payloadEnc := base64.RawURLEncoding.EncodeToString(bodyBytes)
 	signingInput := fmt.Sprintf("%s.%s", header, payloadEnc)
 	mac := hmac.New(sha256.New, s.jwtSecret)
@@ -242,6 +256,9 @@ func split(s string, sep byte) []string {
 }
 
 func mustDecode(s string) []byte {
-	b, _ := base64.RawURLEncoding.DecodeString(s)
+	b, err := base64.RawURLEncoding.DecodeString(s)
+	if err != nil {
+		slog.Error("failed to decode base64", "error", err)
+	}
 	return b
 }

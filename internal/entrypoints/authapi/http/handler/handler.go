@@ -127,13 +127,28 @@ func (a *AuthAPI) Refresh(c *gin.Context) {
 }
 
 func (a *AuthAPI) Logout(c *gin.Context) {
-	cookie, _ := c.Request.Cookie("refresh_token")
+	cookie, err := c.Request.Cookie("refresh_token")
+	if err != nil {
+		if errors.Is(err, http.ErrNoCookie) {
+			c.Status(http.StatusBadRequest)
+			return
+		}
+		c.Status(http.StatusInternalServerError)
+		return
+	}
 	token := strings.TrimPrefix(c.GetHeader("Authorization"), "Bearer ")
 	rt := ""
 	if cookie != nil {
 		rt = cookie.Value
 		http.SetCookie(c.Writer, &http.Cookie{Name: "refresh_token", Value: "", Expires: time.Unix(0, 0), Path: "/"})
 	}
-	a.svc.Logout(token, rt)
+	if err := a.svc.Logout(token, rt); err != nil {
+		if errors.Is(err, authservice.ErrUnauthorized) {
+			c.Status(http.StatusUnauthorized)
+			return
+		}
+		c.Status(http.StatusInternalServerError)
+		return
+	}
 	c.Status(http.StatusNoContent)
 }
