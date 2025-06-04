@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"fmt"
 
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/repository/sqlc"
@@ -46,11 +48,16 @@ func (r *RouteRepository) CreateConnection(
 	return edge, nil
 }
 
-func (r *RouteRepository) CreateIntersection(ctx context.Context, x, y float64) (entities.Node, error) {
+func (r *RouteRepository) CreateIntersection(
+	ctx context.Context,
+	x, y float64,
+	floorID uuid.UUID,
+) (entities.Node, error) {
 	intersection, err := r.q.CreateIntersection(ctx, sqlc.CreateIntersectionParams{
-		ID: uuid.New(),
-		X:  x,
-		Y:  y,
+		ID:      uuid.New(),
+		X:       x,
+		Y:       y,
+		FloorID: floorID,
 	})
 	if err != nil {
 		return entities.Node{}, err
@@ -72,4 +79,25 @@ func (r *RouteRepository) GetConnections(ctx context.Context, buildingID uuid.UU
 	}
 
 	return r.converter.ConnectionsSqlcToEntity(sqlcConnections), nil
+}
+
+func (r *RouteRepository) DeleteIntersection(ctx context.Context, buildingID uuid.UUID, id uuid.UUID) error {
+	err := r.q.DeleteIntersectionConnections(ctx, id)
+	if err != nil {
+		return fmt.Errorf("delete related connections: %w", err)
+	}
+
+	params := sqlc.DeleteIntersectionParams{
+		IntersectionID: id,
+		BuildingID:     buildingID,
+	}
+	err = r.q.DeleteIntersection(ctx, params)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return errors.New("intersection not found")
+		}
+		return fmt.Errorf("delete intersection: %w", err)
+	}
+
+	return nil
 }

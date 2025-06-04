@@ -60,6 +60,35 @@ func (q *Queries) CreateIntersection(ctx context.Context, arg CreateIntersection
 	return i, err
 }
 
+const deleteIntersection = `-- name: DeleteIntersection :exec
+DELETE FROM intersections i
+USING floors f, buildings b
+WHERE i.id = $1
+  AND i.floor_id = f.id
+  AND f.building_id = b.id
+  AND b.id = $2
+`
+
+type DeleteIntersectionParams struct {
+	IntersectionID uuid.UUID
+	BuildingID     uuid.UUID
+}
+
+func (q *Queries) DeleteIntersection(ctx context.Context, arg DeleteIntersectionParams) error {
+	_, err := q.db.ExecContext(ctx, deleteIntersection, arg.IntersectionID, arg.BuildingID)
+	return err
+}
+
+const deleteIntersectionConnections = `-- name: DeleteIntersectionConnections :exec
+DELETE FROM connections
+WHERE from_id = $1 OR to_id = $1
+`
+
+func (q *Queries) DeleteIntersectionConnections(ctx context.Context, intersectionID uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteIntersectionConnections, intersectionID)
+	return err
+}
+
 const getConnections = `-- name: GetConnections :many
 SELECT c.from_id, c.to_id, c.weight 
 FROM connections c

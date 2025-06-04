@@ -3,5 +3,8 @@ package entities
 import "github.com/google/uuid"
 
 type AddIntersectionResponse struct {
-	ID uuid.UUID `json:"id"`
+	ID      uuid.UUID `json:"id"`
+	X       float64   `json:"x"`
+	Y       float64   `json:"y"`
+	FloorID uuid.UUID `json:"floor_id"`
 }
