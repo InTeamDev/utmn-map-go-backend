@@ -63,8 +63,8 @@ func NewAdminAPI(mapService MapService, routeService RouteService) *AdminAPI {
 	return &AdminAPI{mapService: mapService, routeService: routeService}
 }
 
-func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
-	api := router.Group("/api")
+func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
+	api := router.Group("/api", m...)
 	{
 		api.GET("/buildings/:building_id/floors/:floor_id/objects/:object_id", p.GetObjectByIDHandler)
 		api.POST("/buildings/:building_id/floors/:floor_id/objects", p.CreateObjectHandler)

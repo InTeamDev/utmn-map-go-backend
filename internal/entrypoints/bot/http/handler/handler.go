@@ -26,10 +26,10 @@ func (h *BotHandler) SendMessage(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
-	_, err := h.bot.Send(&telebot.User{ID: req.TelegramUserID}, req.Message)
-	if err := err; err != nil {
+	if _, err := h.bot.Send(&telebot.User{ID: req.TelegramUserID}, req.Message); err != nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "telegram send failed"})
 		return
 	}
+	c.Status(http.StatusOK)
 	c.Status(http.StatusOK)
 }

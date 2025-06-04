@@ -15,6 +15,7 @@ type AdminAPI struct {
 	Database struct {
 		DSN string `yaml:"dsn"`
 	} `yaml:"database"`
+	JWTSecret string `yaml:"jwt_secret"`
 }
 
 func LoadAdminAPI(path string) (*AdminAPI, error) {
@@ -36,6 +37,9 @@ func LoadAdminAPI(path string) (*AdminAPI, error) {
 	}
 	if cfg.Database.DSN == "" {
 		return nil, errors.New("database.dsn is required")
+	}
+	if cfg.JWTSecret == "" {
+		return nil, errors.New("jwt_secret is required")
 	}
 
 	return &cfg, nil
