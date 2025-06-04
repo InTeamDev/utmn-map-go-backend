@@ -1,0 +1,12 @@
+server:
+  host: "0.0.0.0"
+  port: 8090
+bot:
+  token: "7714980744:AAGlFHd5yfVUD-aAQ90fK3cuZCXlKL8WLSo"
+authapi_client:
+  url: "http://localhost:8001"
+  client_id: "service"
+  access_token: "secret"
+auth:
+  client_id: "service"
+  access_token: "secret"

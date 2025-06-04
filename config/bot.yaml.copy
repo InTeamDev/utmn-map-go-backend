@@ -1,0 +1,12 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+bot:
+  token: "your-telegram-token"
+backend:
+  url: "http://localhost:8000"
+  client_id: "service"
+  access_token: "secret"
+auth:
+  client_id: "service"
+  access_token: "secret"
