@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"errors"
+
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/auth/entities"
 	"github.com/google/uuid"
 )
@@ -37,7 +38,14 @@ func (r *InMemory) CreateUser(tgID int64, username string) (entities.User, error
 	if _, ok := r.tgIndex[tgID]; ok {
 		return entities.User{}, ErrUserExists
 	}
-	user := entities.User{ID: uuid.NewString(), TGID: tgID, Username: username, Roles: []string{"user"}, CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	user := entities.User{
+		ID:        uuid.NewString(),
+		TGID:      tgID,
+		Username:  username,
+		Roles:     []string{"user"},
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 	r.users[username] = user
 	r.tgIndex[tgID] = username
 	return user, nil

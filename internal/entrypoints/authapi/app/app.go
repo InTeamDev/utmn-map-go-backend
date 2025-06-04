@@ -74,6 +74,10 @@ func runApp(ctx context.Context, configPath string) error {
 	api := handler.NewAuthAPI(svc, repo, []byte(cfg.JWTSecret), cfg.Auth.ClientID, cfg.Auth.AccessToken)
 	api.RegisterRoutes(r)
 
-	srv := &http.Server{Addr: fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port), Handler: r, ReadHeaderTimeout: readHeaderTimeout}
+	srv := &http.Server{
+		Addr:              fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),
+		Handler:           r,
+		ReadHeaderTimeout: readHeaderTimeout,
+	}
 	return server.StartServer(ctx, srv)
 }

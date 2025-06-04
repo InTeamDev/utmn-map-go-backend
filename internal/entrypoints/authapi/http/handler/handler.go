@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 	"time"
@@ -19,7 +20,12 @@ type AuthAPI struct {
 	basicToken string
 }
 
-func NewAuthAPI(svc *authservice.Service, repo *repository.InMemory, secret []byte, basicID, basicToken string) *AuthAPI {
+func NewAuthAPI(
+	svc *authservice.Service,
+	repo *repository.InMemory,
+	secret []byte,
+	basicID, basicToken string,
+) *AuthAPI {
 	return &AuthAPI{svc: svc, repo: repo, secret: secret, basicID: basicID, basicToken: basicToken}
 }
 
@@ -42,7 +48,7 @@ func (a *AuthAPI) SaveUser(c *gin.Context) {
 		return
 	}
 	if err := a.svc.RegisterUser(req.TGID, req.TGUsername); err != nil {
-		if err == authservice.ErrConflict {
+		if errors.Is(err, authservice.ErrNotFound) {
 			c.Status(http.StatusConflict)
 			return
 		}
