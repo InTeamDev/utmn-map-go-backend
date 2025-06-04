@@ -8,6 +8,18 @@ INSERT INTO intersections (id, x, y, floor_id)
 VALUES (@id, @x, @y, @floor_id)
 RETURNING *;
 
+-- name: DeleteIntersectionConnections :exec
+DELETE FROM connections
+WHERE from_id = @intersection_id OR to_id = @intersection_id;
+
+-- name: DeleteIntersection :exec
+DELETE FROM intersections i
+USING floors f, buildings b
+WHERE i.id = @intersection_id
+  AND i.floor_id = f.id
+  AND f.building_id = b.id
+  AND b.id = @building_id;
+
 -- name: GetConnections :many
 SELECT c.from_id, c.to_id, c.weight 
 FROM connections c

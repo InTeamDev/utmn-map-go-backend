@@ -58,25 +58,39 @@ func (mr *MockRouteRepositoryMockRecorder) CreateConnection(ctx, fromID, toID, w
 }
 
 // CreateIntersection mocks base method.
-func (m *MockRouteRepository) CreateIntersection(ctx context.Context, x, y float64) (entities.Node, error) {
+func (m *MockRouteRepository) CreateIntersection(ctx context.Context, x, y float64, floorID uuid.UUID) (entities.Node, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateIntersection", ctx, x, y)
+	ret := m.ctrl.Call(m, "CreateIntersection", ctx, x, y, floorID)
 	ret0, _ := ret[0].(entities.Node)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateIntersection indicates an expected call of CreateIntersection.
-func (mr *MockRouteRepositoryMockRecorder) CreateIntersection(ctx, x, y any) *gomock.Call {
+func (mr *MockRouteRepositoryMockRecorder) CreateIntersection(ctx, x, y, floorID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateIntersection", reflect.TypeOf((*MockRouteRepository)(nil).CreateIntersection), ctx, x, y)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateIntersection", reflect.TypeOf((*MockRouteRepository)(nil).CreateIntersection), ctx, x, y, floorID)
+}
+
+// DeleteIntersection mocks base method.
+func (m *MockRouteRepository) DeleteIntersection(ctx context.Context, buildingID, id uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteIntersection", ctx, buildingID, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteIntersection indicates an expected call of DeleteIntersection.
+func (mr *MockRouteRepositoryMockRecorder) DeleteIntersection(ctx, buildingID, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteIntersection", reflect.TypeOf((*MockRouteRepository)(nil).DeleteIntersection), ctx, buildingID, id)
 }
 
 // GetConnections mocks base method.
-func (m *MockRouteRepository) GetConnections(ctx context.Context, buildingID uuid.UUID) ([]entities.Edge, error) {
+func (m *MockRouteRepository) GetConnections(ctx context.Context, buildingID uuid.UUID) ([]entities.Connection, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetConnections", ctx, buildingID)
-	ret0, _ := ret[0].([]entities.Edge)
+	ret0, _ := ret[0].([]entities.Connection)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

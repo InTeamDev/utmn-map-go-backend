@@ -43,12 +43,13 @@ type RouteService interface {
 	// Точки - ID Объектов.
 	// BuildRoute(ctx context.Context, start uuid.UUID, end uuid.UUID, waypoints []uuid.UUID) ([]entities.Edge, error)
 	// Admin. AddIntersection добавляет новый узел в граф.
-	AddIntersection(ctx context.Context, x, y float64) (uuid.UUID, error)
+	AddIntersection(ctx context.Context, x, y float64, floorID uuid.UUID) (uuid.UUID, error)
 	// Admin. AddConnection добавляет новое ребро в граф.
 	AddConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (routeentities.Edge, error)
 	// Admin. DeleteNode удаляет узел из графа.
 	// DeleteNode(ctx context.Context, id uuid.UUID) error
 	GetConnections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Connection, error)
+	DeleteIntersection(ctx context.Context, buildingID uuid.UUID, intersectionID uuid.UUID) error
 }
 
 type AdminAPI struct {
@@ -75,6 +76,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
 		api.PATCH("/buildings/:building_id", p.UpdateBuilding)
 		api.POST("/floors/:floor_id/poligons", p.CreatePolygonHandler)
 		api.POST("/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
+		api.DELETE("/buildings/:building_id/intersections/:intersection_id", p.DeleteIntersectionHandler)
 	}
 }
 
@@ -225,8 +227,9 @@ func (p *AdminAPI) CreateBuildingHandler(c *gin.Context) {
 
 func (p *AdminAPI) AddIntersection(c *gin.Context) {
 	var input struct {
-		X *float64 `json:"x"`
-		Y *float64 `json:"y"`
+		X       *float64   `json:"x"`
+		Y       *float64   `json:"y"`
+		FloorID *uuid.UUID `json:"floor_id"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -239,15 +242,44 @@ func (p *AdminAPI) AddIntersection(c *gin.Context) {
 		return
 	}
 
-	nodeID, err := p.routeService.AddIntersection(c.Request.Context(), *input.X, *input.Y)
+	nodeID, err := p.routeService.AddIntersection(c.Request.Context(), *input.X, *input.Y, *input.FloorID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusCreated, routeentities.AddIntersectionResponse{
-		ID: nodeID,
+		ID:      nodeID,
+		X:       *input.X,
+		Y:       *input.Y,
+		FloorID: *input.FloorID,
 	})
+}
+
+func (p *AdminAPI) DeleteIntersectionHandler(c *gin.Context) {
+	buildingID, err := uuid.Parse(c.Param("building_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	intersectionID, err := uuid.Parse(c.Param("intersection_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid intersection_id"})
+		return
+	}
+
+	err = p.routeService.DeleteIntersection(c.Request.Context(), buildingID, intersectionID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "intersection not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func (p *AdminAPI) AddConnection(c *gin.Context) {
