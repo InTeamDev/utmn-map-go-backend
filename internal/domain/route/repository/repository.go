@@ -13,6 +13,8 @@ import (
 
 type RouteConverter interface {
 	ConnectionSqlcToEntity(i sqlc.Connection) entities.Connection
+	IntersectionSqlcToEntity(intersection sqlc.Intersection) entities.Intersection
+	IntersectionsSqlcToEntity(intersections []sqlc.GetIntersectionsRow) []entities.Intersection
 }
 
 type RouteRepository struct {
@@ -100,4 +102,13 @@ func (r *RouteRepository) DeleteIntersection(ctx context.Context, buildingID uui
 	}
 
 	return nil
+}
+
+func (r *RouteRepository) GetIntersections(ctx context.Context, buildID uuid.UUID) ([]entities.Intersection, error) {
+	intersections, err := r.q.GetIntersections(ctx, buildID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get intersections by building: %w", err)
+	}
+
+	return r.converter.IntersectionsSqlcToEntity(intersections), nil
 }

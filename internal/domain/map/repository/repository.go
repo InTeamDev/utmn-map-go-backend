@@ -10,12 +10,14 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate mockgen -destination=mocks/mock_map_converter.go -package=mocks -source=repository.go MapConverter
 type MapConverter interface {
 	ObjectsSqlcToEntityByBuilding(
 		objects []sqlc.GetObjectsByBuildingRow,
 		doors map[uuid.UUID][]entities.Door,
 	) []entities.Object
 	ObjectSqlcToEntity(object sqlc.GetObjectsByBuildingRow, doors []entities.Door) entities.Object
+	GetDoorsSqlcToEntity(doors []sqlc.GetDoorsByBuildingRow) []entities.GetDoorsResponse
 	DoorsSqlcToEntityMap(doors []sqlc.GetDoorsByObjectIDsRow) map[uuid.UUID][]entities.Door
 	FloorSqlcToEntity(f sqlc.Floor) entities.Floor
 	FloorsSqlcToEntity(floors []sqlc.Floor) []entities.Floor
@@ -52,6 +54,17 @@ func (r *Map) GetFloors(ctx context.Context, buildingID uuid.UUID) ([]entities.F
 		return nil, fmt.Errorf("failed to get floors: %w", err)
 	}
 	return r.converter.FloorsSqlcToEntity(floors), nil
+}
+
+func (r *Map) GetDoors(ctx context.Context, buildingID uuid.UUID) ([]entities.GetDoorsResponse, error) {
+	rowDoors, err := r.q.GetDoorsByBuilding(ctx, buildingID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get doors: %w", err)
+	}
+
+	doors := r.converter.GetDoorsSqlcToEntity(rowDoors)
+
+	return doors, nil
 }
 
 func (r *Map) GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error) {

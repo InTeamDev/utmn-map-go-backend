@@ -89,6 +89,56 @@ func (q *Queries) DeleteIntersectionConnections(ctx context.Context, intersectio
 	return err
 }
 
+const getIntersections = `-- name: GetIntersections :many
+SELECT 
+    i.id,
+    i.x,
+    i.y,
+    f.id AS floor_id,
+    b.id AS building_id
+FROM intersections i
+JOIN floors f ON i.floor_id = f.id
+JOIN buildings b ON f.building_id = b.id
+WHERE b.id = $1::uuid
+`
+
+type GetIntersectionsRow struct {
+	ID         uuid.UUID
+	X          float64
+	Y          float64
+	FloorID    uuid.UUID
+	BuildingID uuid.UUID
+}
+
+func (q *Queries) GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]GetIntersectionsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getIntersections, buildingID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetIntersectionsRow
+	for rows.Next() {
+		var i GetIntersectionsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.X,
+			&i.Y,
+			&i.FloorID,
+			&i.BuildingID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getConnections = `-- name: GetConnections :many
 SELECT c.from_id, c.to_id, c.weight 
 FROM connections c

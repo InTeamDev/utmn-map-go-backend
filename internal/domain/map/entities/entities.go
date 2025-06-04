@@ -13,6 +13,15 @@ type GetObjectsResponse struct {
 	Floors   []FloorWithData `json:"floors"`   // Данные по каждому этажу.
 }
 
+type GetDoorsResponse struct {
+	ID       uuid.UUID `json:"id"`
+	X        float64   `json:"x"`
+	Y        float64   `json:"y"`
+	Width    float64   `json:"width"`
+	Height   float64   `json:"height"`
+	ObjectID uuid.UUID `json:"object_id"`
+}
+
 // Данные по этажу, включая информацию об этаже, объекты и фон.
 type FloorWithData struct {
 	Floor      Floor                    `json:"floor"`
