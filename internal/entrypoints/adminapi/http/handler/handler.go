@@ -348,7 +348,7 @@ func (p *AdminAPI) CreatePolygonPointsHandler(c *gin.Context) {
 }
 
 func (p *AdminAPI) DeletePolygonPointHandler(c *gin.Context) {
-	pointID, err := strconv.Atoi(c.Param("point_id")) // ✅ парсим как int
+	pointID, err := strconv.Atoi(c.Param("point_
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid point_id"})
 		return
