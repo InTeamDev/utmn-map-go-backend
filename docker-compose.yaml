@@ -12,10 +12,20 @@ services:
     volumes:
       - pg_go_utmn_map_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U utmn_user" ]
+      test: [ "CMD-SHELL", "pg_isready -U utmn_user -d utmn_map" ]
       interval: 10s
       timeout: 5s
       retries: 5
+    command:
+      - "postgres"
+      - "-c"
+      - "log_statement=all"
+      - "-c"
+      - "log_error_verbosity=verbose"
+      - "-c"
+      - "log_connections=on"
+      - "-c"
+      - "log_disconnections=on"
 
   prometheus:
     image: prom/prometheus
@@ -43,7 +53,9 @@ services:
     image: utmn-map-go-backend/publicapi:latest
     ports:
       - "8000:8000"
-    entrypoint: [ "./publicapi", "--config", "config.yaml" ]
+    volumes:
+      - ./config/publicapi.docker.yaml:/app/config.yaml:ro
+    entrypoint: ["./publicapi", "--config", "config.yaml"]
     restart: unless-stopped
     depends_on:
       postgres:
@@ -58,7 +70,43 @@ services:
     image: utmn-map-go-backend/adminapi:latest
     ports:
       - "8001:8001"
-    entrypoint: [ "./adminapi", "--config", "config.yaml" ]
+    volumes:
+      - ./config/adminapi.docker.yaml:/app/config.yaml:ro
+    entrypoint: ["./adminapi", "--config", "config.yaml"]
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  authapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: authapi
+    image: utmn-map-go-backend/authapi:latest
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./config/authapi.docker.yaml:/app/config.yaml:ro
+    entrypoint: [ "./authapi", "--config", "config.yaml" ]
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: bot
+    image: utmn-map-go-backend/bot:latest
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./config/bot.docker.yaml:/app/config.yaml:ro
+    entrypoint: ["./bot", "--config", "config.yaml"]
     restart: unless-stopped
     depends_on:
       postgres:

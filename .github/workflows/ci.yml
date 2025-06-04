@@ -31,5 +31,7 @@ jobs:
 
       - name: Build test Docker images
         run: |
-          docker build --build-arg SERVICE=publicapi -t publicapi:ci .
-          docker build --build-arg SERVICE=adminapi  -t adminapi:ci .
+          docker build --build-arg SERVICE=publicapi  -t publicapi:ci .
+          docker build --build-arg SERVICE=adminapi   -t adminapi:ci .
+          docker build --build-arg SERVICE=bot        -t bot:ci .
+          docker build --build-arg SERVICE=authapi    -t authapi:ci .

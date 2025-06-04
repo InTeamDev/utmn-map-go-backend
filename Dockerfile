@@ -18,6 +18,4 @@ ARG SERVICE
 
 COPY --from=builder /app/bin/${SERVICE} ./
 
-COPY config/${SERVICE}.docker.yaml ./config.yaml
-
-ENTRYPOINT ["./adminapi", "--config", "config.yaml"]
+ENTRYPOINT ["sh", "-c", "./${SERVICE} --config ${SERVICE}.yaml"]

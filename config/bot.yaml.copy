@@ -1,10 +1,10 @@
 server:
   host: "0.0.0.0"
-  port: 8080
+  port: 8003
 bot:
   token: "your-telegram-token"
 authapi_client:
-  url: "http://localhost:8001"
+  url: "http://localhost:8002"
   client_id: "service"
   access_token: "secret"
 auth:
