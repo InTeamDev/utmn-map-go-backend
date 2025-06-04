@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+// Init initializes a PostgreSQL database connection using the provided DSN.
 func Init(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {

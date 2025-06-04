@@ -5,12 +5,13 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
-	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository/mocks"
-	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+
+	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
+	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository/mocks"
+	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service"
 )
 
 type MapServiceTestSuite struct {

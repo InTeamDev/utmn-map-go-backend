@@ -1,8 +1,9 @@
 package cache
 
 import (
-	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/google/uuid"
+
+	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 )
 
 type InMemoryMapCache struct {

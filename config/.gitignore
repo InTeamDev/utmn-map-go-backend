@@ -1,2 +1,8 @@
 publicapi.yaml
 adminapi.yaml
+authapi.yaml
+bot.yaml
+publicapi.docker.yaml
+adminapi.docker.yaml
+authapi.docker.yaml
+bot.docker.yaml

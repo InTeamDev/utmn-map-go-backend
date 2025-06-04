@@ -21,16 +21,17 @@ jobs:
 
       - name: Install golangci-lint
         run: |
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
-            | sh -s -- -b "$(go env GOPATH)/bin" v1.64.8
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.1.6
 
       - name: Run linters
-        run: golangci-lint run --out-format=colored-line-number
+        run: golangci-lint run -v
 
       - name: Run tests
         run: go test ./... -v
 
       - name: Build test Docker images
         run: |
-          docker build --build-arg SERVICE=publicapi -t publicapi:ci .
-          docker build --build-arg SERVICE=adminapi  -t adminapi:ci .
+          docker build --build-arg SERVICE=publicapi  -t publicapi:ci .
+          docker build --build-arg SERVICE=adminapi   -t adminapi:ci .
+          docker build --build-arg SERVICE=bot        -t bot:ci .
+          docker build --build-arg SERVICE=authapi    -t authapi:ci .

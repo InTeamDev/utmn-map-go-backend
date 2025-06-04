@@ -6,10 +6,11 @@ import (
 	"errors"
 	"net/http"
 
-	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
-	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
+	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
 )
 
 const defaultPageLimit = 30

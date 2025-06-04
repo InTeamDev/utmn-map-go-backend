@@ -5,15 +5,16 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	"github.com/google/uuid"
+
+	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 )
 
 type RouteRepository interface {
 	CreateConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (entities.Edge, error)
 	CreateIntersection(ctx context.Context, x, y float64, floorID uuid.UUID) (entities.Node, error)
 	GetConnections(ctx context.Context, buildingID uuid.UUID) ([]entities.Connection, error)
-	DeleteIntersection(ctx context.Context, buildingID uuid.UUID, id uuid.UUID) error
+	DeleteIntersection(ctx context.Context, buildingID, id uuid.UUID) error
 	GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]entities.Intersection, error)
 }
 
@@ -63,7 +64,7 @@ func (r *RouteService) GetConnections(ctx context.Context, buildingID uuid.UUID)
 	return connections, nil
 }
 
-func (r *RouteService) DeleteIntersection(ctx context.Context, buildingID uuid.UUID, id uuid.UUID) error {
+func (r *RouteService) DeleteIntersection(ctx context.Context, buildingID, id uuid.UUID) error {
 	err := r.repo.DeleteIntersection(ctx, buildingID, id)
 	if err != nil {
 		if err.Error() == "intersection not found" {

@@ -7,24 +7,32 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type AdminAPI struct {
+type Bot struct {
 	Server struct {
 		Host string `yaml:"host"`
 		Port int    `yaml:"port"`
 	} `yaml:"server"`
-	Database struct {
-		DSN string `yaml:"dsn"`
-	} `yaml:"database"`
-	JWTSecret string `yaml:"jwt_secret"`
+	Bot struct {
+		Token string `yaml:"token"`
+	} `yaml:"bot"`
+	Backend struct {
+		URL         string `yaml:"url"`
+		ClientID    string `yaml:"client_id"`
+		AccessToken string `yaml:"access_token"`
+	} `yaml:"authapi_client"`
+	Auth struct {
+		ClientID    string `yaml:"client_id"`
+		AccessToken string `yaml:"access_token"`
+	} `yaml:"auth"`
 }
 
-func LoadAdminAPI(path string) (*AdminAPI, error) {
+func LoadBot(path string) (*Bot, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var cfg AdminAPI
+	var cfg Bot
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
 		return nil, err
 	}
@@ -35,12 +43,8 @@ func LoadAdminAPI(path string) (*AdminAPI, error) {
 	if cfg.Server.Port == 0 {
 		return nil, errors.New("server.port is required")
 	}
-	if cfg.Database.DSN == "" {
-		return nil, errors.New("database.dsn is required")
+	if cfg.Bot.Token == "" {
+		return nil, errors.New("bot.token is required")
 	}
-	if cfg.JWTSecret == "" {
-		return nil, errors.New("jwt_secret is required")
-	}
-
 	return &cfg, nil
 }

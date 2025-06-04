@@ -6,10 +6,11 @@ import (
 	"errors"
 	"net/http"
 
-	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
-	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
+	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 )
 
 type MapService interface {
@@ -51,7 +52,7 @@ type RouteService interface {
 	// Admin. DeleteNode удаляет узел из графа.
 	// DeleteNode(ctx context.Context, id uuid.UUID) error
 	GetConnections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Connection, error)
-	DeleteIntersection(ctx context.Context, buildingID uuid.UUID, intersectionID uuid.UUID) error
+	DeleteIntersection(ctx context.Context, buildingID, intersectionID uuid.UUID) error
 }
 
 type AdminAPI struct {
@@ -63,8 +64,8 @@ func NewAdminAPI(mapService MapService, routeService RouteService) *AdminAPI {
 	return &AdminAPI{mapService: mapService, routeService: routeService}
 }
 
-func (p *AdminAPI) RegisterRoutes(router *gin.Engine) {
-	api := router.Group("/api")
+func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
+	api := router.Group("/api", m...)
 	{
 		api.GET("/buildings/:building_id/floors/:floor_id/objects/:object_id", p.GetObjectByIDHandler)
 		api.POST("/buildings/:building_id/floors/:floor_id/objects", p.CreateObjectHandler)
