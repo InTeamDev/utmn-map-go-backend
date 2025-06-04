@@ -31,12 +31,14 @@ type MapConverter interface {
 
 type Map struct {
 	q         *sqlc.Queries
+	db        *sql.DB
 	converter MapConverter
 }
 
 func NewMap(db *sql.DB, converter MapConverter) *Map {
 	return &Map{
 		q:         sqlc.New(db),
+		db:        db,
 		converter: converter,
 	}
 }
@@ -232,7 +234,7 @@ func (r *Map) CreateObject(
 	floorID uuid.UUID,
 	input entities.CreateObjectInput,
 ) (entities.Object, error) {
-	objectID := uuid.New()
+	objectID := input.ID
 
 	params := sqlc.CreateObjectParams{
 		ID:           objectID,
@@ -338,6 +340,15 @@ func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingI
 	return result, nil
 }
 
+func (r *Map) CreateBuildingWithID(ctx context.Context, building entities.Building) error {
+	query := `INSERT INTO buildings (id, name, address) VALUES ($1,$2,$3)`
+	_, err := r.db.ExecContext(ctx, query, building.ID, building.Name, building.Address)
+	if err != nil {
+		return fmt.Errorf("create building: %w", err)
+	}
+	return nil
+}
+
 func (r *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
 	return r.q.DeleteBuilding(ctx, id)
 }
@@ -420,6 +431,15 @@ func (r *Map) CreatePolygon(
 	}, nil
 }
 
+func (r *Map) CreatePolygonWithID(ctx context.Context, polygon entities.Polygon) error {
+	query := `INSERT INTO floor_polygons (id, floor_id, label, z_index) VALUES ($1,$2,$3,$4)`
+	_, err := r.db.ExecContext(ctx, query, polygon.ID, polygon.FloorID, polygon.Label, polygon.ZIndex)
+	if err != nil {
+		return fmt.Errorf("create polygon: %w", err)
+	}
+	return nil
+}
+
 func (r *Map) CreatePolygonPoint(
 	ctx context.Context,
 	polygonID uuid.UUID,
@@ -436,10 +456,27 @@ func (r *Map) CreatePolygonPoint(
 		return entities.PolygonPoint{}, fmt.Errorf("create polygon point: %w", err)
 	}
 	return entities.PolygonPoint{
-		ID:        point.ID,
 		PolygonID: point.PolygonID,
 		Order:     point.PointOrder,
 		X:         point.X,
 		Y:         point.Y,
 	}, nil
+}
+
+func (r *Map) CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entities.Floor) error {
+	query := `INSERT INTO floors (id, name, alias, building_id) VALUES ($1,$2,$3,$4)`
+	_, err := r.db.ExecContext(ctx, query, floor.ID, floor.Name, floor.Alias, buildingID)
+	if err != nil {
+		return fmt.Errorf("create floor: %w", err)
+	}
+	return nil
+}
+
+func (r *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error {
+	query := `INSERT INTO doors (id, x, y, width, height, object_id) VALUES ($1,$2,$3,$4,$5,$6)`
+	_, err := r.db.ExecContext(ctx, query, door.ID, door.X, door.Y, door.Width, door.Height, objectID)
+	if err != nil {
+		return fmt.Errorf("create door: %w", err)
+	}
+	return nil
 }

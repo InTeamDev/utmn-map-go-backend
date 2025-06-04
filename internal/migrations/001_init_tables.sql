@@ -51,21 +51,12 @@ CREATE TABLE doors (
     y FLOAT NOT NULL,
     width FLOAT NOT NULL,
     height FLOAT NOT NULL,
-    floor_id UUID NOT NULL,
-    FOREIGN KEY (floor_id) REFERENCES floors(id) ON DELETE CASCADE
-);
-
-CREATE TABLE object_doors (
     object_id UUID NOT NULL,
-    door_id UUID NOT NULL,
-    PRIMARY KEY (object_id, door_id),
-    FOREIGN KEY (object_id) REFERENCES objects(id) ON DELETE CASCADE,
-    FOREIGN KEY (door_id) REFERENCES doors(id) ON DELETE CASCADE
+    FOREIGN KEY (object_id) REFERENCES objects(id) ON DELETE CASCADE
 );
 
 ---- create above / drop below ----
 
-DROP TABLE object_doors;
 DROP TABLE doors;
 DROP TABLE objects;
 DELETE FROM object_types;

@@ -32,8 +32,7 @@ SELECT
     b.id AS building_id,
     o.id AS object_id
 FROM doors d
-JOIN object_doors od ON d.id = od.door_id
-JOIN objects o ON o.id = od.object_id
+JOIN objects o ON d.object_id = o.id
 JOIN floors f ON f.id = o.floor_id
 JOIN buildings b ON f.building_id = b.id
 WHERE b.id = @building_id::uuid;
@@ -70,11 +69,10 @@ SELECT
     d.x, 
     d.y, 
     d.width, 
-    d.height, 
-    od.object_id
+    d.height,
+    d.object_id
 FROM doors d
-JOIN object_doors od ON d.id = od.door_id
-WHERE od.object_id = ANY(@object_ids::uuid[]);
+WHERE d.object_id = ANY(@object_ids::uuid[]);
 
 -- name: GetObjectByID :one
 SELECT 
@@ -89,8 +87,7 @@ SELECT
             'height', d.height
         ))
         FROM doors d
-        JOIN object_doors od ON d.id = od.door_id
-        WHERE od.object_id = o.id
+        WHERE d.object_id = o.id
     ) AS doors
 FROM objects o
 JOIN floors f ON o.floor_id = f.id

@@ -135,7 +135,7 @@ func (q *Queries) CreatePolygon(ctx context.Context, arg CreatePolygonParams) (F
 const createPolygonPoint = `-- name: CreatePolygonPoint :one
 INSERT INTO floor_polygon_points (polygon_id, point_order, x, y)
 VALUES ($1::uuid, $2, $3, $4)
-RETURNING id, polygon_id, point_order, x, y
+RETURNING polygon_id, point_order, x, y
 `
 
 type CreatePolygonPointParams struct {
@@ -154,7 +154,6 @@ func (q *Queries) CreatePolygonPoint(ctx context.Context, arg CreatePolygonPoint
 	)
 	var i FloorPolygonPoint
 	err := row.Scan(
-		&i.ID,
 		&i.PolygonID,
 		&i.PointOrder,
 		&i.X,
@@ -238,10 +237,9 @@ SELECT
     d.width,
     d.height,
     b.id AS building_id,
-    o.id AS object_id
+    d.object_id
 FROM doors d
-JOIN object_doors od ON d.id = od.door_id
-JOIN objects o ON o.id = od.object_id
+JOIN objects o ON d.object_id = o.id
 JOIN floors f ON f.id = o.floor_id
 JOIN buildings b ON f.building_id = b.id
 WHERE b.id = $1::uuid
@@ -289,16 +287,15 @@ func (q *Queries) GetDoorsByBuilding(ctx context.Context, buildingID uuid.UUID) 
 }
 
 const getDoorsByObjectIDs = `-- name: GetDoorsByObjectIDs :many
-SELECT 
-    d.id, 
-    d.x, 
-    d.y, 
-    d.width, 
-    d.height, 
-    od.object_id
+SELECT
+    d.id,
+    d.x,
+    d.y,
+    d.width,
+    d.height,
+    d.object_id
 FROM doors d
-JOIN object_doors od ON d.id = od.door_id
-WHERE od.object_id = ANY($1::uuid[])
+WHERE d.object_id = ANY($1::uuid[])
 `
 
 type GetDoorsByObjectIDsRow struct {
@@ -462,8 +459,7 @@ SELECT
             'height', d.height
         ))
         FROM doors d
-        JOIN object_doors od ON d.id = od.door_id
-        WHERE od.object_id = o.id
+        WHERE d.object_id = o.id
     ) AS doors
 FROM objects o
 JOIN floors f ON o.floor_id = f.id

@@ -30,6 +30,13 @@ type MapService interface {
 		input mapentities.UpdateBuildingInput,
 	) (mapentities.Building, error)
 	GetDoors(ctx context.Context, buildID uuid.UUID) ([]mapentities.GetDoorsResponse, error)
+	GetObjectCategories(ctx context.Context) ([]mapentities.ObjectTypeInfo, error)
+	GetBuildings(ctx context.Context) ([]mapentities.Building, error)
+	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentities.GetObjectsResponse, error)
+	CreateBuildingWithID(ctx context.Context, b mapentities.Building) error
+	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor mapentities.Floor) error
+	CreateDoor(ctx context.Context, objectID uuid.UUID, door mapentities.Door) error
+	CreatePolygonWithID(ctx context.Context, polygon mapentities.Polygon) error
 	CreatePolygon(ctx context.Context, floorID uuid.UUID, label string, zIndex int32) (mapentities.Polygon, error)
 	CreatePolygonPoint(
 		ctx context.Context,
@@ -83,6 +90,8 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 		api.DELETE("/buildings/:building_id/intersections/:intersection_id", p.DeleteIntersectionHandler)
 		api.GET("/buildings/:building_id/doors", p.GetDoorsHandler)
 		api.GET("/buildings/:building_id/graph/nodes", p.GetNodesHandler)
+		api.POST("/sync", p.SyncDatabaseHandler)
+		api.GET("/sync", p.GetDatabaseHandler)
 	}
 }
 
@@ -473,4 +482,159 @@ func (p *AdminAPI) GetNodesHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"nodes": nodes})
+}
+
+func (p *AdminAPI) SyncDatabaseHandler(c *gin.Context) {
+	var data mapentities.SyncAllData
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+	// iterate over buildings
+	for _, b := range data.Buildings {
+		if err := p.mapService.CreateBuildingWithID(ctx, mapentities.Building{ID: b.ID, Name: b.Name, Address: b.Address}); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		for _, f := range b.Floors {
+			if err := p.mapService.CreateFloor(ctx, b.ID, mapentities.Floor{ID: f.ID, Name: f.Name, Alias: f.Alias}); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			// objects
+			for _, obj := range f.Objects {
+				input := mapentities.CreateObjectInput{
+					ID:           obj.ID,
+					Name:         obj.Name,
+					Alias:        obj.Alias,
+					Description:  obj.Description,
+					X:            obj.X,
+					Y:            obj.Y,
+					Width:        obj.Width,
+					Height:       obj.Height,
+					ObjectTypeID: obj.ObjectTypeID,
+				}
+				created, err := p.mapService.CreateObject(ctx, f.ID, input)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
+				for _, d := range obj.Doors {
+					if err := p.mapService.CreateDoor(ctx, created.ID, d); err != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+						return
+					}
+				}
+			}
+			// polygons
+			for _, poly := range f.FloorPolygons {
+				if err := p.mapService.CreatePolygonWithID(ctx, mapentities.Polygon{ID: poly.ID, FloorID: f.ID, Label: poly.Label, ZIndex: poly.ZIndex}); err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
+				for _, pt := range poly.Points {
+					if _, err := p.mapService.CreatePolygonPoint(ctx, poly.ID, pt.Order, pt.X, pt.Y); err != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+						return
+					}
+				}
+			}
+			// intersections
+			for _, in := range f.Intersections {
+				if _, err := p.routeService.AddIntersection(ctx, in.X, in.Y, f.ID); err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
+			}
+			for _, conn := range f.Connections {
+				if _, err := p.routeService.AddConnection(ctx, conn.FromID, conn.ToID, conn.Weight); err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
+			}
+		}
+	}
+
+	c.Status(http.StatusCreated)
+}
+
+func (p *AdminAPI) GetDatabaseHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+	var result mapentities.SyncAllData
+
+	types, err := p.mapService.GetObjectCategories(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	for _, t := range types {
+		result.ObjectTypes = append(result.ObjectTypes, mapentities.ObjectType(t.Name))
+	}
+
+	buildings, err := p.mapService.GetBuildings(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	for _, b := range buildings {
+		bSync := mapentities.SyncBuildings{ID: b.ID, Name: b.Name, Address: b.Address}
+
+		objResp, err := p.mapService.GetObjectsResponse(ctx, b.ID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		for _, fl := range objResp.Floors {
+			fSync := mapentities.SyncFloors{
+				ID:         fl.Floor.ID,
+				Name:       fl.Floor.Name,
+				Alias:      fl.Floor.Alias,
+				BuildingID: b.ID,
+				Objects:    fl.Objects,
+			}
+			// gather doors per floor
+			for _, obj := range fl.Objects {
+				fSync.Doors = append(fSync.Doors, obj.Doors...)
+			}
+			// polygons
+			for _, bg := range fl.Background {
+				var pts []mapentities.PolygonPoint
+				for _, bp := range bg.Points {
+					pts = append(pts, mapentities.PolygonPoint{
+						PolygonID: bg.ID,
+						Order:     int32(bp.Order),
+						X:         bp.X,
+						Y:         bp.Y,
+					})
+				}
+				fSync.FloorPolygons = append(fSync.FloorPolygons, mapentities.Polygon{
+					ID:      bg.ID,
+					FloorID: fl.Floor.ID,
+					Label:   bg.Label,
+					ZIndex:  int32(bg.ZIndex),
+					Points:  pts,
+				})
+			}
+
+			intersections, err := p.routeService.GetIntersections(ctx, b.ID)
+			if err == nil {
+				for _, inter := range intersections {
+					if inter.FloorID == fl.Floor.ID {
+						fSync.Intersections = append(fSync.Intersections, inter)
+					}
+				}
+			}
+			connections, err := p.routeService.GetConnections(ctx, b.ID)
+			if err == nil {
+				fSync.Connections = connections
+			}
+
+			bSync.Floors = append(bSync.Floors, fSync)
+		}
+		result.Buildings = append(result.Buildings, bSync)
+	}
+
+	c.JSON(http.StatusOK, result)
 }
