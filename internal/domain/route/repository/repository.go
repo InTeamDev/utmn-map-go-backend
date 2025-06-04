@@ -84,7 +84,7 @@ func (r *RouteRepository) GetConnections(ctx context.Context, buildingID uuid.UU
 func (r *RouteRepository) DeleteIntersection(ctx context.Context, buildingID uuid.UUID, id uuid.UUID) error {
 	err := r.q.DeleteIntersectionConnections(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete related connections: %w", err)
+		return fmt.Errorf("delete related connections: %w", err)
 	}
 
 	params := sqlc.DeleteIntersectionParams{
@@ -94,9 +94,9 @@ func (r *RouteRepository) DeleteIntersection(ctx context.Context, buildingID uui
 	err = r.q.DeleteIntersection(ctx, params)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("intersection not found")
+			return errors.New("intersection not found")
 		}
-		return fmt.Errorf("failed to delete intersection: %w", err)
+		return fmt.Errorf("delete intersection: %w", err)
 	}
 
 	return nil

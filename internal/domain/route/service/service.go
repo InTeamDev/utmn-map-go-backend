@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
@@ -57,7 +58,7 @@ func (r *RouteService) DeleteIntersection(ctx context.Context, buildingID uuid.U
 	err := r.repo.DeleteIntersection(ctx, buildingID, id)
 	if err != nil {
 		if err.Error() == "intersection not found" {
-			return fmt.Errorf("intersection not found")
+			return errors.New("intersection not found")
 		}
 		return fmt.Errorf("delete intersection %s: %w", id, err)
 	}
