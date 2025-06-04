@@ -84,7 +84,7 @@ func (r *RouteRepository) GetConnections(ctx context.Context, buildingID uuid.UU
 	return r.converter.ConnectionsSqlcToEntity(sqlcConnections), nil
 }
 
-func (r *RouteRepository) DeleteIntersection(ctx context.Context, buildingID uuid.UUID, id uuid.UUID) error {
+func (r *RouteRepository) DeleteIntersection(ctx context.Context, buildingID, id uuid.UUID) error {
 	err := r.q.DeleteIntersectionConnections(ctx, id)
 	if err != nil {
 		return fmt.Errorf("delete related connections: %w", err)

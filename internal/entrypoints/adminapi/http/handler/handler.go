@@ -52,7 +52,7 @@ type RouteService interface {
 	// Admin. DeleteNode удаляет узел из графа.
 	// DeleteNode(ctx context.Context, id uuid.UUID) error
 	GetConnections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Connection, error)
-	DeleteIntersection(ctx context.Context, buildingID uuid.UUID, intersectionID uuid.UUID) error
+	DeleteIntersection(ctx context.Context, buildingID, intersectionID uuid.UUID) error
 }
 
 type AdminAPI struct {
