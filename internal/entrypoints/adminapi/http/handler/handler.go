@@ -6,10 +6,11 @@ import (
 	"errors"
 	"net/http"
 
-	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
-	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
+	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 )
 
 type MapService interface {

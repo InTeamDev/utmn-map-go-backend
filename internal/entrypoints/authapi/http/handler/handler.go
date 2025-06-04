@@ -6,10 +6,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/auth/repository"
 	authservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/auth/service"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/middleware"
-	"github.com/gin-gonic/gin"
 )
 
 type AuthAPI struct {

@@ -8,8 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/auth/repository"
 	"github.com/gin-gonic/gin"
+
+	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/auth/repository"
 )
 
 type JWTAuthConfig struct {

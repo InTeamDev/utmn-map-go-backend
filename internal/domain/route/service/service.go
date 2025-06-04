@@ -5,8 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	"github.com/google/uuid"
+
+	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 )
 
 type RouteRepository interface {

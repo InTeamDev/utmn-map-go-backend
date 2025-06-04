@@ -13,11 +13,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"gopkg.in/telebot.v3"
+
 	"github.com/InTeamDev/utmn-map-go-backend/config"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/entrypoints/bot/http/handler"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/server"
-	"github.com/gin-gonic/gin"
-	"gopkg.in/telebot.v3"
 )
 
 const readHeaderTimeout = 5 * time.Second

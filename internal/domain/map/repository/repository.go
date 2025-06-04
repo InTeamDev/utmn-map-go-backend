@@ -5,9 +5,10 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository/sqlc"
-	"github.com/google/uuid"
 )
 
 //go:generate mockgen -destination=mocks/mock_map_converter.go -package=mocks -source=repository.go MapConverter

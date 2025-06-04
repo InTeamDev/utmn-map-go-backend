@@ -1,8 +1,9 @@
 package entities
 
 import (
-	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/google/uuid"
+
+	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 )
 
 type SearchRequest struct {

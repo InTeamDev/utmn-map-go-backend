@@ -3,9 +3,10 @@ package repository
 import (
 	"encoding/json"
 
+	"github.com/google/uuid"
+
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository/sqlc"
-	"github.com/google/uuid"
 )
 
 type MapConverterImpl struct{}

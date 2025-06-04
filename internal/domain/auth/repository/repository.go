@@ -1,13 +1,13 @@
 package repository
 
 import (
+	"errors"
 	"sync"
 	"time"
 
-	"errors"
+	"github.com/google/uuid"
 
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/auth/entities"
-	"github.com/google/uuid"
 )
 
 type InMemory struct {

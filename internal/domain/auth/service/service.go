@@ -10,9 +10,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/auth/entities"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/auth/repository"
-	"github.com/google/uuid"
 )
 
 var (
@@ -124,21 +125,32 @@ func (s *Service) RefreshToken(refreshToken string) (string, string, error) {
 	return access, newRefresh, nil
 }
 
-func (s *Service) Logout(accessToken, refreshToken string) {
+func (s *Service) Logout(accessToken, refreshToken string) error {
 	if accessToken != "" {
-		if payload, _ := s.parseToken(accessToken); payload != nil {
+		payload, err := s.parseToken(accessToken)
+		if err != nil {
+			return ErrUnauthorized
+		}
+		if payload != nil {
 			if jti, ok := payload["jti"].(string); ok {
 				s.repo.BlacklistToken(jti)
 			}
 		}
 	}
+
 	if refreshToken != "" {
-		if payload, _ := s.parseToken(refreshToken); payload != nil {
+		payload, err := s.parseToken(refreshToken)
+		if err != nil {
+			return ErrUnauthorized
+		}
+		if payload != nil {
 			if jti, ok := payload["jti"].(string); ok {
 				s.repo.RevokeRefreshToken(jti)
 			}
 		}
 	}
+
+	return nil
 }
 
 func (s *Service) generateTokens(userID string, roles []string) (string, string, error) {

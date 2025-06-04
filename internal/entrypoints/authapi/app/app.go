@@ -11,12 +11,13 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/InTeamDev/utmn-map-go-backend/config"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/auth/repository"
 	authservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/auth/service"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/entrypoints/authapi/http/handler"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/server"
-	"github.com/gin-gonic/gin"
 )
 
 const readHeaderTimeout = 5 * time.Second

@@ -6,8 +6,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	"github.com/google/uuid"
+
+	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 )
 
 //go:generate mockgen -destination=../repository/mocks/mock_map_repository.go -package=mocks github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service MapRepository

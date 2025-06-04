@@ -6,9 +6,10 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/repository/sqlc"
-	"github.com/google/uuid"
 )
 
 type RouteConverter interface {
