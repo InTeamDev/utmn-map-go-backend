@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"strconv"
 
 	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
@@ -35,8 +36,8 @@ type MapService interface {
 		order int32,
 		x, y float64,
 	) (mapentities.PolygonPoint, error)
-	DeletePolygonPoint(ctx context.Context, id uuid.UUID) error
-	DeletePolygonPoints(ctx context.Context, ids []uuid.UUID) error
+	DeletePolygonPoint(ctx context.Context, id int) error
+	DeletePolygonPoints(ctx context.Context, ids []int) error
 }
 
 type RouteService interface {
@@ -347,7 +348,7 @@ func (p *AdminAPI) CreatePolygonPointsHandler(c *gin.Context) {
 }
 
 func (p *AdminAPI) DeletePolygonPointHandler(c *gin.Context) {
-	pointID, err := uuid.Parse(c.Param("point_id"))
+	pointID, err := strconv.Atoi(c.Param("point_id")) // ✅ парсим как int
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid point_id"})
 		return

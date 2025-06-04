@@ -185,20 +185,20 @@ func (q *Queries) DeleteObject(ctx context.Context, id uuid.UUID) error {
 
 const deletePolygonPoint = `-- name: DeletePolygonPoint :exec
 DELETE FROM floor_polygon_points
-WHERE id = $1::uuid
+WHERE id = $1
 `
 
-func (q *Queries) DeletePolygonPoint(ctx context.Context, id uuid.UUID) error {
+func (q *Queries) DeletePolygonPoint(ctx context.Context, id int32) error {
 	_, err := q.db.ExecContext(ctx, deletePolygonPoint, id)
 	return err
 }
 
 const deletePolygonPoints = `-- name: DeletePolygonPoints :exec
 DELETE FROM floor_polygon_points
-WHERE id = ANY($1::uuid[])
+WHERE id = ANY($1::int[])
 `
 
-func (q *Queries) DeletePolygonPoints(ctx context.Context, ids []uuid.UUID) error {
+func (q *Queries) DeletePolygonPoints(ctx context.Context, ids []int32) error {
 	_, err := q.db.ExecContext(ctx, deletePolygonPoints, pq.Array(ids))
 	return err
 }

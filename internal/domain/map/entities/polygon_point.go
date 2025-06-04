@@ -17,5 +17,5 @@ type PolygonPointRequest struct {
 }
 
 type DeletePointsRequest struct {
-	Points []uuid.UUID `json:"points" binding:"required"`
+	Points []int `json:"points" binding:"required"`
 }

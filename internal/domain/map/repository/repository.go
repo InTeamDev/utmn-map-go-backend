@@ -430,10 +430,14 @@ func (r *Map) CreatePolygonPoint(
 	}, nil
 }
 
-func (r *Map) DeletePolygonPoint(ctx context.Context, id uuid.UUID) error {
-	return r.q.DeletePolygonPoint(ctx, id)
+func (r *Map) DeletePolygonPoint(ctx context.Context, id int) error {
+	return r.q.DeletePolygonPoint(ctx, int32(id))
 }
 
-func (r *Map) DeletePolygonPoints(ctx context.Context, ids []uuid.UUID) error {
-	return r.q.DeletePolygonPoints(ctx, ids)
+func (r *Map) DeletePolygonPoints(ctx context.Context, ids []int) error {
+	int32IDs := make([]int32, len(ids))
+	for i, v := range ids {
+		int32IDs[i] = int32(v)
+	}
+	return r.q.DeletePolygonPoints(ctx, int32IDs)
 }

@@ -181,8 +181,8 @@ RETURNING id, polygon_id, point_order, x, y;
 
 -- name: DeletePolygonPoint :exec
 DELETE FROM floor_polygon_points
-WHERE id = @id::uuid;
+WHERE id = @id;
 
 -- name: DeletePolygonPoints :exec
 DELETE FROM floor_polygon_points
-WHERE id = ANY(@ids::uuid[]);
+WHERE id = ANY(@ids::int[]);

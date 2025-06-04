@@ -116,8 +116,22 @@ func (mr *MockMapRepositoryMockRecorder) DeleteBuilding(ctx, id any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteBuilding", reflect.TypeOf((*MockMapRepository)(nil).DeleteBuilding), ctx, id)
 }
 
+// DeleteObject mocks base method.
+func (m *MockMapRepository) DeleteObject(ctx context.Context, objectID uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteObject", ctx, objectID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteObject indicates an expected call of DeleteObject.
+func (mr *MockMapRepositoryMockRecorder) DeleteObject(ctx, objectID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteObject", reflect.TypeOf((*MockMapRepository)(nil).DeleteObject), ctx, objectID)
+}
+
 // DeletePolygonPoint mocks base method.
-func (m *MockMapRepository) DeletePolygonPoint(ctx context.Context, id uuid.UUID) error {
+func (m *MockMapRepository) DeletePolygonPoint(ctx context.Context, id int) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeletePolygonPoint", ctx, id)
 	ret0, _ := ret[0].(error)
@@ -131,7 +145,7 @@ func (mr *MockMapRepositoryMockRecorder) DeletePolygonPoint(ctx, id any) *gomock
 }
 
 // DeletePolygonPoints mocks base method.
-func (m *MockMapRepository) DeletePolygonPoints(ctx context.Context, ids []uuid.UUID) error {
+func (m *MockMapRepository) DeletePolygonPoints(ctx context.Context, ids []int) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeletePolygonPoints", ctx, ids)
 	ret0, _ := ret[0].(error)
@@ -157,20 +171,6 @@ func (m *MockMapRepository) GetBuildingByID(ctx context.Context, id uuid.UUID) (
 func (mr *MockMapRepositoryMockRecorder) GetBuildingByID(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBuildingByID", reflect.TypeOf((*MockMapRepository)(nil).GetBuildingByID), ctx, id)
-}
-
-// DeleteObject mocks base method.
-func (m *MockMapRepository) DeleteObject(ctx context.Context, objectID uuid.UUID) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteObject", ctx, objectID)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteObject indicates an expected call of DeleteObject.
-func (mr *MockMapRepositoryMockRecorder) DeleteObject(ctx, objectID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteObject", reflect.TypeOf((*MockMapRepository)(nil).DeleteObject), ctx, objectID)
 }
 
 // GetBuildings mocks base method.

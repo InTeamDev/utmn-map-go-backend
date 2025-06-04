@@ -37,8 +37,8 @@ type MapRepository interface {
 		order int32,
 		x, y float64,
 	) (entities.PolygonPoint, error)
-	DeletePolygonPoint(ctx context.Context, id uuid.UUID) error
-	DeletePolygonPoints(ctx context.Context, ids []uuid.UUID) error
+	DeletePolygonPoint(ctx context.Context, id int) error
+	DeletePolygonPoints(ctx context.Context, ids []int) error
 }
 
 type Map struct {
@@ -221,10 +221,10 @@ func (m *Map) CreatePolygonPoint(
 	return m.repo.CreatePolygonPoint(ctx, polygonID, order, x, y)
 }
 
-func (m *Map) DeletePolygonPoint(ctx context.Context, id uuid.UUID) error {
+func (m *Map) DeletePolygonPoint(ctx context.Context, id int) error {
 	return m.repo.DeletePolygonPoint(ctx, id)
 }
 
-func (m *Map) DeletePolygonPoints(ctx context.Context, ids []uuid.UUID) error {
+func (m *Map) DeletePolygonPoints(ctx context.Context, ids []int) error {
 	return m.repo.DeletePolygonPoints(ctx, ids)
 }
