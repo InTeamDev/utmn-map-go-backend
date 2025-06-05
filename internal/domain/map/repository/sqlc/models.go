@@ -16,6 +16,15 @@ type Building struct {
 	Address string
 }
 
+type Door struct {
+	ID       uuid.UUID
+	X        float64
+	Y        float64
+	Width    float64
+	Height   float64
+	ObjectID uuid.UUID
+}
+
 type Floor struct {
 	ID         uuid.UUID
 	Name       string

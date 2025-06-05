@@ -237,7 +237,7 @@ SELECT
     d.width,
     d.height,
     b.id AS building_id,
-    d.object_id
+    o.id AS object_id
 FROM doors d
 JOIN objects o ON d.object_id = o.id
 JOIN floors f ON f.id = o.floor_id
@@ -287,35 +287,26 @@ func (q *Queries) GetDoorsByBuilding(ctx context.Context, buildingID uuid.UUID) 
 }
 
 const getDoorsByObjectIDs = `-- name: GetDoorsByObjectIDs :many
-SELECT
-    d.id,
-    d.x,
-    d.y,
-    d.width,
+SELECT 
+    d.id, 
+    d.x, 
+    d.y, 
+    d.width, 
     d.height,
     d.object_id
 FROM doors d
 WHERE d.object_id = ANY($1::uuid[])
 `
 
-type GetDoorsByObjectIDsRow struct {
-	ID       uuid.UUID
-	X        float64
-	Y        float64
-	Width    float64
-	Height   float64
-	ObjectID uuid.UUID
-}
-
-func (q *Queries) GetDoorsByObjectIDs(ctx context.Context, objectIds []uuid.UUID) ([]GetDoorsByObjectIDsRow, error) {
+func (q *Queries) GetDoorsByObjectIDs(ctx context.Context, objectIds []uuid.UUID) ([]Door, error) {
 	rows, err := q.db.QueryContext(ctx, getDoorsByObjectIDs, pq.Array(objectIds))
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetDoorsByObjectIDsRow
+	var items []Door
 	for rows.Next() {
-		var i GetDoorsByObjectIDsRow
+		var i Door
 		if err := rows.Scan(
 			&i.ID,
 			&i.X,

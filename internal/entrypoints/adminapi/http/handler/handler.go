@@ -570,7 +570,11 @@ func (p *AdminAPI) GetDatabaseHandler(c *gin.Context) {
 		return
 	}
 	for _, t := range types {
-		result.ObjectTypes = append(result.ObjectTypes, mapentities.ObjectType(t.Name))
+		result.ObjectTypes = append(result.ObjectTypes, mapentities.ObjectTypeInfo{
+			ID:    t.ID,
+			Name:  t.Name,
+			Alias: t.Alias,
+		})
 	}
 
 	buildings, err := p.mapService.GetBuildings(ctx)

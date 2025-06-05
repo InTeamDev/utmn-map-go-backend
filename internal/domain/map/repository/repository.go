@@ -19,7 +19,7 @@ type MapConverter interface {
 	) []entities.Object
 	ObjectSqlcToEntity(object sqlc.GetObjectsByBuildingRow, doors []entities.Door) entities.Object
 	GetDoorsSqlcToEntity(doors []sqlc.GetDoorsByBuildingRow) []entities.GetDoorsResponse
-	DoorsSqlcToEntityMap(doors []sqlc.GetDoorsByObjectIDsRow) map[uuid.UUID][]entities.Door
+	DoorsSqlcToEntityMap(doors []sqlc.Door) map[uuid.UUID][]entities.Door
 	FloorSqlcToEntity(f sqlc.Floor) entities.Floor
 	FloorsSqlcToEntity(floors []sqlc.Floor) []entities.Floor
 	BuildingsSqlcToEntity(buildings []sqlc.Building) []entities.Building

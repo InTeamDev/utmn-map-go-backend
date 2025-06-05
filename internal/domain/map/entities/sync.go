@@ -7,8 +7,8 @@ import (
 )
 
 type SyncAllData struct {
-	ObjectTypes []ObjectType    `json:"object_types"`
-	Buildings   []SyncBuildings `json:"buildings"`
+	ObjectTypes []ObjectTypeInfo `json:"object_types"`
+	Buildings   []SyncBuildings  `json:"buildings"`
 }
 
 type SyncBuildings struct {

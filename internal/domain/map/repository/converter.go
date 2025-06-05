@@ -72,7 +72,7 @@ func (mc *MapConverterImpl) ObjectSqlcToEntity(
 	}
 }
 
-func (mc *MapConverterImpl) DoorSqlcToEntity(door sqlc.GetDoorsByObjectIDsRow) entities.Door {
+func (mc *MapConverterImpl) DoorSqlcToEntity(door sqlc.Door) entities.Door {
 	return entities.Door{
 		ID:     door.ID,
 		X:      door.X,
@@ -82,7 +82,7 @@ func (mc *MapConverterImpl) DoorSqlcToEntity(door sqlc.GetDoorsByObjectIDsRow) e
 	}
 }
 
-func (mc *MapConverterImpl) DoorsSqlcToEntityMap(doors []sqlc.GetDoorsByObjectIDsRow) map[uuid.UUID][]entities.Door {
+func (mc *MapConverterImpl) DoorsSqlcToEntityMap(doors []sqlc.Door) map[uuid.UUID][]entities.Door {
 	result := make(map[uuid.UUID][]entities.Door)
 	for _, door := range doors {
 		result[door.ObjectID] = append(result[door.ObjectID], mc.DoorSqlcToEntity(door))
