@@ -19,7 +19,7 @@ type MapConverter interface {
 	) []entities.Object
 	ObjectSqlcToEntity(object sqlc.GetObjectsByBuildingRow, doors []entities.Door) entities.Object
 	GetDoorsSqlcToEntity(doors []sqlc.GetDoorsByBuildingRow) []entities.GetDoorsResponse
-	DoorsSqlcToEntityMap(doors []sqlc.GetDoorsByObjectIDsRow) map[uuid.UUID][]entities.Door
+	DoorsSqlcToEntityMap(doors []sqlc.Door) map[uuid.UUID][]entities.Door
 	FloorSqlcToEntity(f sqlc.Floor) entities.Floor
 	FloorsSqlcToEntity(floors []sqlc.Floor) []entities.Floor
 	BuildingsSqlcToEntity(buildings []sqlc.Building) []entities.Building
@@ -31,12 +31,14 @@ type MapConverter interface {
 
 type Map struct {
 	q         *sqlc.Queries
+	db        *sql.DB
 	converter MapConverter
 }
 
 func NewMap(db *sql.DB, converter MapConverter) *Map {
 	return &Map{
 		q:         sqlc.New(db),
+		db:        db,
 		converter: converter,
 	}
 }
@@ -232,7 +234,10 @@ func (r *Map) CreateObject(
 	floorID uuid.UUID,
 	input entities.CreateObjectInput,
 ) (entities.Object, error) {
-	objectID := uuid.New()
+	objectID := input.ID
+	if objectID == uuid.Nil {
+		objectID = uuid.New()
+	}
 
 	params := sqlc.CreateObjectParams{
 		ID:           objectID,
@@ -318,8 +323,12 @@ func (r *Map) DeleteObject(ctx context.Context, objectID uuid.UUID) error {
 }
 
 func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
+	id := input.ID
+	if id == uuid.Nil {
+		id = uuid.New()
+	}
 	params := sqlc.CreateBuildingParams{
-		ID:      uuid.New(),
+		ID:      id,
 		Name:    input.Name,
 		Address: input.Address,
 	}
@@ -396,27 +405,26 @@ func sqlNullFloat64(i *float64) sql.NullFloat64 {
 	return sql.NullFloat64{Float64: *i, Valid: true}
 }
 
-func (r *Map) CreatePolygon(
-	ctx context.Context,
-	floorID uuid.UUID,
-	label string,
-	zIndex int32,
-) (entities.Polygon, error) {
-	polygon, err := r.q.CreatePolygon(ctx, sqlc.CreatePolygonParams{
-		ID:      uuid.New(),
-		FloorID: floorID,
-		Label:   sql.NullString{String: label, Valid: true},
-		ZIndex:  sql.NullInt32{Int32: zIndex, Valid: true},
+func (r *Map) CreatePolygon(ctx context.Context, polygon entities.Polygon) (entities.Polygon, error) {
+	id := polygon.ID
+	if id == uuid.Nil {
+		id = uuid.New()
+	}
+	row, err := r.q.CreatePolygon(ctx, sqlc.CreatePolygonParams{
+		ID:      id,
+		FloorID: polygon.FloorID,
+		Label:   sql.NullString{String: polygon.Label, Valid: polygon.Label != ""},
+		ZIndex:  sql.NullInt32{Int32: polygon.ZIndex, Valid: true},
 	})
 	if err != nil {
 		return entities.Polygon{}, fmt.Errorf("create polygon: %w", err)
 	}
 
 	return entities.Polygon{
-		ID:      polygon.ID,
-		FloorID: polygon.FloorID,
-		Label:   polygon.Label.String,
-		ZIndex:  polygon.ZIndex.Int32,
+		ID:      row.ID,
+		FloorID: row.FloorID,
+		Label:   row.Label.String,
+		ZIndex:  row.ZIndex.Int32,
 	}, nil
 }
 
@@ -436,10 +444,45 @@ func (r *Map) CreatePolygonPoint(
 		return entities.PolygonPoint{}, fmt.Errorf("create polygon point: %w", err)
 	}
 	return entities.PolygonPoint{
-		ID:        point.ID,
 		PolygonID: point.PolygonID,
 		Order:     point.PointOrder,
 		X:         point.X,
 		Y:         point.Y,
 	}, nil
+}
+
+func (r *Map) CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entities.Floor) error {
+	id := floor.ID
+	if id == uuid.Nil {
+		id = uuid.New()
+	}
+	err := r.q.CreateFloor(ctx, sqlc.CreateFloorParams{
+		ID:         id,
+		Name:       floor.Name,
+		Alias:      floor.Alias,
+		BuildingID: buildingID,
+	})
+	if err != nil {
+		return fmt.Errorf("create floor: %w", err)
+	}
+	return nil
+}
+
+func (r *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error {
+	id := door.ID
+	if id == uuid.Nil {
+		id = uuid.New()
+	}
+	err := r.q.CreateDoor(ctx, sqlc.CreateDoorParams{
+		ID:       id,
+		X:        door.X,
+		Y:        door.Y,
+		Width:    door.Width,
+		Height:   door.Height,
+		ObjectID: objectID,
+	})
+	if err != nil {
+		return fmt.Errorf("create door: %w", err)
+	}
+	return nil
 }

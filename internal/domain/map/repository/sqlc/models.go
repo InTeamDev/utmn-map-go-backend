@@ -16,6 +16,15 @@ type Building struct {
 	Address string
 }
 
+type Door struct {
+	ID       uuid.UUID
+	X        float64
+	Y        float64
+	Width    float64
+	Height   float64
+	ObjectID uuid.UUID
+}
+
 type Floor struct {
 	ID         uuid.UUID
 	Name       string
@@ -31,7 +40,6 @@ type FloorPolygon struct {
 }
 
 type FloorPolygonPoint struct {
-	ID         int32
 	PolygonID  uuid.UUID
 	PointOrder int32
 	X          float64

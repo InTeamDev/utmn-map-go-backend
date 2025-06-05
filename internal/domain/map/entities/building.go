@@ -9,8 +9,9 @@ type Building struct {
 }
 
 type CreateBuildingInput struct {
-	Name    string `json:"name"`
-	Address string `json:"address"`
+	ID      uuid.UUID `json:"id"`
+	Name    string    `json:"name"`
+	Address string    `json:"address"`
 }
 
 type UpdateBuildingInput struct {

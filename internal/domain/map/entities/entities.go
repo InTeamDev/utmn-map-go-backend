@@ -41,7 +41,7 @@ type UpdateObjectInput struct {
 }
 
 type CreateObjectInput struct {
-	ID           uuid.UUID `json:"id"`
+	ID           uuid.UUID `json:"id,omitempty"`
 	Name         string    `json:"name"           binding:"required,max=255"`
 	Alias        string    `json:"alias"          binding:"required,max=255"`
 	Description  string    `json:"description"    binding:"max=255"`

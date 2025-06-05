@@ -17,6 +17,9 @@ import (
 const createBuilding = `-- name: CreateBuilding :one
 INSERT INTO buildings (id, name, address)
 VALUES ($1, $2, $3)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    address = EXCLUDED.address
 RETURNING id, name, address
 `
 
@@ -31,6 +34,64 @@ func (q *Queries) CreateBuilding(ctx context.Context, arg CreateBuildingParams) 
 	var i Building
 	err := row.Scan(&i.ID, &i.Name, &i.Address)
 	return i, err
+}
+
+const createDoor = `-- name: CreateDoor :exec
+INSERT INTO doors (id, x, y, width, height, object_id)
+VALUES ($1::uuid, $2, $3, $4, $5, $6::uuid)
+ON CONFLICT (id) DO UPDATE SET
+    x = EXCLUDED.x,
+    y = EXCLUDED.y,
+    width = EXCLUDED.width,
+    height = EXCLUDED.height,
+    object_id = EXCLUDED.object_id
+`
+
+type CreateDoorParams struct {
+	ID       uuid.UUID
+	X        float64
+	Y        float64
+	Width    float64
+	Height   float64
+	ObjectID uuid.UUID
+}
+
+func (q *Queries) CreateDoor(ctx context.Context, arg CreateDoorParams) error {
+	_, err := q.db.ExecContext(ctx, createDoor,
+		arg.ID,
+		arg.X,
+		arg.Y,
+		arg.Width,
+		arg.Height,
+		arg.ObjectID,
+	)
+	return err
+}
+
+const createFloor = `-- name: CreateFloor :exec
+INSERT INTO floors (id, name, alias, building_id)
+VALUES ($1::uuid, $2, $3, $4::uuid)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    alias = EXCLUDED.alias,
+    building_id = EXCLUDED.building_id
+`
+
+type CreateFloorParams struct {
+	ID         uuid.UUID
+	Name       string
+	Alias      string
+	BuildingID uuid.UUID
+}
+
+func (q *Queries) CreateFloor(ctx context.Context, arg CreateFloorParams) error {
+	_, err := q.db.ExecContext(ctx, createFloor,
+		arg.ID,
+		arg.Name,
+		arg.Alias,
+		arg.BuildingID,
+	)
+	return err
 }
 
 const createObject = `-- name: CreateObject :one
@@ -56,7 +117,17 @@ INSERT INTO objects (
     $8,
     $9,
     $10
-) 
+)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    alias = EXCLUDED.alias,
+    description = EXCLUDED.description,
+    x = EXCLUDED.x,
+    y = EXCLUDED.y,
+    width = EXCLUDED.width,
+    height = EXCLUDED.height,
+    object_type_id = EXCLUDED.object_type_id,
+    floor_id = EXCLUDED.floor_id
 RETURNING id, name, alias, description, x, y, width, height, object_type_id, floor_id
 `
 
@@ -105,6 +176,10 @@ func (q *Queries) CreateObject(ctx context.Context, arg CreateObjectParams) (Obj
 const createPolygon = `-- name: CreatePolygon :one
 INSERT INTO floor_polygons (id, floor_id, label, z_index)
 VALUES ($1::uuid, $2::uuid, $3, $4)
+ON CONFLICT (id) DO UPDATE SET
+    floor_id = EXCLUDED.floor_id,
+    label = EXCLUDED.label,
+    z_index = EXCLUDED.z_index
 RETURNING id, floor_id, label, z_index
 `
 
@@ -135,7 +210,10 @@ func (q *Queries) CreatePolygon(ctx context.Context, arg CreatePolygonParams) (F
 const createPolygonPoint = `-- name: CreatePolygonPoint :one
 INSERT INTO floor_polygon_points (polygon_id, point_order, x, y)
 VALUES ($1::uuid, $2, $3, $4)
-RETURNING id, polygon_id, point_order, x, y
+ON CONFLICT (polygon_id, point_order) DO UPDATE SET
+    x = EXCLUDED.x,
+    y = EXCLUDED.y
+RETURNING polygon_id, point_order, x, y
 `
 
 type CreatePolygonPointParams struct {
@@ -154,7 +232,6 @@ func (q *Queries) CreatePolygonPoint(ctx context.Context, arg CreatePolygonPoint
 	)
 	var i FloorPolygonPoint
 	err := row.Scan(
-		&i.ID,
 		&i.PolygonID,
 		&i.PointOrder,
 		&i.X,
@@ -240,8 +317,7 @@ SELECT
     b.id AS building_id,
     o.id AS object_id
 FROM doors d
-JOIN object_doors od ON d.id = od.door_id
-JOIN objects o ON o.id = od.object_id
+JOIN objects o ON d.object_id = o.id
 JOIN floors f ON f.id = o.floor_id
 JOIN buildings b ON f.building_id = b.id
 WHERE b.id = $1::uuid
@@ -294,31 +370,21 @@ SELECT
     d.x, 
     d.y, 
     d.width, 
-    d.height, 
-    od.object_id
+    d.height,
+    d.object_id
 FROM doors d
-JOIN object_doors od ON d.id = od.door_id
-WHERE od.object_id = ANY($1::uuid[])
+WHERE d.object_id = ANY($1::uuid[])
 `
 
-type GetDoorsByObjectIDsRow struct {
-	ID       uuid.UUID
-	X        float64
-	Y        float64
-	Width    float64
-	Height   float64
-	ObjectID uuid.UUID
-}
-
-func (q *Queries) GetDoorsByObjectIDs(ctx context.Context, objectIds []uuid.UUID) ([]GetDoorsByObjectIDsRow, error) {
+func (q *Queries) GetDoorsByObjectIDs(ctx context.Context, objectIds []uuid.UUID) ([]Door, error) {
 	rows, err := q.db.QueryContext(ctx, getDoorsByObjectIDs, pq.Array(objectIds))
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetDoorsByObjectIDsRow
+	var items []Door
 	for rows.Next() {
-		var i GetDoorsByObjectIDsRow
+		var i Door
 		if err := rows.Scan(
 			&i.ID,
 			&i.X,
@@ -462,8 +528,7 @@ SELECT
             'height', d.height
         ))
         FROM doors d
-        JOIN object_doors od ON d.id = od.door_id
-        WHERE od.object_id = o.id
+        WHERE d.object_id = o.id
     ) AS doors
 FROM objects o
 JOIN floors f ON o.floor_id = f.id

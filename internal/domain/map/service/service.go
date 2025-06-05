@@ -32,7 +32,9 @@ type MapRepository interface {
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 	UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error)
 	GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Building, error)
-	CreatePolygon(ctx context.Context, floorID uuid.UUID, label string, zIndex int32) (entities.Polygon, error)
+	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entities.Floor) error
+	CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error
+	CreatePolygon(ctx context.Context, polygon entities.Polygon) (entities.Polygon, error)
 	CreatePolygonPoint(
 		ctx context.Context,
 		polygonID uuid.UUID,
@@ -211,13 +213,8 @@ func (m *Map) GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Build
 	return m.repo.GetBuildingByID(ctx, id)
 }
 
-func (m *Map) CreatePolygon(
-	ctx context.Context,
-	floorID uuid.UUID,
-	label string,
-	zIndex int32,
-) (entities.Polygon, error) {
-	return m.repo.CreatePolygon(ctx, floorID, label, zIndex)
+func (m *Map) CreatePolygon(ctx context.Context, polygon entities.Polygon) (entities.Polygon, error) {
+	return m.repo.CreatePolygon(ctx, polygon)
 }
 
 func (m *Map) CreatePolygonPoint(
@@ -227,4 +224,12 @@ func (m *Map) CreatePolygonPoint(
 	x, y float64,
 ) (entities.PolygonPoint, error) {
 	return m.repo.CreatePolygonPoint(ctx, polygonID, order, x, y)
+}
+
+func (m *Map) CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entities.Floor) error {
+	return m.repo.CreateFloor(ctx, buildingID, floor)
+}
+
+func (m *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error {
+	return m.repo.CreateDoor(ctx, objectID, door)
 }

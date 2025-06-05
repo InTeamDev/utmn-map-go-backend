@@ -14,6 +14,8 @@ import (
 const createConnection = `-- name: CreateConnection :one
 INSERT INTO connections (from_id, to_id, weight)
 VALUES ($1, $2, $3)
+ON CONFLICT (from_id, to_id) DO UPDATE
+  SET weight = EXCLUDED.weight
 RETURNING from_id, to_id, weight
 `
 
@@ -33,6 +35,10 @@ func (q *Queries) CreateConnection(ctx context.Context, arg CreateConnectionPara
 const createIntersection = `-- name: CreateIntersection :one
 INSERT INTO intersections (id, x, y, floor_id)
 VALUES ($1, $2, $3, $4)
+ON CONFLICT (id) DO UPDATE
+  SET x = EXCLUDED.x,
+      y = EXCLUDED.y,
+      floor_id = EXCLUDED.floor_id
 RETURNING id, x, y, floor_id
 `
 
@@ -89,6 +95,40 @@ func (q *Queries) DeleteIntersectionConnections(ctx context.Context, intersectio
 	return err
 }
 
+const getConnections = `-- name: GetConnections :many
+SELECT c.from_id, c.to_id, c.weight 
+FROM connections c
+WHERE EXISTS (
+    SELECT 1 FROM intersections i
+    JOIN floors f ON i.floor_id = f.id
+    WHERE (i.id = c.from_id OR i.id = c.to_id)
+    AND f.building_id = $1
+)
+`
+
+func (q *Queries) GetConnections(ctx context.Context, buildingID uuid.UUID) ([]Connection, error) {
+	rows, err := q.db.QueryContext(ctx, getConnections, buildingID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Connection
+	for rows.Next() {
+		var i Connection
+		if err := rows.Scan(&i.FromID, &i.ToID, &i.Weight); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getIntersections = `-- name: GetIntersections :many
 SELECT 
     i.id,
@@ -126,40 +166,6 @@ func (q *Queries) GetIntersections(ctx context.Context, buildingID uuid.UUID) ([
 			&i.FloorID,
 			&i.BuildingID,
 		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getConnections = `-- name: GetConnections :many
-SELECT c.from_id, c.to_id, c.weight 
-FROM connections c
-WHERE EXISTS (
-    SELECT 1 FROM intersections i
-    JOIN floors f ON i.floor_id = f.id
-    WHERE (i.id = c.from_id OR i.id = c.to_id)
-    AND f.building_id = $1
-)
-`
-
-func (q *Queries) GetConnections(ctx context.Context, buildingID uuid.UUID) ([]Connection, error) {
-	rows, err := q.db.QueryContext(ctx, getConnections, buildingID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Connection
-	for rows.Next() {
-		var i Connection
-		if err := rows.Scan(&i.FromID, &i.ToID, &i.Weight); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
