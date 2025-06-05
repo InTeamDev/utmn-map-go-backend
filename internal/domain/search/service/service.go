@@ -38,6 +38,11 @@ func (s *SearchService) Search(
 		s.mapCache.Set(req.BuildingID, objects)
 	}
 
+	objectDoorMap, err := s.mapService.GetObjectDoorPairs(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("get object door pairs: %w", err)
+	}
+
 	// filter objects by name
 	filteredObjects := make([]searchentities.SearchResult, 0, len(objects))
 	for _, object := range objects {
@@ -49,6 +54,7 @@ func (s *SearchService) Search(
 				ObjectID:     object.ID,
 				ObjectTypeID: int(object.ObjectTypeID),
 				Preview:      fmt.Sprintf("%s (%s)", object.Name, object.Floor.Name),
+				DoorID:       objectDoorMap[object.ID],
 			})
 		}
 	}

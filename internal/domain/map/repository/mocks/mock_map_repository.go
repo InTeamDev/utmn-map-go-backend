@@ -188,6 +188,21 @@ func (mr *MockMapRepositoryMockRecorder) GetBuildings(ctx any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBuildings", reflect.TypeOf((*MockMapRepository)(nil).GetBuildings), ctx)
 }
 
+// GetDoorFloorPairs mocks base method.
+func (m *MockMapRepository) GetDoorFloorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDoorFloorPairs", ctx)
+	ret0, _ := ret[0].(map[uuid.UUID]uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDoorFloorPairs indicates an expected call of GetDoorFloorPairs.
+func (mr *MockMapRepositoryMockRecorder) GetDoorFloorPairs(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDoorFloorPairs", reflect.TypeOf((*MockMapRepository)(nil).GetDoorFloorPairs), ctx)
+}
+
 // GetDoors mocks base method.
 func (m *MockMapRepository) GetDoors(ctx context.Context, buildID uuid.UUID) ([]entities.GetDoorsResponse, error) {
 	m.ctrl.T.Helper()
@@ -231,6 +246,21 @@ func (m *MockMapRepository) GetObjectByID(ctx context.Context, objectID uuid.UUI
 func (mr *MockMapRepositoryMockRecorder) GetObjectByID(ctx, objectID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjectByID", reflect.TypeOf((*MockMapRepository)(nil).GetObjectByID), ctx, objectID)
+}
+
+// GetObjectDoorPairs mocks base method.
+func (m *MockMapRepository) GetObjectDoorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetObjectDoorPairs", ctx)
+	ret0, _ := ret[0].(map[uuid.UUID]uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetObjectDoorPairs indicates an expected call of GetObjectDoorPairs.
+func (mr *MockMapRepositoryMockRecorder) GetObjectDoorPairs(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjectDoorPairs", reflect.TypeOf((*MockMapRepository)(nil).GetObjectDoorPairs), ctx)
 }
 
 // GetObjectTypeByID mocks base method.

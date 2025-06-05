@@ -28,19 +28,14 @@ type MapService interface {
 }
 
 type RouteService interface {
-	// GetRoute строит маршрут между точками
-	// (первая точка - начальная, промежуточные, последняя - конечная).
-	// Точки - ID Объектов.
-	// BuildRoute(ctx context.Context, start uuid.UUID, end uuid.UUID, waypoints []uuid.UUID) ([]entities.Edge, error)
-	// Admin. AddIntersection добавляет новый узел в граф.
-	AddIntersection(ctx context.Context, req routeentities.AddIntersectionRequest) (routeentities.Node, error)
-	GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Intersection, error)
-	// Admin. AddConnection добавляет новое ребро в граф.
-	AddConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (routeentities.Edge, error)
-	// Admin. DeleteNode удаляет узел из графа.
-	// DeleteNode(ctx context.Context, id uuid.UUID) error
+	BuildRoute(
+		ctx context.Context,
+		buildingID uuid.UUID,
+		input routeentities.BuildRouteRequest,
+	) ([]routeentities.Connection, error)
+	GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Node, error)
+	GetDoors(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Node, error)
 	GetConnections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Connection, error)
-	DeleteIntersection(ctx context.Context, buildingID, intersectionID uuid.UUID) error
 }
 
 type SearchService interface {
@@ -74,6 +69,7 @@ func (p *PublicAPI) RegisterRoutes(router *gin.Engine) {
 		api.GET("/buildings/:building_id/intersections", p.GetIntersectionsHandler)
 		api.GET("/buildings/:building_id/connections", p.GetConnectionsHandler)
 		api.GET("/buildings/:building_id/graph/nodes", p.GetNodesHandler)
+		api.POST("/buildings/:building_id/route", p.BuildRouteHandler)
 		// polygons
 		// search
 		api.GET("/buildings/:building_id/search", p.SearchHandler)
@@ -222,40 +218,43 @@ func (p *PublicAPI) GetNodesHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
 		return
 	}
-
 	intersections, err := p.routeService.GetIntersections(c.Request.Context(), buildID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	doors, err := p.routeService.GetDoors(c.Request.Context(), buildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	nodes := make([]routeentities.Node, 0, len(intersections)+len(doors))
+	nodes = append(nodes, doors...)
+	nodes = append(nodes, intersections...)
+	c.JSON(http.StatusOK, gin.H{"nodes": nodes})
+}
 
-	doors, err := p.mapService.GetDoors(c.Request.Context(), buildID)
+func (p *PublicAPI) BuildRouteHandler(c *gin.Context) {
+	buildIDStr := c.Param("building_id")
+	buildingID, err := uuid.Parse(buildIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	var input routeentities.BuildRouteRequest
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		return
+	}
+
+	edges, err := p.routeService.BuildRoute(c.Request.Context(), buildingID, input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	nodes := make([]routeentities.Node, 0, len(intersections)+len(doors))
-	for _, node := range doors {
-		node := routeentities.Node{
-			ID:   node.ID,
-			Type: routeentities.NodeTypeDoor,
-			X:    node.X,
-			Y:    node.Y,
-		}
-		nodes = append(nodes, node)
-	}
-	for _, node := range intersections {
-		node := routeentities.Node{
-			ID:   node.ID,
-			Type: routeentities.NodeTypeIntersection,
-			X:    node.X,
-			Y:    node.Y,
-		}
-		nodes = append(nodes, node)
-	}
-
-	c.JSON(http.StatusOK, gin.H{"nodes": nodes})
+	c.JSON(http.StatusOK, gin.H{"edges": edges})
 }
 
 func (p *PublicAPI) SearchHandler(c *gin.Context) {

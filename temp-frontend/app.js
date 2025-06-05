@@ -1,8 +1,8 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const infoBox = document.getElementById('info-box');
-const adminApiUrl = 'https://utmn-map.zetoqqq.ru/adminapi';
-const publicApiUrl = 'https://utmn-map.zetoqqq.ru/publicapi';
+const adminApiUrl = 'http://localhost:8001';
+const publicApiUrl = 'http://localhost:8000';
 
 let allData = null;
 let currentFloor = null;
@@ -13,6 +13,10 @@ let visibleObjects = [];
 let selectedObject = null;
 let currentBuildingId = null;
 
+// Новые глобальные переменные для графа:
+let graphNodes = [];       // объекты вида { floor_id, id, type, x, y }
+let graphConnections = []; // объекты вида { from_id, to_id, weight }
+
 async function init() {
     try {
         const res = await fetch(`${publicApiUrl}/api/buildings`);
@@ -20,30 +24,62 @@ async function init() {
         if (!Array.isArray(data.buildings) || data.buildings.length === 0) {
             throw new Error("Нет доступных зданий");
         }
-        currentBuildingId = data.buildings[0].id; // выбираем первое здание
+        currentBuildingId = data.buildings[0].id;
         console.log("Выбранное здание:", currentBuildingId);
-        loadBuildingObjects(currentBuildingId);
+
+        await loadBuildingObjects(currentBuildingId);
+        await loadGraphData(currentBuildingId);
+        resizeCanvas();
     } catch (err) {
-        console.error("Ошибка при загрузке зданий:", err);
-        infoBox.innerHTML = "Не удалось загрузить список зданий.";
+        console.error("Ошибка при инициализации:", err);
+        infoBox.innerHTML = "Не удалось загрузить данные.";
     }
 }
 
 function loadBuildingObjects(buildingId) {
-    fetch(`${publicApiUrl}/api/buildings/${buildingId}/objects`)
+    return fetch(`${publicApiUrl}/api/buildings/${buildingId}/objects`)
         .then(res => res.json())
         .then(data => {
-            const result = data.objects; // извлекаем объект с building, floors, background
-            console.log("Извлечённые данные:", result);
+            const result = data.objects;
+            console.log("Извлечённые данные по объектам:", result);
             if (!Array.isArray(result.floors)) throw new Error("Ожидался массив этажей");
             allData = result;
             createFloorButtons(allData);
-            resizeCanvas();
         })
         .catch(err => {
             console.error("Ошибка при загрузке объектов:", err);
             infoBox.innerHTML = "Ошибка загрузки данных с сервера.";
         });
+}
+
+function loadGraphData(buildingId) {
+    const nodesPromise = fetch(`${publicApiUrl}/api/buildings/${buildingId}/graph/nodes`)
+        .then(res => res.json())
+        .then(data => {
+            if (Array.isArray(data.nodes)) {
+                graphNodes = data.nodes;
+            } else {
+                console.warn("Ожидался массив nodes");
+            }
+        })
+        .catch(err => {
+            console.error("Ошибка при загрузке узлов (nodes):", err);
+        });
+
+    const connsPromise = fetch(`${publicApiUrl}/api/buildings/${buildingId}/connections`)
+        .then(res => res.json())
+        .then(data => {
+            if (Array.isArray(data.connections)) {
+                graphConnections = data.connections;
+            } else {
+                console.warn("Ожидался массив connections");
+            }
+        })
+        .catch(err => {
+            console.error("Ошибка при загрузке связей (connections):", err);
+        });
+
+    return Promise.all([nodesPromise, connsPromise]);
 }
 
 function saveObject() {
@@ -121,13 +157,11 @@ canvas.addEventListener('wheel', e => {
     visualize(allData);
 }, { passive: false });
 
-// Обновленный обработчик клика по canvas
 canvas.addEventListener('click', e => {
     const rect = canvas.getBoundingClientRect();
     const clickX = (e.clientX - rect.left - offsetX) / scale;
     const clickY = (e.clientY - rect.top - offsetY) / scale;
 
-    // Сначала ищем клик по двери
     let doorClickedInfo = null;
     for (const object of visibleObjects) {
         if (Array.isArray(object.doors)) {
@@ -145,7 +179,6 @@ canvas.addEventListener('click', e => {
         return;
     }
 
-    // Если клик не по двери — ищем клик по объекту
     for (let obj of visibleObjects) {
         if (
             clickX >= obj.x &&
@@ -204,9 +237,7 @@ function showDoorInfo(door, parent) {
     infoBox.innerHTML = html;
 }
 
-
 function createFloorButtons(data) {
-    // data.floors — это массив этажей, каждый имеет поле floor.name
     const floors = data.floors.map(f => f.floor.name);
     const container = document.getElementById('floor-buttons');
     container.innerHTML = '';
@@ -230,9 +261,7 @@ function createFloorButtons(data) {
     });
 }
 
-// Функция для корректировки яркости цвета (используется для объектов и дверей)
 function adjustColor(color, factor) {
-    // Ожидается формат rgba(r, g, b, a)
     const parts = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*([\d.]+)?\)/);
     if (parts) {
         let r = Math.min(255, Math.max(0, Math.round(parseFloat(parts[1]) * factor)));
@@ -252,11 +281,6 @@ function darkenColor(color, factor = 0.8) {
     return adjustColor(color, factor);
 }
 
-/**
- * Проверяет, попадает ли точка (px,py) в повернутый прямоугольник двери.
- * Переводим точку в локальные координаты двери (относительно её оси поворота),
- * затем проверяем, лежит ли она в пределах [0, door.width] и [0, door.height].
- */
 function isPointInRotatedRect(px, py, door) {
     const angle = door.angle || 0;
     const dx = px - door.x;
@@ -268,12 +292,8 @@ function isPointInRotatedRect(px, py, door) {
     return localX >= 0 && localX <= door.width && localY >= 0 && localY <= door.height;
 }
 
-/**
- * Анимация (открытия/закрытия) двери.
- * Плавно поворачивает дверь от текущего угла до targetAngle за duration миллисекунд.
- */
 function animateDoor(door, targetAngle) {
-    const duration = 500; // длительность анимации в мс
+    const duration = 500;
     const startAngle = door.angle || 0;
     const startTime = performance.now();
 
@@ -282,7 +302,7 @@ function animateDoor(door, targetAngle) {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
         door.angle = startAngle + (targetAngle - startAngle) * progress;
-        visualize(allData); // перерисовываем сцену
+        visualize(allData);
         if (progress < 1) {
             requestAnimationFrame(step);
         }
@@ -298,14 +318,14 @@ function visualize(data) {
 
     visibleObjects = [];
 
-    // Определяем, какие этажи отрисовывать: если выбран конкретный этаж – только его, иначе все
+    // Определяем, какие этажи отрисовывать
     const floorData = currentFloor
         ? allData.floors.find(f => f.floor.name === currentFloor)
         : null;
     const floorsToRender = floorData ? [floorData] : allData.floors;
 
     for (const floor of floorsToRender) {
-        // Рисуем фон этажа (background)
+        // Рисуем фон этажа
         for (const bg of floor.background) {
             const sortedPoints = bg.points.sort((a, b) => a.order - b.order);
             if (sortedPoints.length > 1) {
@@ -325,10 +345,8 @@ function visualize(data) {
         // Рисуем объекты этажа
         for (const object of floor.objects) {
             const { x, y, width, height } = object;
-
-            // Для типа "cabinet" используем непрозрачный цвет
             let color = {
-                'cabinet': 'rgba(0, 128, 255, 1)', // без прозрачности
+                'cabinet': 'rgba(0, 128, 255, 1)',
                 'wardrobe': 'rgba(255, 165, 0, 0.5)',
                 'woman-toilet': 'rgba(255, 192, 203, 0.5)',
                 'man-toilet': 'rgba(144, 238, 144, 0.5)',
@@ -356,47 +374,40 @@ function visualize(data) {
         }
     }
 
+    // -------------- Рисуем граф только для выбранного этажа ----------------
+
+    if (currentFloor && floorData) {
+        // Найдём ID выбранного этажа
+        const selectedFloorId = floorData.floor.id;
+
+        // Фильтруем узлы по floor_id
+        const nodesOnFloor = graphNodes.filter(n => n.floor_id === selectedFloorId);
+
+        // Рисуем связи только между узлами этого же этажа
+        ctx.strokeStyle = 'green';
+        ctx.lineWidth = 2;
+        graphConnections.forEach(conn => {
+            const fromNode = nodesOnFloor.find(n => n.id === conn.from_id);
+            const toNode = nodesOnFloor.find(n => n.id === conn.to_id);
+            if (fromNode && toNode) {
+                ctx.beginPath();
+                ctx.moveTo(fromNode.x, fromNode.y);
+                ctx.lineTo(toNode.x, toNode.y);
+                ctx.stroke();
+            }
+        });
+
+        // Рисуем узлы (красные кружки радиусом 5px) только на этом этаже
+        ctx.fillStyle = 'red';
+        nodesOnFloor.forEach(node => {
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+
     ctx.restore();
 }
 
-// Обработчик клика по canvas
-canvas.addEventListener('click', e => {
-    const rect = canvas.getBoundingClientRect();
-    const clickX = (e.clientX - rect.left - offsetX) / scale;
-    const clickY = (e.clientY - rect.top - offsetY) / scale;
-
-    // Проверяем, был ли клик по двери (и запоминаем родительский объект)
-    let doorClickedInfo = null;
-    for (const object of visibleObjects) {
-        if (Array.isArray(object.doors)) {
-            for (const door of object.doors) {
-                if (isPointInRotatedRect(clickX, clickY, door)) {
-                    doorClickedInfo = { door, parent: object };
-                    break;
-                }
-            }
-        }
-        if (doorClickedInfo) break;
-    }
-    if (doorClickedInfo) {
-        showDoorInfo(doorClickedInfo.door, doorClickedInfo.parent);
-        return;
-    }
-
-    // Если клик не по двери, проверяем попадание по объектам
-    for (let obj of visibleObjects) {
-        if (
-            clickX >= obj.x &&
-            clickX <= obj.x + obj.width &&
-            clickY >= obj.y &&
-            clickY <= obj.y + obj.height
-        ) {
-            showObjectInfo(obj);
-            return;
-        }
-    }
-    infoBox.innerHTML = 'Объект не найден. Нажмите на элемент на карте.';
-});
-
-// 🔥 Запуск
+// Запуск
 init();

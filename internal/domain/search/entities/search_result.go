@@ -18,4 +18,5 @@ type SearchResult struct {
 	ObjectID     uuid.UUID `json:"object_id"`
 	ObjectTypeID int       `json:"object_type_id"`
 	Preview      string    `json:"preview"`
+	DoorID       uuid.UUID `json:"door_id"`
 }

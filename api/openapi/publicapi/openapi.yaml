@@ -282,6 +282,42 @@ paths:
         "500":
           description: Internal server error
 
+  /api/buildings/{building_id}/route:
+    post:
+      tags:
+        - Route
+      summary: Calculate a route between two points in a building
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuildRouteRequest"
+      responses:
+        "200":
+          description: Route found successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  route:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Connection"
+        "400":
+          description: Invalid parameters or no route found
+        "500":
+          description: Internal server error
+
   /api/buildings/{building_id}/search:
     get:
       tags:
@@ -781,11 +817,15 @@ components:
           format: double
         type:
           $ref: "#/components/schemas/NodeType"
+        floor_id:
+          type: string
+          format: uuid
       required:
         - id
         - x
         - y
         - type
+        - floor_id
 
     Graph:
       type: object
@@ -934,6 +974,9 @@ components:
         object_id:
           type: string
           format: uuid
+        door_id:
+          type: string
+          format: uuid
         object_type_id:
           type: integer
           format: int32
@@ -943,3 +986,21 @@ components:
         - object_id
         - object_type_id
         - preview
+        - door_id
+    BuildRouteRequest:
+      type: object
+      properties:
+        start_node_id:
+          type: string
+          format: uuid
+        end_node_id:
+          type: string
+          format: uuid
+        waypoints:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - start_node_id
+        - end_node_id

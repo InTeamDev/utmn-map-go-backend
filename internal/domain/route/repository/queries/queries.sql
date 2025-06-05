@@ -47,3 +47,14 @@ FROM intersections i
 JOIN floors f ON i.floor_id = f.id
 JOIN buildings b ON f.building_id = b.id
 WHERE b.id = @building_id::uuid;
+
+-- name: ListDoorsByBuilding :many
+SELECT
+    d.id        AS id,
+    d.x         AS x,
+    d.y         AS y,
+    o.floor_id  AS floor_id
+FROM doors AS d
+JOIN objects AS o ON d.object_id = o.id
+JOIN floors  AS f ON o.floor_id   = f.id
+WHERE f.building_id = $1::uuid;

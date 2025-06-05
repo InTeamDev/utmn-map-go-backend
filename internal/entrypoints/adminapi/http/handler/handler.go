@@ -49,12 +49,13 @@ type RouteService interface {
 	// GetRoute строит маршрут между точками
 	// (первая точка - начальная, промежуточные, последняя - конечная).
 	// Точки - ID Объектов.
-	// BuildRoute(ctx context.Context, start uuid.UUID, end uuid.UUID, waypoints []uuid.UUID) ([]entities.Edge, error)
+	// BuildRoute(ctx context.Context, start uuid.UUID, end uuid.UUID, waypoints []uuid.UUID) ([]entities.Connection,
+	// error)
 	// Admin. AddIntersection добавляет новый узел в граф.
 	AddIntersection(ctx context.Context, req routeentities.AddIntersectionRequest) (routeentities.Node, error)
-	GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Intersection, error)
+	GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Node, error)
 	// Admin. AddConnection добавляет новое ребро в граф.
-	AddConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (routeentities.Edge, error)
+	AddConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (routeentities.Connection, error)
 	// Admin. DeleteNode удаляет узел из графа.
 	// DeleteNode(ctx context.Context, id uuid.UUID) error
 	GetConnections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Connection, error)
@@ -504,7 +505,12 @@ func (p *AdminAPI) GetDatabaseHandler(c *gin.Context) {
 			if err == nil {
 				for _, inter := range intersections {
 					if inter.FloorID == fl.Floor.ID {
-						fSync.Intersections = append(fSync.Intersections, inter)
+						fSync.Intersections = append(fSync.Intersections, routeentities.Intersection{
+							ID:      inter.ID,
+							X:       inter.X,
+							Y:       inter.Y,
+							FloorID: inter.FloorID,
+						})
 					}
 				}
 			}

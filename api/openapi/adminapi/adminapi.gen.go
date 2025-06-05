@@ -104,10 +104,11 @@ type Intersection struct {
 
 // Node defines model for Node.
 type Node struct {
-	Id   openapi_types.UUID `json:"id"`
-	Type NodeType           `json:"type"`
-	X    float64            `json:"x"`
-	Y    float64            `json:"y"`
+	FloorId openapi_types.UUID `json:"floor_id"`
+	Id      openapi_types.UUID `json:"id"`
+	Type    NodeType           `json:"type"`
+	X       float64            `json:"x"`
+	Y       float64            `json:"y"`
 }
 
 // NodeType defines model for NodeType.
