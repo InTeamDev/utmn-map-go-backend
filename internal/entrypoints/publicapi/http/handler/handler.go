@@ -8,22 +8,39 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 
-	publicapi "github.com/InTeamDev/utmn-map-go-backend/api/openapi/publicapi"
-	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
+	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
+	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
 )
 
 const defaultPageLimit = 30
 
 type MapService interface {
-	GetBuildings(ctx context.Context) ([]mapentites.Building, error)
-	GetFloors(ctx context.Context, buildID uuid.UUID) ([]mapentites.Floor, error)
-	GetObjectCategories(ctx context.Context) ([]mapentites.ObjectTypeInfo, error)
-	GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]mapentites.Object, error)
-	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentites.GetObjectsResponse, error)
-	GetBuildingByID(ctx context.Context, id uuid.UUID) (mapentites.Building, error)
+	GetBuildings(ctx context.Context) ([]mapentities.Building, error)
+	GetBuildingByID(ctx context.Context, id uuid.UUID) (mapentities.Building, error)
+	GetFloors(ctx context.Context, buildID uuid.UUID) ([]mapentities.Floor, error)
+	GetObjectByID(ctx context.Context, objectID uuid.UUID) (mapentities.Object, error)
+	GetObjectCategories(ctx context.Context) ([]mapentities.ObjectTypeInfo, error)
+	GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]mapentities.Object, error)
+	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentities.GetObjectsResponse, error)
+	GetDoors(ctx context.Context, buildID uuid.UUID) ([]mapentities.GetDoorsResponse, error)
+}
+
+type RouteService interface {
+	// GetRoute строит маршрут между точками
+	// (первая точка - начальная, промежуточные, последняя - конечная).
+	// Точки - ID Объектов.
+	// BuildRoute(ctx context.Context, start uuid.UUID, end uuid.UUID, waypoints []uuid.UUID) ([]entities.Edge, error)
+	// Admin. AddIntersection добавляет новый узел в граф.
+	AddIntersection(ctx context.Context, req routeentities.AddIntersectionRequest) (routeentities.Node, error)
+	GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Intersection, error)
+	// Admin. AddConnection добавляет новое ребро в граф.
+	AddConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (routeentities.Edge, error)
+	// Admin. DeleteNode удаляет узел из графа.
+	// DeleteNode(ctx context.Context, id uuid.UUID) error
+	GetConnections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Connection, error)
+	DeleteIntersection(ctx context.Context, buildingID, intersectionID uuid.UUID) error
 }
 
 type SearchService interface {
@@ -33,37 +50,89 @@ type SearchService interface {
 type PublicAPI struct {
 	mapService    MapService
 	searchService SearchService
+	routeService  RouteService
 }
 
-func NewPublicAPI(mapService MapService, searchService SearchService) *PublicAPI {
-	return &PublicAPI{mapService: mapService, searchService: searchService}
+func NewPublicAPI(mapService MapService, searchService SearchService, routeService RouteService) *PublicAPI {
+	return &PublicAPI{mapService: mapService, searchService: searchService, routeService: routeService}
 }
 
 func (p *PublicAPI) RegisterRoutes(router *gin.Engine) {
-	// GET получить информацию об объекте (для отображения информации об объекте)
-	// GET получение маршрута
-
 	api := router.Group("/api")
 	{
-		// GET получить все корпуса (просто список корпусов, id;name;address)
+		// buildings
 		api.GET("/buildings", p.GetBuildingsHandler)
-		// GET получить все этажи корпуса
-		api.GET("/buildings/:build_id/floors", p.GetFloorsHandler)
-		// GET получить объекты этажа корпуса (для отрисовки объектов на карте)
-		api.GET("/buildings/:build_id/objects", p.GetObjectsByBuildingHandler)
-		// GET поиск объектов
-		api.GET("/buildings/:build_id/search", p.SearchHandler)
-		// GET получить все категории объектов корпуса (для фильтрации объектов на карте)
+		api.GET("/buildings/:building_id", p.GetBuildingByIDHandler)
+		// floors
+		api.GET("/buildings/:building_id/floors", p.GetFloorsHandler)
+		// objects
+		api.GET("/buildings/:building_id/objects", p.GetObjectsByBuildingHandler)
+		api.GET("/buildings/:building_id/objects/:object_id", p.GetObjectByIDHandler)
+		// doors
+		api.GET("/buildings/:building_id/doors", p.GetDoorsHandler)
+		// route
+		api.GET("/buildings/:building_id/intersections", p.GetIntersectionsHandler)
+		api.GET("/buildings/:building_id/connections", p.GetConnectionsHandler)
+		api.GET("/buildings/:building_id/graph/nodes", p.GetNodesHandler)
+		// polygons
+		// search
+		api.GET("/buildings/:building_id/search", p.SearchHandler)
+		// categories
 		api.GET("/categories", p.GetObjectCategories)
-		api.GET("/buildings/:build_id", p.GetBuildingByIDHandler)
 	}
 }
 
-func (p *PublicAPI) GetObjectsByBuildingHandler(c *gin.Context) {
-	buildIDStr := c.Param("build_id")
+func (p *PublicAPI) GetBuildingsHandler(c *gin.Context) {
+	buildings, err := p.mapService.GetBuildings(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"buildings": buildings})
+}
+
+func (p *PublicAPI) GetBuildingByIDHandler(c *gin.Context) {
+	idParam := c.Param("building_id")
+	id, err := uuid.Parse(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	result, err := p.mapService.GetBuildingByID(c.Request.Context(), id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "build not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func (p *PublicAPI) GetFloorsHandler(c *gin.Context) {
+	buildIDStr := c.Param("building_id")
 	buildID, err := uuid.Parse(buildIDStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid build_id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	floors, err := p.mapService.GetFloors(c.Request.Context(), buildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"floors": floors})
+}
+
+func (p *PublicAPI) GetObjectsByBuildingHandler(c *gin.Context) {
+	buildIDStr := c.Param("building_id")
+	buildID, err := uuid.Parse(buildIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
 		return
 	}
 
@@ -76,51 +145,121 @@ func (p *PublicAPI) GetObjectsByBuildingHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"objects": objects})
 }
 
-func (p *PublicAPI) GetBuildingsHandler(c *gin.Context) {
-	buildings, err := p.mapService.GetBuildings(c.Request.Context())
+func (p *PublicAPI) GetObjectByIDHandler(c *gin.Context) {
+	objectID, err := uuid.Parse(c.Param("object_id"))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid object_id"})
 		return
 	}
-	var resp []publicapi.Building
-	for _, b := range buildings {
-		bd := publicapi.Building{
-			Id:      (*openapi_types.UUID)(&b.ID),
-			Name:    &b.Name,
-			Address: &b.Address,
+
+	result, err := p.mapService.GetObjectByID(c.Request.Context(), objectID)
+	if err != nil {
+		if errors.Is(err, mapentities.ErrObjectNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
-		resp = append(resp, bd)
+		return
 	}
-	c.JSON(http.StatusOK, gin.H{"buildings": resp})
+
+	c.JSON(http.StatusOK, result)
 }
 
-func (p *PublicAPI) GetFloorsHandler(c *gin.Context) {
-	buildIDStr := c.Param("build_id")
+func (p *PublicAPI) GetDoorsHandler(c *gin.Context) {
+	buildIDStr := c.Param("building_id")
 	buildID, err := uuid.Parse(buildIDStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid build_id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
 		return
 	}
 
-	floors, err := p.mapService.GetFloors(c.Request.Context(), buildID)
+	doors, err := p.mapService.GetDoors(c.Request.Context(), buildID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"floors": floors})
+
+	c.JSON(http.StatusOK, gin.H{"doors": doors})
 }
 
-func (p *PublicAPI) GetObjectCategories(c *gin.Context) {
-	categories, err := p.mapService.GetObjectCategories(c.Request.Context())
+func (p *PublicAPI) GetIntersectionsHandler(c *gin.Context) {
+	buildIDStr := c.Param("building_id")
+	buildID, err := uuid.Parse(buildIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	intersections, err := p.routeService.GetIntersections(c.Request.Context(), buildID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"categories": categories})
+
+	c.JSON(http.StatusOK, gin.H{"intersections": intersections})
+}
+
+func (p *PublicAPI) GetConnectionsHandler(c *gin.Context) {
+	buildingID, err := uuid.Parse(c.Param("building_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	connections, err := p.routeService.GetConnections(c.Request.Context(), buildingID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"connections": connections})
+}
+
+func (p *PublicAPI) GetNodesHandler(c *gin.Context) {
+	buildIDStr := c.Param("building_id")
+	buildID, err := uuid.Parse(buildIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	intersections, err := p.routeService.GetIntersections(c.Request.Context(), buildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	doors, err := p.mapService.GetDoors(c.Request.Context(), buildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	nodes := make([]routeentities.Node, 0, len(intersections)+len(doors))
+	for _, node := range doors {
+		node := routeentities.Node{
+			ID:   node.ID,
+			Type: routeentities.NodeTypeDoor,
+			X:    node.X,
+			Y:    node.Y,
+		}
+		nodes = append(nodes, node)
+	}
+	for _, node := range intersections {
+		node := routeentities.Node{
+			ID:   node.ID,
+			Type: routeentities.NodeTypeIntersection,
+			X:    node.X,
+			Y:    node.Y,
+		}
+		nodes = append(nodes, node)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"nodes": nodes})
 }
 
 func (p *PublicAPI) SearchHandler(c *gin.Context) {
-	buildIDStr := c.Param("build_id")
+	buildIDStr := c.Param("building_id")
 	buildID, err := uuid.Parse(buildIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
@@ -132,9 +271,9 @@ func (p *PublicAPI) SearchHandler(c *gin.Context) {
 		userCategories = []string{}
 	}
 
-	categories := make([]mapentites.ObjectType, len(userCategories))
+	categories := make([]mapentities.ObjectType, len(userCategories))
 	for i, category := range userCategories {
-		categories[i] = mapentites.ObjectType(category)
+		categories[i] = mapentities.ObjectType(category)
 	}
 
 	query := c.Query("query")
@@ -154,23 +293,11 @@ func (p *PublicAPI) SearchHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"results": results})
 }
 
-func (p *PublicAPI) GetBuildingByIDHandler(c *gin.Context) {
-	idParam := c.Param("build_id")
-	id, err := uuid.Parse(idParam)
+func (p *PublicAPI) GetObjectCategories(c *gin.Context) {
+	categories, err := p.mapService.GetObjectCategories(c.Request.Context())
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid build_id"})
-		return
-	}
-
-	result, err := p.mapService.GetBuildingByID(c.Request.Context(), id)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "build not found"})
-			return
-		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{"categories": categories})
 }

@@ -1,16 +1,39 @@
-openapi: 3.0.3
+openapi: 3.0.0
+
 info:
   title: Public API
-  version: "1.0"
+  description: Read only API приложения
+  version: 1.0.0
+
 servers:
-  - url: /api
+  - url: https://utmn-map.zetoqqq.ru/publicapi/
+    description: Продакшн сервер
+  - url: http://localhost:8000/
+    description: Локальный сервер
+
+tags:
+  - name: Buildings
+    description: Операции с зданиями
+  - name: Floors
+    description: Операции с зданиями
+  - name: Objects
+    description: Операции с объектами
+  - name: Doors
+    description: Операции с дверями
+  - name: Route
+    description: Операции с маршрутами
+  - name: Polygons
+    description: Операции с полигонами
+
 paths:
-  /buildings:
+  /api/buildings:
     get:
-      summary: List buildings
+      tags:
+        - Buildings
+      summary: Retrieve all buildings
       responses:
-        '200':
-          description: OK
+        "200":
+          description: List of buildings
           content:
             application/json:
               schema:
@@ -19,37 +42,53 @@ paths:
                   buildings:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Building'
-  /buildings/{build_id}:
+                      $ref: "#/components/schemas/Building"
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}:
     get:
-      summary: Get building by id
+      tags:
+        - Buildings
+      summary: Retrieve a building by its ID
       parameters:
-        - in: path
-          name: build_id
+        - name: building_id
+          in: path
+          description: UUID of the building
           required: true
           schema:
             type: string
             format: uuid
       responses:
-        '200':
-          description: OK
+        "200":
+          description: Building found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Building'
-  /buildings/{build_id}/floors:
+                $ref: "#/components/schemas/Building"
+        "400":
+          description: Invalid building_id
+        "404":
+          description: Building not found
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/floors:
     get:
-      summary: List floors of building
+      tags:
+        - Floors
+      summary: Retrieve all floors for a building
       parameters:
-        - in: path
-          name: build_id
+        - name: building_id
+          in: path
+          description: UUID of the building
           required: true
           schema:
             type: string
             format: uuid
       responses:
-        '200':
-          description: OK
+        "200":
+          description: List of floors
           content:
             application/json:
               schema:
@@ -58,50 +97,221 @@ paths:
                   floors:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Floor'
-  /buildings/{build_id}/objects:
+                      $ref: "#/components/schemas/Floor"
+        "400":
+          description: Invalid building_id
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/objects:
     get:
-      summary: Get objects of building
+      tags:
+        - Objects
+      summary: Retrieve all objects for a building
       parameters:
-        - in: path
-          name: build_id
+        - name: building_id
+          in: path
+          description: UUID of the building
           required: true
           schema:
             type: string
             format: uuid
       responses:
-        '200':
-          description: OK
+        "200":
+          description: Objects grouped by floor for the building
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetObjectsResponse"
+        "400":
+          description: Invalid building_id
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/objects/{object_id}:
+    get:
+      tags:
+        - Objects
+      summary: Retrieve an object by its ID
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: object_id
+          in: path
+          description: UUID of the object
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Object found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Object"
+        "400":
+          description: Invalid building_id or object_id
+        "404":
+          description: Object not found
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/doors:
+    get:
+      tags:
+        - Doors
+      summary: Retrieve all doors for a building
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: List of doors
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  objects:
-                    $ref: '#/components/schemas/GetObjectsResponse'
-  /buildings/{build_id}/search:
+                  doors:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/GetDoorsResponse"
+        "400":
+          description: Invalid building_id
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/intersections:
     get:
-      summary: Search objects
+      tags:
+        - Route
+      summary: Retrieve all intersections for a building
       parameters:
-        - in: path
-          name: build_id
+        - name: building_id
+          in: path
+          description: UUID of the building
           required: true
           schema:
             type: string
             format: uuid
-        - in: query
-          name: query
+      responses:
+        "200":
+          description: List of intersections
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  intersections:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Intersection"
+        "400":
+          description: Invalid building_id
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/connections:
+    get:
+      tags:
+        - Route
+      summary: Retrieve all connections for a building
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
           schema:
             type: string
-        - in: query
-          name: category
+            format: uuid
+      responses:
+        "200":
+          description: List of connections
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  connections:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Connection"
+        "400":
+          description: Invalid building_id
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/graph/nodes:
+    get:
+      tags:
+        - Route
+      summary: Retrieve all graph nodes (doors and intersections) for a building
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: List of nodes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nodes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Node"
+        "400":
+          description: Invalid building_id
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/search:
+    get:
+      tags:
+        - Search
+      summary: Search objects within a building
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: query
+          in: query
+          description: Search query string
+          required: false
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: Filter by one or more object categories
+          required: false
           schema:
             type: array
             items:
               type: string
       responses:
-        '200':
-          description: OK
+        "200":
+          description: Search results
           content:
             application/json:
               schema:
@@ -110,13 +320,20 @@ paths:
                   results:
                     type: array
                     items:
-                      $ref: '#/components/schemas/SearchResult'
-  /categories:
+                      $ref: "#/components/schemas/SearchResult"
+        "400":
+          description: Invalid building_id or query parameters
+        "500":
+          description: Internal server error
+
+  /api/categories:
     get:
-      summary: Get object categories
+      tags:
+        - Categories
+      summary: Retrieve all object categories
       responses:
-        '200':
-          description: OK
+        "200":
+          description: List of object type information
           content:
             application/json:
               schema:
@@ -125,46 +342,41 @@ paths:
                   categories:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ObjectTypeInfo'
+                      $ref: "#/components/schemas/ObjectTypeInfo"
+        "500":
+          description: Internal server error
+
 components:
   schemas:
-    Building:
+    ObjectType:
+      type: string
+      enum:
+        - cabinet
+        - department
+        - man-toilet
+        - woman-toilet
+        - stair
+        - wardrobe
+        - gym
+        - cafe
+        - canteen
+        - chill-zone
+
+    ObjectTypeInfo:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        address:
-          type: string
-    Floor:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
+          type: integer
+          format: int32
         name:
           type: string
         alias:
           type: string
-    Door:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        x:
-          type: number
-        y:
-          type: number
-        width:
-          type: number
-        height:
-          type: number
-        object_id:
-          type: string
-          format: uuid
+      required:
+        - id
+        - name
+        - alias
+
     Object:
       type: object
       properties:
@@ -179,20 +391,149 @@ components:
           type: string
         x:
           type: number
+          format: double
         y:
           type: number
+          format: double
         width:
           type: number
+          format: double
         height:
           type: number
+          format: double
         object_type_id:
           type: integer
+          format: int32
         doors:
           type: array
           items:
-            $ref: '#/components/schemas/Door'
+            $ref: "#/components/schemas/Door"
         floor:
-          $ref: '#/components/schemas/Floor'
+          $ref: "#/components/schemas/Floor"
+      required:
+        - id
+        - name
+        - alias
+        - description
+        - x
+        - y
+        - width
+        - height
+        - object_type_id
+        - doors
+        - floor
+
+    SyncAllData:
+      type: object
+      properties:
+        object_types:
+          type: array
+          items:
+            $ref: "#/components/schemas/ObjectTypeInfo"
+        buildings:
+          type: array
+          items:
+            $ref: "#/components/schemas/SyncBuildings"
+      required:
+        - object_types
+        - buildings
+
+    SyncBuildings:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+        floors:
+          type: array
+          items:
+            $ref: "#/components/schemas/SyncFloors"
+      required:
+        - id
+        - name
+        - address
+        - floors
+
+    SyncFloors:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        alias:
+          type: string
+        building_id:
+          type: string
+          format: uuid
+        objects:
+          type: array
+          items:
+            $ref: "#/components/schemas/Object"
+        doors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Door"
+        floor_polygons:
+          type: array
+          items:
+            $ref: "#/components/schemas/Polygon"
+        intersections:
+          type: array
+          items:
+            $ref: "#/components/schemas/Intersection"
+        connections:
+          type: array
+          items:
+            $ref: "#/components/schemas/Connection"
+      required:
+        - id
+        - name
+        - alias
+        - building_id
+        - objects
+        - doors
+        - floor_polygons
+        - intersections
+        - connections
+
+    Floor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        alias:
+          type: string
+      required:
+        - id
+        - name
+        - alias
+
+    BackgroundPoint:
+      type: object
+      properties:
+        order:
+          type: integer
+          format: int32
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+      required:
+        - order
+        - x
+        - y
+
     FloorBackgroundElement:
       type: object
       properties:
@@ -203,60 +544,353 @@ components:
           type: string
         z_index:
           type: integer
+          format: int32
         points:
           type: array
           items:
-            $ref: '#/components/schemas/BackgroundPoint'
-    BackgroundPoint:
+            $ref: "#/components/schemas/BackgroundPoint"
+      required:
+        - id
+        - label
+        - z_index
+        - points
+
+    PolygonPoint:
       type: object
       properties:
+        polygon_id:
+          type: string
+          format: uuid
         order:
           type: integer
+          format: int32
         x:
           type: number
+          format: double
         y:
           type: number
+          format: double
+      required:
+        - polygon_id
+        - order
+        - x
+        - y
+
+    Polygon:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        floor_id:
+          type: string
+          format: uuid
+        label:
+          type: string
+        z_index:
+          type: integer
+          format: int32
+        points:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolygonPoint"
+      required:
+        - id
+        - floor_id
+        - label
+        - z_index
+        - points
+
+    Building:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+      required:
+        - id
+        - name
+        - address
+
+    CreateBuildingInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+      required:
+        - id
+        - name
+        - address
+
+    UpdateBuildingInput:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+
+    Door:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        width:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+        object_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - x
+        - y
+        - width
+        - height
+        - object_id
+
+    PolygonPointRequest:
+      type: object
+      properties:
+        point_order:
+          type: integer
+          format: int32
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+      required:
+        - point_order
+        - x
+        - y
+
+    AddIntersectionRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        floor_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - x
+        - y
+        - floor_id
+
+    Connection:
+      type: object
+      properties:
+        from_id:
+          type: string
+          format: uuid
+        to_id:
+          type: string
+          format: uuid
+        weight:
+          type: number
+          format: double
+      required:
+        - from_id
+        - to_id
+        - weight
+
+    Intersection:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        floor_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - x
+        - y
+        - floor_id
+
+    Edge:
+      type: object
+      properties:
+        from_id:
+          type: string
+          format: uuid
+        to_id:
+          type: string
+          format: uuid
+        weight:
+          type: number
+          format: double
+      required:
+        - from_id
+        - to_id
+        - weight
+
+    NodeType:
+      type: string
+      enum:
+        - intersection
+        - door
+
+    Node:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        type:
+          $ref: "#/components/schemas/NodeType"
+      required:
+        - id
+        - x
+        - y
+        - type
+
+    Graph:
+      type: object
+      properties:
+        nodes:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Node"
+        edges:
+          type: array
+          items:
+            $ref: "#/components/schemas/Edge"
+        building_id:
+          type: string
+          format: uuid
+      required:
+        - nodes
+        - edges
+        - building_id
+
+    GetDoorsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        width:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+        object_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - x
+        - y
+        - width
+        - height
+        - object_id
+
     FloorWithData:
       type: object
       properties:
         floor:
-          $ref: '#/components/schemas/Floor'
+          $ref: "#/components/schemas/Floor"
         objects:
           type: array
           items:
-            $ref: '#/components/schemas/Object'
+            $ref: "#/components/schemas/Object"
         background:
           type: array
           items:
-            $ref: '#/components/schemas/FloorBackgroundElement'
+            $ref: "#/components/schemas/FloorBackgroundElement"
+      required:
+        - floor
+        - objects
+        - background
+
     GetObjectsResponse:
       type: object
       properties:
         building:
-          $ref: '#/components/schemas/Building'
+          $ref: "#/components/schemas/Building"
         floors:
           type: array
           items:
-            $ref: '#/components/schemas/FloorWithData'
-    ObjectTypeInfo:
+            $ref: "#/components/schemas/FloorWithData"
+      required:
+        - building
+        - floors
+
+    UpdateObjectInput:
       type: object
       properties:
-        id:
-          type: integer
         name:
           type: string
         alias:
           type: string
-    SearchResult:
-      type: object
-      properties:
-        object_id:
+        description:
           type: string
-          format: uuid
-        category:
-          type: string
-        preview:
-          type: string
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        width:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+        object_type_id:
+          type: integer
+          format: int32
+
     CreateObjectInput:
       type: object
       properties:
@@ -271,30 +905,40 @@ components:
           type: string
         x:
           type: number
+          format: double
         y:
           type: number
+          format: double
         width:
           type: number
+          format: double
         height:
           type: number
+          format: double
         object_type_id:
           type: integer
-    UpdateObjectInput:
+          format: int32
+      required:
+        - name
+        - alias
+        - description
+        - x
+        - y
+        - width
+        - height
+        - object_type_id
+
+    SearchResult:
       type: object
       properties:
-        name:
+        object_id:
           type: string
-        alias:
+          format: uuid
+        category:
           type: string
-        description:
+        preview:
           type: string
-        x:
-          type: number
-        y:
-          type: number
-        width:
-          type: number
-        height:
-          type: number
-        object_type_id:
-          type: integer
+      required:
+        - object_id
+        - category
+        - preview

@@ -1,0 +1,6 @@
+package: authapi
+generate:
+  gin-server: true
+  models: true
+  client: true
+output: authapi.gen.go

@@ -1,0 +1,6 @@
+package: adminapi
+generate:
+  gin-server: true
+  models: true
+  client: true
+output: adminapi.gen.go
