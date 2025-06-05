@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
+	"sort"
+	"strings"
 
 	mapcache "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/cache"
 	mapservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service"
@@ -39,14 +41,25 @@ func (s *SearchService) Search(
 	// filter objects by name
 	filteredObjects := make([]searchentities.SearchResult, 0, len(objects))
 	for _, object := range objects {
-		if object.Name == req.Query || req.Query == "" {
+		if strings.Contains(strings.ToLower(object.Name), strings.ToLower(req.Query)) ||
+			strings.Contains(strings.ToLower(object.Alias), strings.ToLower(req.Query)) ||
+			strings.Contains(strings.ToLower(object.Description), strings.ToLower(req.Query)) ||
+			req.Query == "" {
 			filteredObjects = append(filteredObjects, searchentities.SearchResult{
-				ObjectID: object.ID,
-				/// Category: string(object.ObjectType),	FIX (Sam): Временно закомментированно. Паша, разберись!
-				/// Preview:  fmt.Sprintf("%s %s (%s floor)", object.ObjectType, object.Name, object.Floor.Name),
+				ObjectID:     object.ID,
+				ObjectTypeID: int(object.ObjectTypeID),
+				Preview:      fmt.Sprintf("%s (%s)", object.Name, object.Floor.Name),
 			})
 		}
 	}
+
+	sort.Slice(filteredObjects, func(i, j int) bool {
+		// Sort by name, then by alias, then by description
+		if filteredObjects[i].Preview != filteredObjects[j].Preview {
+			return filteredObjects[i].Preview < filteredObjects[j].Preview
+		}
+		return filteredObjects[i].ObjectID.String() < filteredObjects[j].ObjectID.String()
+	})
 
 	return filteredObjects, nil
 }

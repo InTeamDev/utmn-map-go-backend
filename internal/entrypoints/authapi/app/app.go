@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"github.com/InTeamDev/utmn-map-go-backend/config"
@@ -20,7 +21,11 @@ import (
 	"github.com/InTeamDev/utmn-map-go-backend/internal/server"
 )
 
-const readHeaderTimeout = 5 * time.Second
+const (
+	ttl               = 5 * time.Minute
+	readHeaderTimeout = 5 * time.Second
+	maxAge            = 24 * time.Hour
+)
 
 type BotClient struct {
 	url      string
@@ -72,6 +77,15 @@ func runApp(ctx context.Context, configPath string) error {
 	svc := authservice.New(repo, bot, []byte(cfg.JWTSecret))
 
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
+		AllowCredentials: true,
+		MaxAge:           maxAge,
+	}))
+
 	api := handler.NewAuthAPI(svc, repo, []byte(cfg.JWTSecret), cfg.Auth.ClientID, cfg.Auth.AccessToken)
 	api.RegisterRoutes(r)
 

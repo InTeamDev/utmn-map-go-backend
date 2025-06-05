@@ -14,14 +14,6 @@ import (
 )
 
 type MapService interface {
-	GetObjectByID(ctx context.Context, objectID uuid.UUID) (mapentities.Object, error)
-	CreateObject(
-		ctx context.Context,
-		floorID uuid.UUID,
-		input mapentities.CreateObjectInput,
-	) (mapentities.Object, error)
-	UpdateObject(ctx context.Context, id uuid.UUID, input mapentities.UpdateObjectInput) (mapentities.Object, error)
-	DeleteObject(ctx context.Context, objectID uuid.UUID) error
 	CreateBuilding(ctx context.Context, input mapentities.CreateBuildingInput) (mapentities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 	UpdateBuilding(
@@ -29,12 +21,21 @@ type MapService interface {
 		id uuid.UUID,
 		input mapentities.UpdateBuildingInput,
 	) (mapentities.Building, error)
-	GetDoors(ctx context.Context, buildID uuid.UUID) ([]mapentities.GetDoorsResponse, error)
-	GetObjectCategories(ctx context.Context) ([]mapentities.ObjectTypeInfo, error)
 	GetBuildings(ctx context.Context) ([]mapentities.Building, error)
+
+	CreateObject(
+		ctx context.Context,
+		floorID uuid.UUID,
+		input mapentities.CreateObjectInput,
+	) (mapentities.Object, error)
+	UpdateObject(ctx context.Context, id uuid.UUID, input mapentities.UpdateObjectInput) (mapentities.Object, error)
+	DeleteObject(ctx context.Context, objectID uuid.UUID) error
+	GetObjectCategories(ctx context.Context) ([]mapentities.ObjectTypeInfo, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentities.GetObjectsResponse, error)
+
 	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor mapentities.Floor) error
 	CreateDoor(ctx context.Context, objectID uuid.UUID, door mapentities.Door) error
+
 	CreatePolygon(ctx context.Context, polygon mapentities.Polygon) (mapentities.Polygon, error)
 	CreatePolygonPoint(
 		ctx context.Context,
@@ -72,45 +73,27 @@ func NewAdminAPI(mapService MapService, routeService RouteService) *AdminAPI {
 func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 	api := router.Group("/api", m...)
 	{
-		api.GET("/buildings/:building_id/floors/:floor_id/objects/:object_id", p.GetObjectByIDHandler)
-		api.POST("/buildings/:building_id/floors/:floor_id/objects", p.CreateObjectHandler)
-		api.PATCH("/objects/:object_id", p.UpdateObjectHandler)
+		// buildings
 		api.POST("/buildings", p.CreateBuildingHandler)
-		api.POST("/route/intersections", p.AddIntersection)
-		api.GET("/buildings/:building_id/intersections", p.GetIntersectionsHandler)
-		api.POST("/route/connections", p.AddConnection)
-		api.GET("/buildings/:building_id/connections", p.GetConnectionsHandler)
-		api.DELETE("/buildings/:building_id", p.DeleteBuildingHandler)
-		api.DELETE("/buildings/:building_id/objects/:object_id", p.DeleteObjectHandler)
 		api.PATCH("/buildings/:building_id", p.UpdateBuilding)
-		api.POST("/floors/:floor_id/poligons", p.CreatePolygonHandler)
-		api.POST("/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
+		api.DELETE("/buildings/:building_id", p.DeleteBuildingHandler)
+		// TODO: floors post, patch and delete
+		// objects
+		api.POST("/buildings/:building_id/floors/:floor_id/objects", p.CreateObjectHandler)
+		api.PATCH("/buildings/:building_id/floors/:floor_id/objects/:object_id", p.UpdateObjectHandler)
+		api.DELETE("/buildings/:building_id/floors/:floor_id/objects/:object_id", p.DeleteObjectHandler)
+		// TODO: doors post, patch and delete
+		// route
+		api.POST("/buildings/:building_id/route/intersections", p.AddIntersection)
+		api.POST("/buildings/:building_id/route/connections", p.AddConnection)
 		api.DELETE("/buildings/:building_id/intersections/:intersection_id", p.DeleteIntersectionHandler)
-		api.GET("/buildings/:building_id/doors", p.GetDoorsHandler)
-		api.GET("/buildings/:building_id/graph/nodes", p.GetNodesHandler)
+		// polygons
+		api.POST("/buildings/:building_id/floors/:floor_id/poligons", p.CreatePolygonHandler)
+		api.POST("/buildings/:building_id/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
+		// sync
 		api.POST("/sync", p.SyncDatabaseHandler)
 		api.GET("/sync", p.GetDatabaseHandler)
 	}
-}
-
-func (p *AdminAPI) GetObjectByIDHandler(c *gin.Context) {
-	objectID, err := uuid.Parse(c.Param("object_id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid object_id"})
-		return
-	}
-
-	result, err := p.mapService.GetObjectByID(c.Request.Context(), objectID)
-	if err != nil {
-		if errors.Is(err, mapentities.ErrObjectNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
-		return
-	}
-
-	c.JSON(http.StatusOK, result)
 }
 
 func (p *AdminAPI) CreateObjectHandler(c *gin.Context) {
@@ -301,22 +284,6 @@ func (p *AdminAPI) AddConnection(c *gin.Context) {
 	c.JSON(http.StatusCreated, result)
 }
 
-func (p *AdminAPI) GetConnectionsHandler(c *gin.Context) {
-	buildingID, err := uuid.Parse(c.Param("building_id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
-		return
-	}
-
-	connections, err := p.routeService.GetConnections(c.Request.Context(), buildingID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"connections": connections})
-}
-
 func (p *AdminAPI) UpdateBuilding(c *gin.Context) {
 	idParam := c.Param("building_id")
 	id, err := uuid.Parse(idParam)
@@ -391,83 +358,6 @@ func (p *AdminAPI) CreatePolygonPointsHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, result)
-}
-
-func (p *AdminAPI) GetIntersectionsHandler(c *gin.Context) {
-	buildIDStr := c.Param("building_id")
-	buildID, err := uuid.Parse(buildIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
-		return
-	}
-
-	intersections, err := p.routeService.GetIntersections(c.Request.Context(), buildID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"intersections": intersections})
-}
-
-func (p *AdminAPI) GetDoorsHandler(c *gin.Context) {
-	buildIDStr := c.Param("building_id")
-	buildID, err := uuid.Parse(buildIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
-		return
-	}
-
-	doors, err := p.mapService.GetDoors(c.Request.Context(), buildID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"doors": doors})
-}
-
-func (p *AdminAPI) GetNodesHandler(c *gin.Context) {
-	buildIDStr := c.Param("building_id")
-	buildID, err := uuid.Parse(buildIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
-		return
-	}
-
-	intersections, err := p.routeService.GetIntersections(c.Request.Context(), buildID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	doors, err := p.mapService.GetDoors(c.Request.Context(), buildID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	nodes := make([]routeentities.Node, 0, len(intersections)+len(doors))
-	for _, node := range doors {
-		node := routeentities.Node{
-			ID:   node.ID,
-			Type: routeentities.NodeTypeDoor,
-			X:    node.X,
-			Y:    node.Y,
-		}
-		nodes = append(nodes, node)
-	}
-	for _, node := range intersections {
-		node := routeentities.Node{
-			ID:   node.ID,
-			Type: routeentities.NodeTypeIntersection,
-			X:    node.X,
-			Y:    node.Y,
-		}
-		nodes = append(nodes, node)
-	}
-
-	c.JSON(http.StatusOK, gin.H{"nodes": nodes})
 }
 
 func (p *AdminAPI) SyncDatabaseHandler(c *gin.Context) {

@@ -51,7 +51,8 @@ func (a *AuthAPI) SaveUser(c *gin.Context) {
 		return
 	}
 	if err := a.svc.RegisterUser(req.TGID, req.TGUsername); err != nil {
-		if errors.Is(err, authservice.ErrNotFound) {
+		slog.Error("Failed to register user", "error", err, "tg_username", req.TGUsername)
+		if errors.Is(err, authservice.ErrConflict) {
 			c.Status(http.StatusConflict)
 			return
 		}
@@ -90,11 +91,13 @@ func (a *AuthAPI) Verify(c *gin.Context) {
 		Code       string `json:"code"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
+		slog.Error("Failed to bind request", "error", err)
 		c.Status(http.StatusBadRequest)
 		return
 	}
 	access, refresh, err := a.svc.VerifyCode(req.TGUsername, req.Code)
 	if err != nil {
+		slog.Error("Failed to verify code", "error", err, "tg_username", req.TGUsername)
 		switch err {
 		case authservice.ErrNotFound:
 			c.Status(http.StatusNotFound)

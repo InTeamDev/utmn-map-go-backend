@@ -1,0 +1,177 @@
+openapi: 3.0.0
+
+info:
+  title: Auth API
+  description: API для аутентификации и авторизации пользователей
+  version: 1.0.0
+
+servers:
+  - url: https://utmn-map.zetoqqq.ru/authapi/
+    description: Продакшн сервер
+  - url: http://localhost:8002/
+    description: Локальный сервер
+
+tags:
+  - name: Auth
+    description: Операции связанные с аутентификацией и авторизацией пользователей
+
+paths:
+  /api/auth/send_code:
+    post:
+      tags:
+        - Auth
+      summary: Send a login code to a Telegram user
+      requestBody:
+        description: Username to send the code to
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tg_username:
+                  type: string
+              required:
+                - tg_username
+      responses:
+        "200":
+          description: Code sent successfully, returns expiration timestamp
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  expires_at:
+                    type: string
+                    format: date-time
+        "400":
+          description: Bad request (missing or invalid tg_username)
+        "404":
+          description: User not found
+        "429":
+          description: Too many requests (rate limit exceeded)
+        "503":
+          description: Service unavailable
+
+  /api/auth/verify:
+    post:
+      tags:
+        - Auth
+      summary: Verify a login code and issue tokens
+      requestBody:
+        description: Username and code to verify
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tg_username:
+                  type: string
+                code:
+                  type: string
+              required:
+                - tg_username
+                - code
+      responses:
+        "200":
+          description: Verification successful, returns access token and sets refresh cookie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+        "400":
+          description: Bad request (invalid JSON, missing fields, invalid or expired code)
+        "401":
+          description: Unauthorized (invalid code)
+        "404":
+          description: User not found
+        "429":
+          description: Too many attempts
+        "500":
+          description: Internal server error
+
+  /api/auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refresh access token using refresh cookie
+      responses:
+        "200":
+          description: Refresh successful, returns new access token and sets a new refresh cookie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+        "400":
+          description: Bad request (refresh_token cookie not provided)
+        "401":
+          description: Unauthorized (invalid or expired refresh token)
+        "500":
+          description: Internal server error
+
+  /api/auth/save_tg_user:
+    post:
+      tags:
+        - Auth
+      summary: Register or save a Telegram user (admin only)
+      security:
+        - BasicAuth: []
+      requestBody:
+        description: Telegram user data to register
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tg_id:
+                  type: integer
+                  format: int64
+                tg_username:
+                  type: string
+              required:
+                - tg_id
+                - tg_username
+      responses:
+        "204":
+          description: User saved successfully (no content)
+        "400":
+          description: Bad request (invalid JSON or missing fields)
+        "409":
+          description: Conflict (user already exists or not found)
+        "500":
+          description: Internal server error
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Log out the current user by invalidating tokens
+      security:
+        - BearerAuth: []
+      responses:
+        "204":
+          description: Logout successful (no content)
+        "400":
+          description: Bad request (missing refresh_token cookie)
+        "401":
+          description: Unauthorized (invalid or expired token)
+        "500":
+          description: Internal server error
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    BasicAuth:
+      type: http
+      scheme: basic

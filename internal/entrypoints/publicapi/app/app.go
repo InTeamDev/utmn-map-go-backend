@@ -18,6 +18,8 @@ import (
 	mapcache "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/cache"
 	maprepository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository"
 	mapservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service"
+	routerepository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/repository"
+	routeservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/service"
 	searchservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/service"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/entrypoints/publicapi/http/handler"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/middleware"
@@ -65,13 +67,17 @@ func runApp(ctx context.Context, configPath string) error {
 
 	searchService := searchservice.NewSearchService(mapCache, mapService)
 
+	routeConverter := routerepository.NewRouteConverter()
+	routeRepository := routerepository.NewRoute(db, routeConverter)
+	routeService := routeservice.NewRoute(routeRepository)
+
 	metrics := middleware.NewMetrics()
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
 		AllowCredentials: true,
 		MaxAge:           maxAge,
 	}))
@@ -79,7 +85,7 @@ func runApp(ctx context.Context, configPath string) error {
 	router.Use(metrics.Middleware())
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
-	publicAPI := handler.NewPublicAPI(mapService, searchService)
+	publicAPI := handler.NewPublicAPI(mapService, searchService, routeService)
 	publicAPI.RegisterRoutes(router)
 
 	srv := &http.Server{

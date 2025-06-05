@@ -1,0 +1,1064 @@
+openapi: 3.0.0
+
+info:
+  title: Admin API
+  description: API для панели администратора
+  version: 1.0.0
+
+servers:
+  - url: https://utmn-map.zetoqqq.ru/adminapi/
+    description: Продакшн сервер
+  - url: http://localhost:8001/
+    description: Локальный сервер
+
+tags:
+  - name: Buildings
+    description: Операции с зданиями
+  - name: Floors
+    description: Операции с зданиями
+  - name: Objects
+    description: Операции с объектами
+  - name: Doors
+    description: Операции с дверями
+  - name: Route
+    description: Операции с маршрутами
+  - name: Polygons
+    description: Операции с полигонами
+  - name: Sync
+    description: Синхронизация данных
+
+security:
+  - BearerAuth: []
+
+paths:
+  /api/buildings:
+    post:
+      tags:
+        - Buildings
+      summary: Create a new building
+      requestBody:
+        description: Payload for creating a building
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBuildingInput"
+      responses:
+        "200":
+          description: Building created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Building"
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}:
+    patch:
+      tags:
+        - Buildings
+      summary: Update an existing building
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Fields to update for the building
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBuildingInput"
+      responses:
+        "200":
+          description: Building updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Building"
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+    delete:
+      tags:
+        - Buildings
+      summary: Delete a building
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: No content—building deleted
+        "400":
+          description: Invalid building_id
+        "401":
+          description: Unauthorized
+        "404":
+          description: Building not found
+        "500":
+          description: Internal server error
+
+  # TODO: Implement Floors post; patch; delete
+
+  /api/buildings/{building_id}/floors/{floor_id}/objects:
+    post:
+      tags:
+        - Objects
+      summary: Create a new object on a floor
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: floor_id
+          in: path
+          description: UUID of the floor
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Creation payload for a new object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateObjectInput"
+      responses:
+        "201":
+          description: Object created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Object"
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "404":
+          description: Building or Floor not found
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/floors/{floor_id}/objects/{object_id}:
+    patch:
+      tags:
+        - Objects
+      summary: Update an existing object
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: floor_id
+          in: path
+          description: UUID of the floor
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: object_id
+          in: path
+          description: UUID of the object to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Fields to update for the object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateObjectInput"
+      responses:
+        "200":
+          description: Object updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Object"
+        "400":
+          description: Invalid object_id or payload
+        "401":
+          description: Unauthorized
+        "404":
+          description: Building, Floor or Object not found
+        "500":
+          description: Internal server error
+    delete:
+      tags:
+        - Objects
+      summary: Delete an object
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: floor_id
+          in: path
+          description: UUID of the floor
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: object_id
+          in: path
+          description: UUID of the object to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: No content—object deleted
+        "400":
+          description: Invalid ID supplied
+        "401":
+          description: Unauthorized
+        "404":
+          description: Building, Floor or Object not found
+        "500":
+          description: Internal server error
+
+  # TODO: Implement Doors post; patch; delete
+
+  /api/buildings/{building_id}/route/intersections:
+    post:
+      tags:
+        - Route
+      summary: Add a new intersection node
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Payload for adding an intersection
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddIntersectionRequest"
+      responses:
+        "201":
+          description: Intersection added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Node"
+        "400":
+          description: Invalid input
+        "500":
+          description: Internal server error
+  /api/buildings/{building_id}/route/intersections/{intersection_id}:
+    delete:
+      tags:
+        - Route
+      summary: Delete an intersection
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: intersection_id
+          in: path
+          description: UUID of the intersection to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: No content—intersection deleted
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Intersection not found
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/route/connections:
+    post:
+      tags:
+        - Route
+      summary: Add a new connection (edge)
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Payload for adding a connection
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Connection"
+      responses:
+        "201":
+          description: Connection added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Edge"
+        "400":
+          description: Invalid input
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/floors/{floor_id}/poligons:
+    post:
+      tags:
+        - Polygons
+      summary: Create a polygon on a floor
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: floor_id
+          in: path
+          description: UUID of the floor
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Payload for creating a polygon
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                z_index:
+                  type: integer
+                  format: int32
+              required:
+                - label
+      responses:
+        "200":
+          description: Polygon created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Polygon"
+        "400":
+          description: Invalid input
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/floors/{floor_id}/poligons/{p_id}/points:
+    post:
+      tags:
+        - Polygons
+      summary: Add points to a polygon
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: floor_id
+          in: path
+          description: UUID of the floor
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: p_id
+          in: path
+          description: UUID of the polygon
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Array of points to add
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/PolygonPointRequest"
+      responses:
+        "201":
+          description: Polygon points added
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PolygonPoint"
+        "400":
+          description: Invalid input
+        "500":
+          description: Internal server error
+
+  /api/sync:
+    post:
+      tags:
+        - Sync
+      summary: Synchronize the entire database
+      requestBody:
+        description: Full synchronization payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SyncAllData"
+      responses:
+        "201":
+          description: Synchronization completed
+        "400":
+          description: Invalid input
+        "500":
+          description: Internal server error
+
+    get:
+      tags:
+        - Sync
+      summary: Retrieve the entire database as sync payload
+      responses:
+        "200":
+          description: Current database snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncAllData"
+        "500":
+          description: Internal server error
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    BasicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    ObjectType:
+      type: string
+      enum:
+        - cabinet
+        - department
+        - man-toilet
+        - woman-toilet
+        - stair
+        - wardrobe
+        - gym
+        - cafe
+        - canteen
+        - chill-zone
+
+    ObjectTypeInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        alias:
+          type: string
+      required:
+        - id
+        - name
+        - alias
+
+    Object:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        alias:
+          type: string
+        description:
+          type: string
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        width:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+        object_type_id:
+          type: integer
+          format: int32
+        doors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Door"
+        floor:
+          $ref: "#/components/schemas/Floor"
+      required:
+        - id
+        - name
+        - alias
+        - description
+        - x
+        - y
+        - width
+        - height
+        - object_type_id
+        - doors
+        - floor
+
+    SyncAllData:
+      type: object
+      properties:
+        object_types:
+          type: array
+          items:
+            $ref: "#/components/schemas/ObjectTypeInfo"
+        buildings:
+          type: array
+          items:
+            $ref: "#/components/schemas/SyncBuildings"
+      required:
+        - object_types
+        - buildings
+
+    SyncBuildings:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+        floors:
+          type: array
+          items:
+            $ref: "#/components/schemas/SyncFloors"
+      required:
+        - id
+        - name
+        - address
+        - floors
+
+    SyncFloors:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        alias:
+          type: string
+        building_id:
+          type: string
+          format: uuid
+        objects:
+          type: array
+          items:
+            $ref: "#/components/schemas/Object"
+        doors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Door"
+        floor_polygons:
+          type: array
+          items:
+            $ref: "#/components/schemas/Polygon"
+        intersections:
+          type: array
+          items:
+            $ref: "#/components/schemas/Intersection"
+        connections:
+          type: array
+          items:
+            $ref: "#/components/schemas/Connection"
+      required:
+        - id
+        - name
+        - alias
+        - building_id
+        - objects
+        - doors
+        - floor_polygons
+        - intersections
+        - connections
+
+    Floor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        alias:
+          type: string
+      required:
+        - id
+        - name
+        - alias
+
+    BackgroundPoint:
+      type: object
+      properties:
+        order:
+          type: integer
+          format: int32
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+      required:
+        - order
+        - x
+        - y
+
+    FloorBackgroundElement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        label:
+          type: string
+        z_index:
+          type: integer
+          format: int32
+        points:
+          type: array
+          items:
+            $ref: "#/components/schemas/BackgroundPoint"
+      required:
+        - id
+        - label
+        - z_index
+        - points
+
+    PolygonPoint:
+      type: object
+      properties:
+        polygon_id:
+          type: string
+          format: uuid
+        order:
+          type: integer
+          format: int32
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+      required:
+        - polygon_id
+        - order
+        - x
+        - y
+
+    Polygon:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        floor_id:
+          type: string
+          format: uuid
+        label:
+          type: string
+        z_index:
+          type: integer
+          format: int32
+        points:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolygonPoint"
+      required:
+        - id
+        - floor_id
+        - label
+        - z_index
+        - points
+
+    Building:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+      required:
+        - id
+        - name
+        - address
+
+    CreateBuildingInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+      required:
+        - id
+        - name
+        - address
+
+    UpdateBuildingInput:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+
+    Door:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        width:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+        object_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - x
+        - y
+        - width
+        - height
+        - object_id
+
+    PolygonPointRequest:
+      type: object
+      properties:
+        point_order:
+          type: integer
+          format: int32
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+      required:
+        - point_order
+        - x
+        - y
+
+    AddIntersectionRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        floor_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - x
+        - y
+        - floor_id
+
+    Connection:
+      type: object
+      properties:
+        from_id:
+          type: string
+          format: uuid
+        to_id:
+          type: string
+          format: uuid
+        weight:
+          type: number
+          format: double
+      required:
+        - from_id
+        - to_id
+        - weight
+
+    Intersection:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        floor_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - x
+        - y
+        - floor_id
+
+    Edge:
+      type: object
+      properties:
+        from_id:
+          type: string
+          format: uuid
+        to_id:
+          type: string
+          format: uuid
+        weight:
+          type: number
+          format: double
+      required:
+        - from_id
+        - to_id
+        - weight
+
+    NodeType:
+      type: string
+      enum:
+        - intersection
+        - door
+
+    Node:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        type:
+          $ref: "#/components/schemas/NodeType"
+      required:
+        - id
+        - x
+        - y
+        - type
+
+    Graph:
+      type: object
+      properties:
+        nodes:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Node"
+        edges:
+          type: array
+          items:
+            $ref: "#/components/schemas/Edge"
+        building_id:
+          type: string
+          format: uuid
+      required:
+        - nodes
+        - edges
+        - building_id
+
+    GetDoorsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        width:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+        object_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - x
+        - y
+        - width
+        - height
+        - object_id
+
+    FloorWithData:
+      type: object
+      properties:
+        floor:
+          $ref: "#/components/schemas/Floor"
+        objects:
+          type: array
+          items:
+            $ref: "#/components/schemas/Object"
+        background:
+          type: array
+          items:
+            $ref: "#/components/schemas/FloorBackgroundElement"
+      required:
+        - floor
+        - objects
+        - background
+
+    GetObjectsResponse:
+      type: object
+      properties:
+        building:
+          $ref: "#/components/schemas/Building"
+        floors:
+          type: array
+          items:
+            $ref: "#/components/schemas/FloorWithData"
+      required:
+        - building
+        - floors
+
+    UpdateObjectInput:
+      type: object
+      properties:
+        name:
+          type: string
+        alias:
+          type: string
+        description:
+          type: string
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        width:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+        object_type_id:
+          type: integer
+          format: int32
+
+    CreateObjectInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        alias:
+          type: string
+        description:
+          type: string
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        width:
+          type: number
+          format: double
+        height:
+          type: number
+          format: double
+        object_type_id:
+          type: integer
+          format: int32
+      required:
+        - name
+        - alias
+        - description
+        - x
+        - y
+        - width
+        - height
+        - object_type_id

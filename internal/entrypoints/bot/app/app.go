@@ -103,8 +103,13 @@ func registerCommands(bot *telebot.Bot, cfg *config.Bot) {
 			return c.Send("backend unavailable")
 		}
 		defer resp.Body.Close()
-		if resp.StatusCode != http.StatusNoContent {
-			return c.Send("registration failed")
+		switch resp.StatusCode {
+		case http.StatusBadRequest:
+			return c.Send("неправильный формат запроса")
+		case http.StatusConflict:
+			return c.Send("ты уже зарегистрирован")
+		case http.StatusInternalServerError:
+			slog.Error("backend error during registration", "status", resp.StatusCode)
 		}
 		return c.Send("Ты зарегистрирован. Для повышения роли, обратись к куратору")
 	})
