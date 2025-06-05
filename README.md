@@ -1,5 +1,7 @@
 # UTMN MAP Go Backend
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/InTeamDev/utmn-map-go-backend)
+
 ## С чего начать
 
 ### Требования:
