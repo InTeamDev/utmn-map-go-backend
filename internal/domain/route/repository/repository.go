@@ -21,12 +21,14 @@ type RouteConverter interface {
 
 type RouteRepository struct {
 	q         *sqlc.Queries
+	db        *sql.DB
 	converter *RouteConverterImpl
 }
 
 func NewRoute(db *sql.DB, converter RouteConverter) *RouteRepository {
 	return &RouteRepository{
 		q:         sqlc.New(db),
+		db:        db,
 		converter: NewRouteConverter(),
 	}
 }
@@ -132,4 +134,24 @@ func (r *RouteRepository) GetIntersections(ctx context.Context, buildID uuid.UUI
 	}
 
 	return r.converter.IntersectionsSqlcToEntity(intersections), nil
+}
+
+func (r *RouteRepository) GetNodeBuilding(ctx context.Context, nodeID uuid.UUID) (uuid.UUID, error) {
+	const query = `SELECT f.building_id
+                FROM intersections i
+                JOIN floors f ON i.floor_id = f.id
+                WHERE i.id = $1
+                UNION
+                SELECT f.building_id
+                FROM doors d
+                JOIN objects o ON d.object_id = o.id
+                JOIN floors f ON o.floor_id = f.id
+                WHERE d.id = $1
+                LIMIT 1`
+
+	var bID uuid.UUID
+	if err := r.db.QueryRowContext(ctx, query, nodeID).Scan(&bID); err != nil {
+		return uuid.Nil, err
+	}
+	return bID, nil
 }

@@ -31,7 +31,7 @@ type RouteService interface {
 	// GetRoute строит маршрут между точками
 	// (первая точка - начальная, промежуточные, последняя - конечная).
 	// Точки - ID Объектов.
-	// BuildRoute(ctx context.Context, start uuid.UUID, end uuid.UUID, waypoints []uuid.UUID) ([]entities.Edge, error)
+	BuildRoute(ctx context.Context, start uuid.UUID, end uuid.UUID, waypoints []uuid.UUID) ([]routeentities.Edge, error)
 	// Admin. AddIntersection добавляет новый узел в граф.
 	AddIntersection(ctx context.Context, req routeentities.AddIntersectionRequest) (routeentities.Node, error)
 	GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Intersection, error)
@@ -74,6 +74,7 @@ func (p *PublicAPI) RegisterRoutes(router *gin.Engine) {
 		api.GET("/buildings/:building_id/intersections", p.GetIntersectionsHandler)
 		api.GET("/buildings/:building_id/connections", p.GetConnectionsHandler)
 		api.GET("/buildings/:building_id/graph/nodes", p.GetNodesHandler)
+		api.GET("/buildings/:building_id/route", p.BuildRouteHandler)
 		// polygons
 		// search
 		api.GET("/buildings/:building_id/search", p.SearchHandler)
@@ -256,6 +257,46 @@ func (p *PublicAPI) GetNodesHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"nodes": nodes})
+}
+
+func (p *PublicAPI) BuildRouteHandler(c *gin.Context) {
+	startStr := c.Query("start")
+	endStr := c.Query("end")
+	if startStr == "" || endStr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing start or end"})
+		return
+	}
+
+	startID, err := uuid.Parse(startStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid start"})
+		return
+	}
+
+	endID, err := uuid.Parse(endStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid end"})
+		return
+	}
+
+	waypointStrs := c.QueryArray("waypoint")
+	waypoints := make([]uuid.UUID, 0, len(waypointStrs))
+	for _, s := range waypointStrs {
+		id, err := uuid.Parse(s)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid waypoint"})
+			return
+		}
+		waypoints = append(waypoints, id)
+	}
+
+	edges, err := p.routeService.BuildRoute(c.Request.Context(), startID, endID, waypoints)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"edges": edges})
 }
 
 func (p *PublicAPI) SearchHandler(c *gin.Context) {

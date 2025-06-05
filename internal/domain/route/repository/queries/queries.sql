@@ -47,3 +47,16 @@ FROM intersections i
 JOIN floors f ON i.floor_id = f.id
 JOIN buildings b ON f.building_id = b.id
 WHERE b.id = @building_id::uuid;
+
+-- name: GetNodeBuilding :one
+SELECT f.building_id
+FROM intersections i
+JOIN floors f ON i.floor_id = f.id
+WHERE i.id = @node_id::uuid
+UNION
+SELECT f.building_id
+FROM doors d
+JOIN objects o ON d.object_id = o.id
+JOIN floors f ON o.floor_id = f.id
+WHERE d.id = @node_id::uuid
+LIMIT 1;
