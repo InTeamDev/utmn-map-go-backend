@@ -43,6 +43,8 @@ type MapRepository interface {
 	) (entities.PolygonPoint, error)
 	GetDoorFloorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error)
 	GetObjectDoorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error)
+	DeletePolygonPoint(ctx context.Context, request entities.DeletePolygonPointRequest) error
+	DeletePolygonPoints(ctx context.Context, request entities.DeletePolygonPointsRequest) error
 }
 
 type Map struct {
@@ -235,20 +237,4 @@ func (m *Map) CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entit
 
 func (m *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error {
 	return m.repo.CreateDoor(ctx, objectID, door)
-}
-
-func (m *Map) GetDoorFloorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error) {
-	doorFloorPairs, err := m.repo.GetDoorFloorPairs(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("get door-floor pairs: %w", err)
-	}
-	return doorFloorPairs, nil
-}
-
-func (m *Map) GetObjectDoorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error) {
-	objectDoorPairs, err := m.repo.GetObjectDoorPairs(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("get object-door pairs: %w", err)
-	}
-	return objectDoorPairs, nil
 }
