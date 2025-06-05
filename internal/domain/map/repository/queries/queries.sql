@@ -129,7 +129,17 @@ INSERT INTO objects (
     @width,
     @height,
     @object_type_id
-) 
+)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    alias = EXCLUDED.alias,
+    description = EXCLUDED.description,
+    x = EXCLUDED.x,
+    y = EXCLUDED.y,
+    width = EXCLUDED.width,
+    height = EXCLUDED.height,
+    object_type_id = EXCLUDED.object_type_id,
+    floor_id = EXCLUDED.floor_id
 RETURNING *;
 
 -- name: DeleteObject :exec
@@ -169,6 +179,9 @@ ORDER BY fp.z_index;
 -- name: CreateBuilding :one
 INSERT INTO buildings (id, name, address)
 VALUES ($1, $2, $3)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    address = EXCLUDED.address
 RETURNING *;
 
 -- name: DeleteBuilding :exec
@@ -182,12 +195,37 @@ address = COALESCE(sqlc.narg('address'), address)
 WHERE id = sqlc.arg('id')::uuid
 RETURNING id, name, address;
 
+-- name: CreateFloor :exec
+INSERT INTO floors (id, name, alias, building_id)
+VALUES (@id::uuid, @name, @alias, @building_id::uuid)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    alias = EXCLUDED.alias,
+    building_id = EXCLUDED.building_id;
+
+-- name: CreateDoor :exec
+INSERT INTO doors (id, x, y, width, height, object_id)
+VALUES (@id::uuid, @x, @y, @width, @height, @object_id::uuid)
+ON CONFLICT (id) DO UPDATE SET
+    x = EXCLUDED.x,
+    y = EXCLUDED.y,
+    width = EXCLUDED.width,
+    height = EXCLUDED.height,
+    object_id = EXCLUDED.object_id;
+
 -- name: CreatePolygon :one
 INSERT INTO floor_polygons (id, floor_id, label, z_index)
 VALUES (@id::uuid, @floor_id::uuid, @label, @z_index)
+ON CONFLICT (id) DO UPDATE SET
+    floor_id = EXCLUDED.floor_id,
+    label = EXCLUDED.label,
+    z_index = EXCLUDED.z_index
 RETURNING id, floor_id, label, z_index;
 
 -- name: CreatePolygonPoint :one
 INSERT INTO floor_polygon_points (polygon_id, point_order, x, y)
 VALUES (@polygon_id::uuid, @point_order, @x, @y)
+ON CONFLICT (polygon_id, point_order) DO UPDATE SET
+    x = EXCLUDED.x,
+    y = EXCLUDED.y
 RETURNING polygon_id, point_order, x, y;

@@ -33,11 +33,9 @@ type MapService interface {
 	GetObjectCategories(ctx context.Context) ([]mapentities.ObjectTypeInfo, error)
 	GetBuildings(ctx context.Context) ([]mapentities.Building, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentities.GetObjectsResponse, error)
-	CreateBuildingWithID(ctx context.Context, b mapentities.Building) error
 	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor mapentities.Floor) error
 	CreateDoor(ctx context.Context, objectID uuid.UUID, door mapentities.Door) error
-	CreatePolygonWithID(ctx context.Context, polygon mapentities.Polygon) error
-	CreatePolygon(ctx context.Context, floorID uuid.UUID, label string, zIndex int32) (mapentities.Polygon, error)
+	CreatePolygon(ctx context.Context, polygon mapentities.Polygon) (mapentities.Polygon, error)
 	CreatePolygonPoint(
 		ctx context.Context,
 		polygonID uuid.UUID,
@@ -372,7 +370,7 @@ func (p *AdminAPI) CreatePolygonHandler(c *gin.Context) {
 		return
 	}
 
-	polygon, err := p.mapService.CreatePolygon(c.Request.Context(), floorID, req.Label, req.ZIndex)
+	polygon, err := p.mapService.CreatePolygon(c.Request.Context(), mapentities.Polygon{FloorID: floorID, Label: req.Label, ZIndex: req.ZIndex})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -494,7 +492,7 @@ func (p *AdminAPI) SyncDatabaseHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	// iterate over buildings
 	for _, b := range data.Buildings {
-		if err := p.mapService.CreateBuildingWithID(ctx, mapentities.Building{ID: b.ID, Name: b.Name, Address: b.Address}); err != nil {
+		if _, err := p.mapService.CreateBuilding(ctx, mapentities.CreateBuildingInput{ID: b.ID, Name: b.Name, Address: b.Address}); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -530,7 +528,7 @@ func (p *AdminAPI) SyncDatabaseHandler(c *gin.Context) {
 			}
 			// polygons
 			for _, poly := range f.FloorPolygons {
-				if err := p.mapService.CreatePolygonWithID(ctx, mapentities.Polygon{ID: poly.ID, FloorID: f.ID, Label: poly.Label, ZIndex: poly.ZIndex}); err != nil {
+				if _, err := p.mapService.CreatePolygon(ctx, mapentities.Polygon{ID: poly.ID, FloorID: f.ID, Label: poly.Label, ZIndex: poly.ZIndex}); err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}

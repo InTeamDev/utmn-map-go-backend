@@ -17,6 +17,9 @@ import (
 const createBuilding = `-- name: CreateBuilding :one
 INSERT INTO buildings (id, name, address)
 VALUES ($1, $2, $3)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    address = EXCLUDED.address
 RETURNING id, name, address
 `
 
@@ -56,7 +59,17 @@ INSERT INTO objects (
     $8,
     $9,
     $10
-) 
+)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    alias = EXCLUDED.alias,
+    description = EXCLUDED.description,
+    x = EXCLUDED.x,
+    y = EXCLUDED.y,
+    width = EXCLUDED.width,
+    height = EXCLUDED.height,
+    object_type_id = EXCLUDED.object_type_id,
+    floor_id = EXCLUDED.floor_id
 RETURNING id, name, alias, description, x, y, width, height, object_type_id, floor_id
 `
 
@@ -105,6 +118,10 @@ func (q *Queries) CreateObject(ctx context.Context, arg CreateObjectParams) (Obj
 const createPolygon = `-- name: CreatePolygon :one
 INSERT INTO floor_polygons (id, floor_id, label, z_index)
 VALUES ($1::uuid, $2::uuid, $3, $4)
+ON CONFLICT (id) DO UPDATE SET
+    floor_id = EXCLUDED.floor_id,
+    label = EXCLUDED.label,
+    z_index = EXCLUDED.z_index
 RETURNING id, floor_id, label, z_index
 `
 
@@ -135,6 +152,9 @@ func (q *Queries) CreatePolygon(ctx context.Context, arg CreatePolygonParams) (F
 const createPolygonPoint = `-- name: CreatePolygonPoint :one
 INSERT INTO floor_polygon_points (polygon_id, point_order, x, y)
 VALUES ($1::uuid, $2, $3, $4)
+ON CONFLICT (polygon_id, point_order) DO UPDATE SET
+    x = EXCLUDED.x,
+    y = EXCLUDED.y
 RETURNING polygon_id, point_order, x, y
 `
 
@@ -645,6 +665,64 @@ func (q *Queries) UpdateBuilding(ctx context.Context, arg UpdateBuildingParams) 
 	var i Building
 	err := row.Scan(&i.ID, &i.Name, &i.Address)
 	return i, err
+}
+
+const createFloor = `-- name: CreateFloor :exec
+INSERT INTO floors (id, name, alias, building_id)
+VALUES ($1::uuid, $2, $3, $4::uuid)
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    alias = EXCLUDED.alias,
+    building_id = EXCLUDED.building_id
+`
+
+type CreateFloorParams struct {
+	ID         uuid.UUID
+	Name       string
+	Alias      string
+	BuildingID uuid.UUID
+}
+
+func (q *Queries) CreateFloor(ctx context.Context, arg CreateFloorParams) error {
+	_, err := q.db.ExecContext(ctx, createFloor,
+		arg.ID,
+		arg.Name,
+		arg.Alias,
+		arg.BuildingID,
+	)
+	return err
+}
+
+const createDoor = `-- name: CreateDoor :exec
+INSERT INTO doors (id, x, y, width, height, object_id)
+VALUES ($1::uuid, $2, $3, $4, $5, $6::uuid)
+ON CONFLICT (id) DO UPDATE SET
+    x = EXCLUDED.x,
+    y = EXCLUDED.y,
+    width = EXCLUDED.width,
+    height = EXCLUDED.height,
+    object_id = EXCLUDED.object_id
+`
+
+type CreateDoorParams struct {
+	ID       uuid.UUID
+	X        float64
+	Y        float64
+	Width    float64
+	Height   float64
+	ObjectID uuid.UUID
+}
+
+func (q *Queries) CreateDoor(ctx context.Context, arg CreateDoorParams) error {
+	_, err := q.db.ExecContext(ctx, createDoor,
+		arg.ID,
+		arg.X,
+		arg.Y,
+		arg.Width,
+		arg.Height,
+		arg.ObjectID,
+	)
+	return err
 }
 
 const updateObject = `-- name: UpdateObject :one

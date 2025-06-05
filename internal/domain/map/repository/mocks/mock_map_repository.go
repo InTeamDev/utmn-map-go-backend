@@ -57,10 +57,38 @@ func (mr *MockMapRepositoryMockRecorder) CreateBuilding(ctx, input any) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBuilding", reflect.TypeOf((*MockMapRepository)(nil).CreateBuilding), ctx, input)
 }
 
-// CreateBuildingWithID mocks base method.
-func (m *MockMapRepository) CreateBuildingWithID(ctx context.Context, b entities.Building) error {
+func (m *MockMapRepository) CreatePolygon(ctx context.Context, polygon entities.Polygon) (entities.Polygon, error) {
+	ret := m.ctrl.Call(m, "CreatePolygon", ctx, polygon)
+func (mr *MockMapRepositoryMockRecorder) CreatePolygon(ctx, polygon any) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePolygon", reflect.TypeOf((*MockMapRepository)(nil).CreatePolygon), ctx, polygon)
+}
+
+// CreateFloor mocks base method.
+func (m *MockMapRepository) CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entities.Floor) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateBuildingWithID", ctx, b)
+	ret := m.ctrl.Call(m, "CreateFloor", ctx, buildingID, floor)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateFloor indicates an expected call of CreateFloor.
+func (mr *MockMapRepositoryMockRecorder) CreateFloor(ctx, buildingID, floor any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateFloor", reflect.TypeOf((*MockMapRepository)(nil).CreateFloor), ctx, buildingID, floor)
+}
+
+// CreateDoor mocks base method.
+func (m *MockMapRepository) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateDoor", ctx, objectID, door)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateDoor indicates an expected call of CreateDoor.
+func (mr *MockMapRepositoryMockRecorder) CreateDoor(ctx, objectID, door any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDoor", reflect.TypeOf((*MockMapRepository)(nil).CreateDoor), ctx, objectID, door)
 	ret0, _ := ret[0].(error)
 	return ret0
 }

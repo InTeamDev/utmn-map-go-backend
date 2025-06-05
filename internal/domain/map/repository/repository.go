@@ -235,6 +235,9 @@ func (r *Map) CreateObject(
 	input entities.CreateObjectInput,
 ) (entities.Object, error) {
 	objectID := input.ID
+	if objectID == uuid.Nil {
+		objectID = uuid.New()
+	}
 
 	params := sqlc.CreateObjectParams{
 		ID:           objectID,
@@ -320,8 +323,12 @@ func (r *Map) DeleteObject(ctx context.Context, objectID uuid.UUID) error {
 }
 
 func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
+	id := input.ID
+	if id == uuid.Nil {
+		id = uuid.New()
+	}
 	params := sqlc.CreateBuildingParams{
-		ID:      uuid.New(),
+		ID:      id,
 		Name:    input.Name,
 		Address: input.Address,
 	}
@@ -338,15 +345,6 @@ func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingI
 	}
 
 	return result, nil
-}
-
-func (r *Map) CreateBuildingWithID(ctx context.Context, building entities.Building) error {
-	query := `INSERT INTO buildings (id, name, address) VALUES ($1,$2,$3)`
-	_, err := r.db.ExecContext(ctx, query, building.ID, building.Name, building.Address)
-	if err != nil {
-		return fmt.Errorf("create building: %w", err)
-	}
-	return nil
 }
 
 func (r *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
@@ -407,37 +405,27 @@ func sqlNullFloat64(i *float64) sql.NullFloat64 {
 	return sql.NullFloat64{Float64: *i, Valid: true}
 }
 
-func (r *Map) CreatePolygon(
-	ctx context.Context,
-	floorID uuid.UUID,
-	label string,
-	zIndex int32,
-) (entities.Polygon, error) {
-	polygon, err := r.q.CreatePolygon(ctx, sqlc.CreatePolygonParams{
-		ID:      uuid.New(),
-		FloorID: floorID,
-		Label:   sql.NullString{String: label, Valid: true},
-		ZIndex:  sql.NullInt32{Int32: zIndex, Valid: true},
+func (r *Map) CreatePolygon(ctx context.Context, polygon entities.Polygon) (entities.Polygon, error) {
+	id := polygon.ID
+	if id == uuid.Nil {
+		id = uuid.New()
+	}
+	row, err := r.q.CreatePolygon(ctx, sqlc.CreatePolygonParams{
+		ID:      id,
+		FloorID: polygon.FloorID,
+		Label:   sql.NullString{String: polygon.Label, Valid: polygon.Label != ""},
+		ZIndex:  sql.NullInt32{Int32: polygon.ZIndex, Valid: true},
 	})
 	if err != nil {
 		return entities.Polygon{}, fmt.Errorf("create polygon: %w", err)
 	}
 
 	return entities.Polygon{
-		ID:      polygon.ID,
-		FloorID: polygon.FloorID,
-		Label:   polygon.Label.String,
-		ZIndex:  polygon.ZIndex.Int32,
+		ID:      row.ID,
+		FloorID: row.FloorID,
+		Label:   row.Label.String,
+		ZIndex:  row.ZIndex.Int32,
 	}, nil
-}
-
-func (r *Map) CreatePolygonWithID(ctx context.Context, polygon entities.Polygon) error {
-	query := `INSERT INTO floor_polygons (id, floor_id, label, z_index) VALUES ($1,$2,$3,$4)`
-	_, err := r.db.ExecContext(ctx, query, polygon.ID, polygon.FloorID, polygon.Label, polygon.ZIndex)
-	if err != nil {
-		return fmt.Errorf("create polygon: %w", err)
-	}
-	return nil
 }
 
 func (r *Map) CreatePolygonPoint(
@@ -464,8 +452,16 @@ func (r *Map) CreatePolygonPoint(
 }
 
 func (r *Map) CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entities.Floor) error {
-	query := `INSERT INTO floors (id, name, alias, building_id) VALUES ($1,$2,$3,$4)`
-	_, err := r.db.ExecContext(ctx, query, floor.ID, floor.Name, floor.Alias, buildingID)
+	id := floor.ID
+	if id == uuid.Nil {
+		id = uuid.New()
+	}
+	err := r.q.CreateFloor(ctx, sqlc.CreateFloorParams{
+		ID:         id,
+		Name:       floor.Name,
+		Alias:      floor.Alias,
+		BuildingID: buildingID,
+	})
 	if err != nil {
 		return fmt.Errorf("create floor: %w", err)
 	}
@@ -473,8 +469,18 @@ func (r *Map) CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entit
 }
 
 func (r *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error {
-	query := `INSERT INTO doors (id, x, y, width, height, object_id) VALUES ($1,$2,$3,$4,$5,$6)`
-	_, err := r.db.ExecContext(ctx, query, door.ID, door.X, door.Y, door.Width, door.Height, objectID)
+	id := door.ID
+	if id == uuid.Nil {
+		id = uuid.New()
+	}
+	err := r.q.CreateDoor(ctx, sqlc.CreateDoorParams{
+		ID:       id,
+		X:        door.X,
+		Y:        door.Y,
+		Width:    door.Width,
+		Height:   door.Height,
+		ObjectID: objectID,
+	})
 	if err != nil {
 		return fmt.Errorf("create door: %w", err)
 	}
