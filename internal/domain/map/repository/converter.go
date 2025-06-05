@@ -74,11 +74,12 @@ func (mc *MapConverterImpl) ObjectSqlcToEntity(
 
 func (mc *MapConverterImpl) DoorSqlcToEntity(door sqlc.Door) entities.Door {
 	return entities.Door{
-		ID:     door.ID,
-		X:      door.X,
-		Y:      door.Y,
-		Width:  door.Width,
-		Height: door.Height,
+		ID:       door.ID,
+		X:        door.X,
+		Y:        door.Y,
+		Width:    door.Width,
+		Height:   door.Height,
+		ObjectID: door.ObjectID,
 	}
 }
 

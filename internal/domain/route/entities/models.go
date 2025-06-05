@@ -2,7 +2,7 @@ package entities
 
 import "github.com/google/uuid"
 
-type AddIntersectionResponse struct {
+type AddIntersectionRequest struct {
 	ID      uuid.UUID `json:"id"`
 	X       float64   `json:"x"`
 	Y       float64   `json:"y"`

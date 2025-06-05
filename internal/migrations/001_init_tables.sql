@@ -18,11 +18,18 @@ CREATE TABLE object_types (
     alias VARCHAR(50) UNIQUE NOT NULL
 );
 
-INSERT INTO object_types (name, alias) VALUES
-    ('cabinet', 'Аудитория'),
+INSERT INTO
+    object_types (name, alias)
+VALUES ('cabinet', 'Аудитория'),
     ('department', 'Кафедра'),
-    ('man-toilet', 'Мужской туалет'),
-    ('woman-toilet', 'Женский туалет'),
+    (
+        'man-toilet',
+        'Мужской туалет'
+    ),
+    (
+        'woman-toilet',
+        'Женский туалет'
+    ),
     ('stair', 'Лестница'),
     ('wardrobe', 'Гардероб'),
     ('gym', 'Спортзал'),
@@ -41,7 +48,7 @@ CREATE TABLE objects (
     height FLOAT NOT NULL,
     object_type_id INT NOT NULL,
     floor_id UUID NOT NULL,
-    FOREIGN KEY (object_type_id) REFERENCES object_types (id) ON DELETE RESTRICT,
+    FOREIGN KEY (object_type_id) REFERENCES object_types (id) ON DELETE CASCADE,
     FOREIGN KEY (floor_id) REFERENCES floors (id) ON DELETE CASCADE
 );
 
@@ -85,26 +92,30 @@ CREATE TABLE connections (
     to_id UUID NOT NULL,
     weight DOUBLE PRECISION NOT NULL CHECK (weight >= 0),
     PRIMARY KEY (from_id, to_id)
+    -- FOREIGN KEY (from_id)
+    --     REFERENCES intersections (id)
+    --     ON DELETE CASCADE,
+    -- FOREIGN KEY (to_id)
+    --     REFERENCES intersections (id)
+    --     ON DELETE CASCADE
 );
 
 ---- create above / drop below ----
 
-DROP TABLE doors;
+DROP TABLE IF EXISTS connections;
 
-DROP TABLE objects;
+DROP TABLE IF EXISTS intersections;
 
-DELETE FROM object_types;
+DROP TABLE IF EXISTS floor_polygon_points;
 
-DROP TABLE object_types;
+DROP TABLE IF EXISTS floor_polygons;
 
-DROP TABLE floors;
+DROP TABLE IF EXISTS doors;
 
-DROP TABLE buildings;
+DROP TABLE IF EXISTS objects;
 
-DROP TABLE floor_polygon_points;
+DROP TABLE IF EXISTS object_types;
 
-DROP TABLE floor_polygons;
+DROP TABLE IF EXISTS floors;
 
-DROP TABLE intersections;
-
-DROP TABLE connections;
+DROP TABLE IF EXISTS buildings;

@@ -57,48 +57,6 @@ func (mr *MockMapRepositoryMockRecorder) CreateBuilding(ctx, input any) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBuilding", reflect.TypeOf((*MockMapRepository)(nil).CreateBuilding), ctx, input)
 }
 
-func (m *MockMapRepository) CreatePolygon(ctx context.Context, polygon entities.Polygon) (entities.Polygon, error) {
-	ret := m.ctrl.Call(m, "CreatePolygon", ctx, polygon)
-func (mr *MockMapRepositoryMockRecorder) CreatePolygon(ctx, polygon any) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePolygon", reflect.TypeOf((*MockMapRepository)(nil).CreatePolygon), ctx, polygon)
-}
-
-// CreateFloor mocks base method.
-func (m *MockMapRepository) CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entities.Floor) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateFloor", ctx, buildingID, floor)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateFloor indicates an expected call of CreateFloor.
-func (mr *MockMapRepositoryMockRecorder) CreateFloor(ctx, buildingID, floor any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateFloor", reflect.TypeOf((*MockMapRepository)(nil).CreateFloor), ctx, buildingID, floor)
-}
-
-// CreateDoor mocks base method.
-func (m *MockMapRepository) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateDoor", ctx, objectID, door)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateDoor indicates an expected call of CreateDoor.
-func (mr *MockMapRepositoryMockRecorder) CreateDoor(ctx, objectID, door any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDoor", reflect.TypeOf((*MockMapRepository)(nil).CreateDoor), ctx, objectID, door)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateBuildingWithID indicates an expected call of CreateBuildingWithID.
-func (mr *MockMapRepositoryMockRecorder) CreateBuildingWithID(ctx, b any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBuildingWithID", reflect.TypeOf((*MockMapRepository)(nil).CreateBuildingWithID), ctx, b)
-}
-
 // CreateDoor mocks base method.
 func (m *MockMapRepository) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error {
 	m.ctrl.T.Helper()
@@ -143,18 +101,18 @@ func (mr *MockMapRepositoryMockRecorder) CreateObject(ctx, floorID, input any) *
 }
 
 // CreatePolygon mocks base method.
-func (m *MockMapRepository) CreatePolygon(ctx context.Context, floorID uuid.UUID, label string, zIndex int32) (entities.Polygon, error) {
+func (m *MockMapRepository) CreatePolygon(ctx context.Context, polygon entities.Polygon) (entities.Polygon, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreatePolygon", ctx, floorID, label, zIndex)
+	ret := m.ctrl.Call(m, "CreatePolygon", ctx, polygon)
 	ret0, _ := ret[0].(entities.Polygon)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreatePolygon indicates an expected call of CreatePolygon.
-func (mr *MockMapRepositoryMockRecorder) CreatePolygon(ctx, floorID, label, zIndex any) *gomock.Call {
+func (mr *MockMapRepositoryMockRecorder) CreatePolygon(ctx, polygon any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePolygon", reflect.TypeOf((*MockMapRepository)(nil).CreatePolygon), ctx, floorID, label, zIndex)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePolygon", reflect.TypeOf((*MockMapRepository)(nil).CreatePolygon), ctx, polygon)
 }
 
 // CreatePolygonPoint mocks base method.
@@ -170,20 +128,6 @@ func (m *MockMapRepository) CreatePolygonPoint(ctx context.Context, polygonID uu
 func (mr *MockMapRepositoryMockRecorder) CreatePolygonPoint(ctx, polygonID, order, x, y any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePolygonPoint", reflect.TypeOf((*MockMapRepository)(nil).CreatePolygonPoint), ctx, polygonID, order, x, y)
-}
-
-// CreatePolygonWithID mocks base method.
-func (m *MockMapRepository) CreatePolygonWithID(ctx context.Context, polygon entities.Polygon) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreatePolygonWithID", ctx, polygon)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreatePolygonWithID indicates an expected call of CreatePolygonWithID.
-func (mr *MockMapRepositoryMockRecorder) CreatePolygonWithID(ctx, polygon any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePolygonWithID", reflect.TypeOf((*MockMapRepository)(nil).CreatePolygonWithID), ctx, polygon)
 }
 
 // DeleteBuilding mocks base method.

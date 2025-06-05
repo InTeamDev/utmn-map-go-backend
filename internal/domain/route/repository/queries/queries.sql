@@ -1,11 +1,17 @@
 -- name: CreateConnection :one
 INSERT INTO connections (from_id, to_id, weight)
 VALUES (@from_id, @to_id, @weight)
+ON CONFLICT (from_id, to_id) DO UPDATE
+  SET weight = EXCLUDED.weight
 RETURNING *;
 
 -- name: CreateIntersection :one
 INSERT INTO intersections (id, x, y, floor_id)
 VALUES (@id, @x, @y, @floor_id)
+ON CONFLICT (id) DO UPDATE
+  SET x = EXCLUDED.x,
+      y = EXCLUDED.y,
+      floor_id = EXCLUDED.floor_id
 RETURNING *;
 
 -- name: DeleteIntersectionConnections :exec

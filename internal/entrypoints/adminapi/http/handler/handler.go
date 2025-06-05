@@ -50,7 +50,7 @@ type RouteService interface {
 	// Точки - ID Объектов.
 	// BuildRoute(ctx context.Context, start uuid.UUID, end uuid.UUID, waypoints []uuid.UUID) ([]entities.Edge, error)
 	// Admin. AddIntersection добавляет новый узел в граф.
-	AddIntersection(ctx context.Context, x, y float64, floorID uuid.UUID) (uuid.UUID, error)
+	AddIntersection(ctx context.Context, req routeentities.AddIntersectionRequest) (routeentities.Node, error)
 	GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Intersection, error)
 	// Admin. AddConnection добавляет новое ребро в граф.
 	AddConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (routeentities.Edge, error)
@@ -239,34 +239,19 @@ func (p *AdminAPI) CreateBuildingHandler(c *gin.Context) {
 }
 
 func (p *AdminAPI) AddIntersection(c *gin.Context) {
-	var input struct {
-		X       *float64   `json:"x"`
-		Y       *float64   `json:"y"`
-		FloorID *uuid.UUID `json:"floor_id"`
-	}
-
+	var input routeentities.AddIntersectionRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
 		return
 	}
 
-	if input.X == nil || input.Y == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "x and y must be non-zero"})
-		return
-	}
-
-	nodeID, err := p.routeService.AddIntersection(c.Request.Context(), *input.X, *input.Y, *input.FloorID)
+	node, err := p.routeService.AddIntersection(c.Request.Context(), input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, routeentities.AddIntersectionResponse{
-		ID:      nodeID,
-		X:       *input.X,
-		Y:       *input.Y,
-		FloorID: *input.FloorID,
-	})
+	c.JSON(http.StatusCreated, node)
 }
 
 func (p *AdminAPI) DeleteIntersectionHandler(c *gin.Context) {
@@ -370,7 +355,10 @@ func (p *AdminAPI) CreatePolygonHandler(c *gin.Context) {
 		return
 	}
 
-	polygon, err := p.mapService.CreatePolygon(c.Request.Context(), mapentities.Polygon{FloorID: floorID, Label: req.Label, ZIndex: req.ZIndex})
+	polygon, err := p.mapService.CreatePolygon(
+		c.Request.Context(),
+		mapentities.Polygon{FloorID: floorID, Label: req.Label, ZIndex: req.ZIndex},
+	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -501,6 +489,7 @@ func (p *AdminAPI) SyncDatabaseHandler(c *gin.Context) {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
 			}
+
 			// objects
 			for _, obj := range f.Objects {
 				input := mapentities.CreateObjectInput{
@@ -514,16 +503,16 @@ func (p *AdminAPI) SyncDatabaseHandler(c *gin.Context) {
 					Height:       obj.Height,
 					ObjectTypeID: obj.ObjectTypeID,
 				}
-				created, err := p.mapService.CreateObject(ctx, f.ID, input)
+				_, err := p.mapService.CreateObject(ctx, f.ID, input)
 				if err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
-				for _, d := range obj.Doors {
-					if err := p.mapService.CreateDoor(ctx, created.ID, d); err != nil {
-						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-						return
-					}
+			}
+			for _, d := range f.Doors {
+				if err := p.mapService.CreateDoor(ctx, d.ObjectID, d); err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
 				}
 			}
 			// polygons
@@ -541,11 +530,12 @@ func (p *AdminAPI) SyncDatabaseHandler(c *gin.Context) {
 			}
 			// intersections
 			for _, in := range f.Intersections {
-				if _, err := p.routeService.AddIntersection(ctx, in.X, in.Y, f.ID); err != nil {
+				if _, err := p.routeService.AddIntersection(ctx, routeentities.AddIntersectionRequest{ID: in.ID, X: in.X, Y: in.Y, FloorID: f.ID}); err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 			}
+
 			for _, conn := range f.Connections {
 				if _, err := p.routeService.AddConnection(ctx, conn.FromID, conn.ToID, conn.Weight); err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

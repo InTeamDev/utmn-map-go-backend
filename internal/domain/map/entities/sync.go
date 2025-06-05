@@ -25,7 +25,7 @@ type SyncFloors struct {
 	BuildingID    uuid.UUID                    `json:"building_id"`
 	Objects       []Object                     `json:"objects"`
 	Doors         []Door                       `json:"doors"`
-	FloorPolygons []Polygon                    `json:"floor_polygons"`
+	FloorPolygons []Polygon                    `json:"polygons"`
 	Intersections []routeentities.Intersection `json:"intersections"`
 	Connections   []routeentities.Connection   `json:"connections"`
 }

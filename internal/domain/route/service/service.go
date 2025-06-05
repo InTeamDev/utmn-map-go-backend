@@ -12,7 +12,7 @@ import (
 
 type RouteRepository interface {
 	CreateConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (entities.Edge, error)
-	CreateIntersection(ctx context.Context, x, y float64, floorID uuid.UUID) (entities.Node, error)
+	CreateIntersection(ctx context.Context, req entities.AddIntersectionRequest) (entities.Node, error)
 	GetConnections(ctx context.Context, buildingID uuid.UUID) ([]entities.Connection, error)
 	DeleteIntersection(ctx context.Context, buildingID, id uuid.UUID) error
 	GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]entities.Intersection, error)
@@ -28,12 +28,15 @@ func NewRoute(repo RouteRepository) *RouteService {
 	}
 }
 
-func (r *RouteService) AddIntersection(ctx context.Context, x, y float64, floorID uuid.UUID) (uuid.UUID, error) {
-	node, err := r.repo.CreateIntersection(ctx, x, y, floorID)
+func (r *RouteService) AddIntersection(
+	ctx context.Context,
+	req entities.AddIntersectionRequest,
+) (entities.Node, error) {
+	node, err := r.repo.CreateIntersection(ctx, req)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("create intersection in (%f;%f): %w", x, y, err)
+		return entities.Node{}, fmt.Errorf("create intersection: %w", err)
 	}
-	return node.ID, nil
+	return node, nil
 }
 
 func (r *RouteService) GetIntersections(ctx context.Context, buildingID uuid.UUID) ([]entities.Intersection, error) {
@@ -51,7 +54,7 @@ func (r *RouteService) AddConnection(
 ) (entities.Edge, error) {
 	conn, err := r.repo.CreateConnection(ctx, fromID, toID, weight)
 	if err != nil {
-		return entities.Edge{}, fmt.Errorf("create connection %w", err)
+		return entities.Edge{}, fmt.Errorf("create connection from %s to %s: %w", fromID, toID, err)
 	}
 	return entities.Edge{FromID: conn.FromID, ToID: conn.ToID, Weight: conn.Weight}, nil
 }

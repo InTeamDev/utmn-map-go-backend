@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	"github.com/google/uuid"
 
@@ -41,29 +42,48 @@ func (r *RouteRepository) CreateConnection(
 		Weight: weight,
 	})
 	if err != nil {
+		slog.Error(
+			"failed to create connection",
+			"slog",
+			slog.String("fromID", fromID.String()),
+			slog.String("toID", toID.String()),
+			slog.Float64("weight", weight),
+			slog.Any("error", err),
+		)
 		return entities.Edge{}, err
 	}
-	edge := entities.Edge{
+	return entities.Edge{
 		FromID: connection.FromID,
 		ToID:   connection.ToID,
 		Weight: connection.Weight,
-	}
-	return edge, nil
+	}, nil
 }
 
 func (r *RouteRepository) CreateIntersection(
 	ctx context.Context,
-	x, y float64,
-	floorID uuid.UUID,
+	req entities.AddIntersectionRequest,
 ) (entities.Node, error) {
+	id := req.ID
+	if id == uuid.Nil {
+		id = uuid.New()
+	}
 	intersection, err := r.q.CreateIntersection(ctx, sqlc.CreateIntersectionParams{
-		ID:      uuid.New(),
-		X:       x,
-		Y:       y,
-		FloorID: floorID,
+		ID:      id,
+		X:       req.X,
+		Y:       req.Y,
+		FloorID: req.FloorID,
 	})
 	if err != nil {
-		return entities.Node{}, err
+		slog.Error(
+			"failed to create intersection",
+			"slog",
+			slog.String("id", id.String()),
+			slog.Float64("x", req.X),
+			slog.Float64("y", req.Y),
+			slog.String("floorID", req.FloorID.String()),
+			slog.Any("error", err),
+		)
+		return entities.Node{}, fmt.Errorf("create intersection at (%f, %f): %w", req.X, req.Y, err)
 	}
 
 	node := entities.Node{
