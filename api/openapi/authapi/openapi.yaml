@@ -1,0 +1,90 @@
+openapi: 3.0.3
+info:
+  title: Auth API
+  version: "1.0"
+servers:
+  - url: /api/auth
+paths:
+  /send_code:
+    post:
+      summary: Send auth code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tg_username:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  expires_at:
+                    type: string
+                    format: date-time
+  /verify:
+    post:
+      summary: Verify code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tg_username:
+                  type: string
+                code:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+  /refresh:
+    post:
+      summary: Refresh token
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+  /save_tg_user:
+    post:
+      summary: Register telegram user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tg_id:
+                  type: integer
+                tg_username:
+                  type: string
+      responses:
+        '204':
+          description: Saved
+  /logout:
+    post:
+      summary: Logout
+      responses:
+        '204':
+          description: Logout done

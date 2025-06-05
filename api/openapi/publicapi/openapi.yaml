@@ -1,0 +1,300 @@
+openapi: 3.0.3
+info:
+  title: Public API
+  version: "1.0"
+servers:
+  - url: /api
+paths:
+  /buildings:
+    get:
+      summary: List buildings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  buildings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Building'
+  /buildings/{build_id}:
+    get:
+      summary: Get building by id
+      parameters:
+        - in: path
+          name: build_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+  /buildings/{build_id}/floors:
+    get:
+      summary: List floors of building
+      parameters:
+        - in: path
+          name: build_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  floors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Floor'
+  /buildings/{build_id}/objects:
+    get:
+      summary: Get objects of building
+      parameters:
+        - in: path
+          name: build_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  objects:
+                    $ref: '#/components/schemas/GetObjectsResponse'
+  /buildings/{build_id}/search:
+    get:
+      summary: Search objects
+      parameters:
+        - in: path
+          name: build_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: query
+          schema:
+            type: string
+        - in: query
+          name: category
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchResult'
+  /categories:
+    get:
+      summary: Get object categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ObjectTypeInfo'
+components:
+  schemas:
+    Building:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+    Floor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        alias:
+          type: string
+    Door:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        x:
+          type: number
+        y:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+        object_id:
+          type: string
+          format: uuid
+    Object:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        alias:
+          type: string
+        description:
+          type: string
+        x:
+          type: number
+        y:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+        object_type_id:
+          type: integer
+        doors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Door'
+        floor:
+          $ref: '#/components/schemas/Floor'
+    FloorBackgroundElement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        label:
+          type: string
+        z_index:
+          type: integer
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/BackgroundPoint'
+    BackgroundPoint:
+      type: object
+      properties:
+        order:
+          type: integer
+        x:
+          type: number
+        y:
+          type: number
+    FloorWithData:
+      type: object
+      properties:
+        floor:
+          $ref: '#/components/schemas/Floor'
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Object'
+        background:
+          type: array
+          items:
+            $ref: '#/components/schemas/FloorBackgroundElement'
+    GetObjectsResponse:
+      type: object
+      properties:
+        building:
+          $ref: '#/components/schemas/Building'
+        floors:
+          type: array
+          items:
+            $ref: '#/components/schemas/FloorWithData'
+    ObjectTypeInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        alias:
+          type: string
+    SearchResult:
+      type: object
+      properties:
+        object_id:
+          type: string
+          format: uuid
+        category:
+          type: string
+        preview:
+          type: string
+    CreateObjectInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        alias:
+          type: string
+        description:
+          type: string
+        x:
+          type: number
+        y:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+        object_type_id:
+          type: integer
+    UpdateObjectInput:
+      type: object
+      properties:
+        name:
+          type: string
+        alias:
+          type: string
+        description:
+          type: string
+        x:
+          type: number
+        y:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+        object_type_id:
+          type: integer

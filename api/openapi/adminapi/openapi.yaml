@@ -1,0 +1,244 @@
+openapi: 3.0.3
+info:
+  title: Admin API
+  version: "1.0"
+servers:
+  - url: /api
+paths:
+  /buildings:
+    post:
+      summary: Create building
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBuilding'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+  /buildings/{building_id}:
+    delete:
+      summary: Delete building
+      parameters:
+        - name: building_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No content
+    patch:
+      summary: Update building
+      parameters:
+        - name: building_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBuildingInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+  /buildings/{building_id}/floors/{floor_id}/objects:
+    post:
+      summary: Create object
+      parameters:
+        - name: building_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: floor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateObjectInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Object'
+  /objects/{object_id}:
+    patch:
+      summary: Update object
+      parameters:
+        - name: object_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateObjectInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Object'
+    delete:
+      summary: Delete object
+      parameters:
+        - name: object_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No content
+components:
+  schemas:
+    Building:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+    CreateBuilding:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+    UpdateBuildingInput:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+    Object:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        alias:
+          type: string
+        description:
+          type: string
+        x:
+          type: number
+        y:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+        object_type_id:
+          type: integer
+        doors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Door'
+        floor:
+          $ref: '#/components/schemas/Floor'
+    CreateObjectInput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        alias:
+          type: string
+        description:
+          type: string
+        x:
+          type: number
+        y:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+        object_type_id:
+          type: integer
+    UpdateObjectInput:
+      type: object
+      properties:
+        name:
+          type: string
+        alias:
+          type: string
+        description:
+          type: string
+        x:
+          type: number
+        y:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+        object_type_id:
+          type: integer
+    Door:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        x:
+          type: number
+        y:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+        object_id:
+          type: string
+          format: uuid
+    Floor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        alias:
+          type: string

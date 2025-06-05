@@ -8,7 +8,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 
+	publicapi "github.com/InTeamDev/utmn-map-go-backend/api/openapi/publicapi"
 	mapentites "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
 )
@@ -80,7 +82,16 @@ func (p *PublicAPI) GetBuildingsHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"buildings": buildings})
+	var resp []publicapi.Building
+	for _, b := range buildings {
+		bd := publicapi.Building{
+			Id:      (*openapi_types.UUID)(&b.ID),
+			Name:    &b.Name,
+			Address: &b.Address,
+		}
+		resp = append(resp, bd)
+	}
+	c.JSON(http.StatusOK, gin.H{"buildings": resp})
 }
 
 func (p *PublicAPI) GetFloorsHandler(c *gin.Context) {
