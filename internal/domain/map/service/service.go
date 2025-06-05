@@ -187,9 +187,10 @@ func (m *Map) DeleteBuilding(ctx context.Context, id uuid.UUID) error {
 		return fmt.Errorf("get floors: %w", err)
 	}
 
-	if len(floors) == 0 {
+	if len(floors) != 0 {
 		return errors.New("can't delete building with floors, at first delete all floors")
 	}
+
 	err = m.repo.DeleteBuilding(ctx, id)
 	if err != nil {
 		return fmt.Errorf("delete building: %w", err)

@@ -934,11 +934,12 @@ components:
         object_id:
           type: string
           format: uuid
-        category:
-          type: string
+        object_type_id:
+          type: integer
+          format: int32
         preview:
           type: string
       required:
         - object_id
-        - category
+        - object_type_id
         - preview
