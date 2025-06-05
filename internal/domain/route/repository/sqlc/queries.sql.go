@@ -178,3 +178,50 @@ func (q *Queries) GetIntersections(ctx context.Context, buildingID uuid.UUID) ([
 	}
 	return items, nil
 }
+
+const listDoorsByBuilding = `-- name: ListDoorsByBuilding :many
+SELECT
+    d.id        AS id,
+    d.x         AS x,
+    d.y         AS y,
+    o.floor_id  AS floor_id
+FROM doors AS d
+JOIN objects AS o ON d.object_id = o.id
+JOIN floors  AS f ON o.floor_id   = f.id
+WHERE f.building_id = $1::uuid
+`
+
+type ListDoorsByBuildingRow struct {
+	ID      uuid.UUID
+	X       float64
+	Y       float64
+	FloorID uuid.UUID
+}
+
+func (q *Queries) ListDoorsByBuilding(ctx context.Context, dollar_1 uuid.UUID) ([]ListDoorsByBuildingRow, error) {
+	rows, err := q.db.QueryContext(ctx, listDoorsByBuilding, dollar_1)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListDoorsByBuildingRow
+	for rows.Next() {
+		var i ListDoorsByBuildingRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.X,
+			&i.Y,
+			&i.FloorID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

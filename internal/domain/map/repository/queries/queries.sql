@@ -20,7 +20,7 @@ SELECT
     f.alias,
     f.building_id
 FROM floors f 
-WHERE f.building_id = @building_id::uuid;
+WHERE f.building_id = @building_id::uuid ORDER BY name asc;
 
 -- name: GetDoorsByBuilding :many
 SELECT
@@ -229,3 +229,17 @@ ON CONFLICT (polygon_id, point_order) DO UPDATE SET
     x = EXCLUDED.x,
     y = EXCLUDED.y
 RETURNING polygon_id, point_order, x, y;
+
+-- name: GetDoorFloorPairs :many
+SELECT
+  d.id       AS door_id,
+  o.floor_id AS floor_id
+FROM doors d
+JOIN objects o ON d.object_id = o.id;
+
+-- name: GetObjectDoorPairs :many
+SELECT
+  d.id AS door_id,
+  o.id AS object_id
+FROM doors d
+JOIN objects o ON d.object_id = o.id;

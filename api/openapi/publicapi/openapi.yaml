@@ -781,11 +781,15 @@ components:
           format: double
         type:
           $ref: "#/components/schemas/NodeType"
+        floor_id:
+          type: string
+          format: uuid
       required:
         - id
         - x
         - y
         - type
+        - floor_id
 
     Graph:
       type: object
@@ -934,6 +938,9 @@ components:
         object_id:
           type: string
           format: uuid
+        door_id:
+          type: string
+          format: uuid
         object_type_id:
           type: integer
           format: int32
@@ -943,3 +950,4 @@ components:
         - object_id
         - object_type_id
         - preview
+        - door_id

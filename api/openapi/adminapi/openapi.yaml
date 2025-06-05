@@ -916,11 +916,15 @@ components:
           format: double
         type:
           $ref: "#/components/schemas/NodeType"
+        floor_id:
+          type: string
+          format: uuid
       required:
         - id
         - x
         - y
         - type
+        - floor_id
 
     Graph:
       type: object

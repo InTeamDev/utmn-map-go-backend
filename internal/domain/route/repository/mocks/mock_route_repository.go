@@ -43,10 +43,10 @@ func (m *MockRouteRepository) EXPECT() *MockRouteRepositoryMockRecorder {
 }
 
 // CreateConnection mocks base method.
-func (m *MockRouteRepository) CreateConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (entities.Edge, error) {
+func (m *MockRouteRepository) CreateConnection(ctx context.Context, fromID, toID uuid.UUID, weight float64) (entities.Connection, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateConnection", ctx, fromID, toID, weight)
-	ret0, _ := ret[0].(entities.Edge)
+	ret0, _ := ret[0].(entities.Connection)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

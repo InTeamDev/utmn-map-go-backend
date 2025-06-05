@@ -486,3 +486,29 @@ func (r *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.
 	}
 	return nil
 }
+
+// GetDoorFloorPairs retrieves a map[doorID]floorID.
+func (r *Map) GetDoorFloorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error) {
+	pairs, err := r.q.GetDoorFloorPairs(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("get doors by building: %w", err)
+	}
+	doorsMap := make(map[uuid.UUID]uuid.UUID, len(pairs))
+	for _, pair := range pairs {
+		doorsMap[pair.DoorID] = pair.FloorID
+	}
+	return doorsMap, nil
+}
+
+// GetObjectDoorPairs retrieves a map[objectID]doorID.
+func (r *Map) GetObjectDoorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error) {
+	pairs, err := r.q.GetObjectDoorPairs(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("get object door pairs: %w", err)
+	}
+	objectDoorMap := make(map[uuid.UUID]uuid.UUID, len(pairs))
+	for _, pair := range pairs {
+		objectDoorMap[pair.ObjectID] = pair.DoorID
+	}
+	return objectDoorMap, nil
+}
