@@ -95,7 +95,7 @@ func (a *AuthAPI) Verify(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	access, refresh, err := a.svc.VerifyCode(req.TGUsername, req.Code)
+	tokens, err := a.svc.VerifyCode(req.TGUsername, req.Code)
 	if err != nil {
 		slog.Error("Failed to verify code", "error", err, "tg_username", req.TGUsername)
 		switch err {
@@ -112,8 +112,7 @@ func (a *AuthAPI) Verify(c *gin.Context) {
 		}
 		return
 	}
-	http.SetCookie(c.Writer, &http.Cookie{Name: "refresh_token", Value: refresh, HttpOnly: true, Path: "/"})
-	c.JSON(http.StatusOK, gin.H{"access_token": access})
+	c.JSON(http.StatusOK, gin.H{"access_token": tokens.AccessToken, "refresh_token": tokens.RefreshToken})
 }
 
 func (a *AuthAPI) Refresh(c *gin.Context) {
@@ -122,13 +121,12 @@ func (a *AuthAPI) Refresh(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	access, refresh, err := a.svc.RefreshToken(cookie.Value)
+	tokens, err := a.svc.RefreshToken(cookie.Value)
 	if err != nil {
 		c.Status(http.StatusUnauthorized)
 		return
 	}
-	http.SetCookie(c.Writer, &http.Cookie{Name: "refresh_token", Value: refresh, HttpOnly: true, Path: "/"})
-	c.JSON(http.StatusOK, gin.H{"access_token": access})
+	c.JSON(http.StatusOK, gin.H{"access_token": tokens.AccessToken, "refresh_token": tokens.RefreshToken})
 }
 
 func (a *AuthAPI) Logout(c *gin.Context) {

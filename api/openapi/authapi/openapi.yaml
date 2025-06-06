@@ -76,20 +76,10 @@ paths:
       responses:
         "200":
           description: Verification successful, returns access token and sets refresh cookie
-          headers:
-            Set-Cookie:
-              description: Новый refresh_token устанавливается через заголовок Set-Cookie
-              schema:
-                type: string
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  access_token:
-                    type: string
-                required:
-                  - access_token
+                $ref: "#/components/schemas/TokenPair"
         "400":
           description: Bad request (invalid JSON, missing fields, invalid or expired code)
         "401":
@@ -119,47 +109,11 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  access_token:
-                    type: string
+                $ref: "#/components/schemas/TokenPair"
         "400":
           description: Bad request (refresh_token cookie not provided)
         "401":
           description: Unauthorized (invalid or expired refresh token)
-        "500":
-          description: Internal server error
-
-  /api/auth/save_tg_user:
-    post:
-      tags:
-        - Auth
-      summary: Register or save a Telegram user (admin only)
-      security:
-        - BasicAuth: []
-      requestBody:
-        description: Telegram user data to register
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                tg_id:
-                  type: integer
-                  format: int64
-                tg_username:
-                  type: string
-              required:
-                - tg_id
-                - tg_username
-      responses:
-        "204":
-          description: User saved successfully (no content)
-        "400":
-          description: Bad request (invalid JSON or missing fields)
-        "409":
-          description: Conflict (user already exists or not found)
         "500":
           description: Internal server error
 
@@ -193,6 +147,17 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    BasicAuth:
-      type: http
-      scheme: basic
+
+  schemas:
+    TokenPair:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: Access token for authenticated requests
+        refresh_token:
+          type: string
+          description: Refresh token to obtain new access tokens
+      required:
+        - access_token
+        - refresh_token

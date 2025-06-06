@@ -82,58 +82,58 @@ func (s *Service) SendCode(username string) (time.Time, error) {
 	return expires, nil
 }
 
-func (s *Service) VerifyCode(username, code string) (string, string, error) {
+func (s *Service) VerifyCode(username, code string) (*entities.TokenPair, error) {
 	user, ok := s.repo.GetUserByUsername(username)
 	if !ok {
-		return "", "", ErrNotFound
+		return nil, ErrNotFound
 	}
 	c, ok := s.repo.GetCode(username)
 	if !ok {
-		return "", "", ErrInvalidCode
+		return nil, ErrInvalidCode
 	}
 	if time.Now().After(c.ExpiresAt) {
 		s.repo.DeleteCode(username)
-		return "", "", ErrExpired
+		return nil, ErrExpired
 	}
 	if c.Attempts >= 3 {
-		return "", "", ErrTooMany
+		return nil, ErrTooMany
 	}
 	if c.Code != code {
 		c.Attempts++
 		s.repo.UpdateCode(username, c)
-		return "", "", ErrUnauthorized
+		return nil, ErrUnauthorized
 	}
 	s.repo.DeleteCode(username)
-	access, refresh, err := s.generateTokens(user.ID, user.Roles)
+	pair, err := s.generateTokens(user.ID, user.Roles)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
-	return access, refresh, nil
+	return pair, nil
 }
 
-func (s *Service) RefreshToken(refreshToken string) (string, string, error) {
+func (s *Service) RefreshToken(refreshToken string) (*entities.TokenPair, error) {
 	payload, err := s.parseToken(refreshToken)
 	if err != nil {
-		return "", "", ErrUnauthorized
+		return nil, ErrUnauthorized
 	}
 	jti, ok := payload["jti"].(string)
 	if !ok {
-		return "", "", errors.New("invalid token payload: missing jti")
+		return nil, errors.New("invalid token payload: missing jti")
 	}
 	rt, ok := s.repo.GetRefreshToken(jti)
 	if !ok || rt.Revoked || rt.ExpiresAt.Before(time.Now()) {
-		return "", "", ErrUnauthorized
+		return nil, ErrUnauthorized
 	}
 	userID, ok := payload["sub"].(string)
 	if !ok {
-		return "", "", errors.New("invalid token payload: missing sub")
+		return nil, errors.New("invalid token payload: missing sub")
 	}
-	access, newRefresh, err := s.generateTokens(userID, nil)
+	pair, err := s.generateTokens(userID, nil)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
 	s.repo.RevokeRefreshToken(rt.JTI)
-	return access, newRefresh, nil
+	return pair, nil
 }
 
 func (s *Service) Logout(accessToken, refreshToken string) error {
@@ -164,7 +164,7 @@ func (s *Service) Logout(accessToken, refreshToken string) error {
 	return nil
 }
 
-func (s *Service) generateTokens(userID string, roles []string) (string, string, error) {
+func (s *Service) generateTokens(userID string, roles []string) (*entities.TokenPair, error) {
 	accessJTI := uuid.NewString()
 	refreshJTI := uuid.NewString()
 	now := time.Now()
@@ -184,11 +184,11 @@ func (s *Service) generateTokens(userID string, roles []string) (string, string,
 	}
 	access, err := s.sign(accessPayload)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
 	refresh, err := s.sign(refreshPayload)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
 	s.repo.StoreRefreshToken(entities.RefreshToken{
 		JTI:       refreshJTI,
@@ -197,7 +197,7 @@ func (s *Service) generateTokens(userID string, roles []string) (string, string,
 		ExpiresAt: now.Add(30 * 24 * time.Hour),
 		Revoked:   false,
 	})
-	return access, refresh, nil
+	return &entities.TokenPair{AccessToken: access, RefreshToken: refresh}, nil
 }
 
 func (s *Service) sign(payload map[string]interface{}) (string, error) {

@@ -25,3 +25,8 @@ type RefreshToken struct {
 	ExpiresAt time.Time
 	Revoked   bool
 }
+
+type TokenPair struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
