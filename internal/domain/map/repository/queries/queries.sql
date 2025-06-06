@@ -238,14 +238,6 @@ WHERE polygon_id = $1 AND point_order = $2;
 DELETE FROM floor_polygon_points
 WHERE polygon_id = $1 AND point_order = ANY($2::int[]);
 
--- name: DeletePolygonPoint :exec
-DELETE FROM floor_polygon_points
-WHERE polygon_id = $1 AND point_order = $2;
-
--- name: DeletePolygonPoints :exec
-DELETE FROM floor_polygon_points
-WHERE polygon_id = $1 AND point_order = ANY($2::int[]);
-
 -- name: GetDoorFloorPairs :many
 SELECT
   d.id       AS door_id,
