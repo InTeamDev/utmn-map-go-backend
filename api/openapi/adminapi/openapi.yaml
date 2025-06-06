@@ -484,6 +484,55 @@ paths:
           description: Invalid input
         "500":
           description: Internal server error
+    delete:
+      summary: Delete multiple points from a polygon
+      operationId: deletePolygonPoints
+      parameters:
+        - name: building_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: floor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: poligon_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeletePolygonPointsRequest"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
 
   /api/sync:
     post:
@@ -1097,3 +1146,22 @@ components:
         - width
         - height
         - object_type_id
+
+    DeletePolygonPointsRequest:
+      type: object
+      properties:
+        polygon_id:
+          type: string
+          format: uuid
+        point_orders:
+          type: array
+          items:
+            type: integer
+            format: int32
+        points:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - polygon_id

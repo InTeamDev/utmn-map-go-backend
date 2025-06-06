@@ -43,6 +43,7 @@ type MapService interface {
 		order int32,
 		x, y float64,
 	) (mapentities.PolygonPoint, error)
+	DeletePolygonPoints(ctx context.Context, request mapentities.DeletePolygonPointsRequest) error
 }
 
 type RouteService interface {
@@ -91,6 +92,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 		// polygons
 		api.POST("/buildings/:building_id/floors/:floor_id/poligons", p.CreatePolygonHandler)
 		api.POST("/buildings/:building_id/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
+		api.DELETE("/buildings/:building_id/floors/:floor_id/poligons:poligon_id/points", p.DeletePolygonPointsHandler)
 		// sync
 		api.POST("/sync", p.SyncDatabaseHandler)
 		api.GET("/sync", p.GetDatabaseHandler)
@@ -359,6 +361,21 @@ func (p *AdminAPI) CreatePolygonPointsHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"points": result})
+}
+
+func (p *AdminAPI) DeletePolygonPointsHandler(c *gin.Context) {
+	var req mapentities.DeletePolygonPointsRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := p.mapService.DeletePolygonPoints(c.Request.Context(), req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 func (p *AdminAPI) SyncDatabaseHandler(c *gin.Context) {

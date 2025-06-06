@@ -230,6 +230,10 @@ ON CONFLICT (polygon_id, point_order) DO UPDATE SET
     y = EXCLUDED.y
 RETURNING polygon_id, point_order, x, y;
 
+-- name: DeletePolygonPoints :exec
+DELETE FROM floor_polygon_points
+WHERE polygon_id = $1 AND point_order = ANY($2::int[]);
+
 -- name: GetDoorFloorPairs :many
 SELECT
   d.id       AS door_id,
