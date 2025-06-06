@@ -116,7 +116,7 @@ func (p *AdminAPI) CreateObjectHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, result)
+	c.JSON(http.StatusCreated, gin.H{"object": result})
 }
 
 func (p *AdminAPI) DeleteObjectHandler(c *gin.Context) {
@@ -173,7 +173,7 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{"object": result})
 }
 
 func (p *AdminAPI) DeleteBuildingHandler(c *gin.Context) {
@@ -219,7 +219,7 @@ func (p *AdminAPI) CreateBuildingHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, building)
+	c.JSON(http.StatusOK, gin.H{"building": building})
 }
 
 func (p *AdminAPI) AddIntersection(c *gin.Context) {
@@ -235,7 +235,7 @@ func (p *AdminAPI) AddIntersection(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, node)
+	c.JSON(http.StatusCreated, gin.H{"node": node})
 }
 
 func (p *AdminAPI) DeleteIntersectionHandler(c *gin.Context) {
@@ -282,7 +282,7 @@ func (p *AdminAPI) AddConnection(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, result)
+	c.JSON(http.StatusCreated, gin.H{"connection": result})
 }
 
 func (p *AdminAPI) UpdateBuilding(c *gin.Context) {
@@ -302,7 +302,7 @@ func (p *AdminAPI) UpdateBuilding(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, building)
+	c.JSON(http.StatusOK, gin.H{"building": building})
 }
 
 type CreatePolygonRequest struct {
@@ -332,7 +332,7 @@ func (p *AdminAPI) CreatePolygonHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, polygon)
+	c.JSON(http.StatusOK, gin.H{"polygon": polygon})
 }
 
 func (p *AdminAPI) CreatePolygonPointsHandler(c *gin.Context) {
@@ -358,15 +358,17 @@ func (p *AdminAPI) CreatePolygonPointsHandler(c *gin.Context) {
 		result = append(result, res)
 	}
 
-	c.JSON(http.StatusCreated, result)
+	c.JSON(http.StatusCreated, gin.H{"points": result})
 }
 
 func (p *AdminAPI) SyncDatabaseHandler(c *gin.Context) {
-	var data mapentities.SyncAllData
-	if err := c.ShouldBindJSON(&data); err != nil {
+	var dataRequest mapentities.SyncAllDataRequest
+	if err := c.ShouldBindJSON(&dataRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	data := dataRequest.Data
 
 	ctx := c.Request.Context()
 	// iterate over buildings
@@ -524,5 +526,5 @@ func (p *AdminAPI) GetDatabaseHandler(c *gin.Context) {
 		result.Buildings = append(result.Buildings, bSync)
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{"data": result})
 }

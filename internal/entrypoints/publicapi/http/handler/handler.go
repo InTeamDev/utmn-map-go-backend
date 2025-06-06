@@ -105,7 +105,7 @@ func (p *PublicAPI) GetBuildingByIDHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{"building": result})
 }
 
 func (p *PublicAPI) GetFloorsHandler(c *gin.Context) {
@@ -158,7 +158,7 @@ func (p *PublicAPI) GetObjectByIDHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{"object": result})
 }
 
 func (p *PublicAPI) GetDoorsHandler(c *gin.Context) {

@@ -15,7 +15,7 @@ tags:
   - name: Buildings
     description: Операции с зданиями
   - name: Floors
-    description: Операции с зданиями
+    description: Операции с этажами
   - name: Objects
     description: Операции с объектами
   - name: Doors
@@ -42,14 +42,27 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateBuildingInput"
+              type: object
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+              required:
+                - name
+                - address
       responses:
         "200":
           description: Building created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Building"
+                type: object
+                properties:
+                  building:
+                    $ref: "#/components/schemas/Building"
+                required:
+                  - building
         "400":
           description: Invalid input
         "401":
@@ -83,13 +96,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Building"
+                type: object
+                properties:
+                  building:
+                    $ref: "#/components/schemas/Building"
+                required:
+                  - building
         "400":
           description: Invalid input
         "401":
           description: Unauthorized
         "500":
           description: Internal server error
+
     delete:
       tags:
         - Buildings
@@ -113,8 +132,6 @@ paths:
           description: Building not found
         "500":
           description: Internal server error
-
-  # TODO: Implement Floors post; patch; delete
 
   /api/buildings/{building_id}/floors/{floor_id}/objects:
     post:
@@ -149,7 +166,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Object"
+                type: object
+                properties:
+                  object:
+                    $ref: "#/components/schemas/Object"
+                required:
+                  - object
         "400":
           description: Invalid input
         "401":
@@ -199,7 +221,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Object"
+                type: object
+                properties:
+                  object:
+                    $ref: "#/components/schemas/Object"
+                required:
+                  - object
         "400":
           description: Invalid object_id or payload
         "401":
@@ -208,6 +235,7 @@ paths:
           description: Building, Floor or Object not found
         "500":
           description: Internal server error
+
     delete:
       tags:
         - Objects
@@ -246,8 +274,6 @@ paths:
         "500":
           description: Internal server error
 
-  # TODO: Implement Doors post; patch; delete
-
   /api/buildings/{building_id}/route/intersections:
     post:
       tags:
@@ -274,11 +300,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Node"
+                type: object
+                properties:
+                  node:
+                    $ref: "#/components/schemas/Node"
+                required:
+                  - node
         "400":
           description: Invalid input
         "500":
           description: Internal server error
+
   /api/buildings/{building_id}/route/intersections/{intersection_id}:
     delete:
       tags:
@@ -335,7 +367,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Edge"
+                type: object
+                properties:
+                  connection:
+                    $ref: "#/components/schemas/Connection"
+                required:
+                  - connection
         "400":
           description: Invalid input
         "500":
@@ -382,7 +419,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Polygon"
+                type: object
+                properties:
+                  polygon:
+                    $ref: "#/components/schemas/Polygon"
+                required:
+                  - polygon
         "400":
           description: Invalid input
         "500":
@@ -430,9 +472,14 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/PolygonPoint"
+                type: object
+                properties:
+                  points:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PolygonPoint"
+                required:
+                  - points
         "400":
           description: Invalid input
         "500":
@@ -468,7 +515,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SyncAllData"
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SyncAllData"
+                required:
+                  - data
         "500":
           description: Internal server error
 
@@ -754,15 +806,11 @@ components:
     CreateBuildingInput:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         address:
           type: string
       required:
-        - id
         - name
         - address
 
@@ -878,23 +926,6 @@ components:
         - x
         - y
         - floor_id
-
-    Edge:
-      type: object
-      properties:
-        from_id:
-          type: string
-          format: uuid
-        to_id:
-          type: string
-          format: uuid
-        weight:
-          type: number
-          format: double
-      required:
-        - from_id
-        - to_id
-        - weight
 
     NodeType:
       type: string

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	mapcache "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/cache"
+	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	mapservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service"
 	searchentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/entities"
 )
@@ -27,7 +28,6 @@ func (s *SearchService) Search(
 	ctx context.Context,
 	req searchentities.SearchRequest,
 ) ([]searchentities.SearchResult, error) {
-	// simple search
 	objects, exists := s.mapCache.Get(req.BuildingID)
 	if !exists {
 		var err error
@@ -43,29 +43,46 @@ func (s *SearchService) Search(
 		return nil, fmt.Errorf("get object door pairs: %w", err)
 	}
 
-	// filter objects by name
-	filteredObjects := make([]searchentities.SearchResult, 0, len(objects))
-	for _, object := range objects {
-		if strings.Contains(strings.ToLower(object.Name), strings.ToLower(req.Query)) ||
-			strings.Contains(strings.ToLower(object.Alias), strings.ToLower(req.Query)) ||
-			strings.Contains(strings.ToLower(object.Description), strings.ToLower(req.Query)) ||
-			req.Query == "" {
-			filteredObjects = append(filteredObjects, searchentities.SearchResult{
-				ObjectID:     object.ID,
-				ObjectTypeID: int(object.ObjectTypeID),
-				Preview:      fmt.Sprintf("%s (%s)", object.Name, object.Floor.Name),
-				DoorID:       objectDoorMap[object.ID],
+	query := strings.ToLower(req.Query)
+
+	filtered := make([]searchentities.SearchResult, 0, len(objects))
+	for _, obj := range objects {
+		doorID, hasDoor := objectDoorMap[obj.ID]
+		if !hasDoor {
+			continue
+		}
+		if matchesQuery(obj, query) {
+			filtered = append(filtered, searchentities.SearchResult{
+				ObjectID:     obj.ID,
+				ObjectTypeID: int(obj.ObjectTypeID),
+				Preview:      fmt.Sprintf("%s (%s)", obj.Name, obj.Floor.Name),
+				DoorID:       doorID,
 			})
 		}
 	}
 
-	sort.Slice(filteredObjects, func(i, j int) bool {
-		// Sort by name, then by alias, then by description
-		if filteredObjects[i].Preview != filteredObjects[j].Preview {
-			return filteredObjects[i].Preview < filteredObjects[j].Preview
+	// Сортируем по Preview (а при равенстве — по UUID)
+	sort.Slice(filtered, func(i, j int) bool {
+		if filtered[i].Preview != filtered[j].Preview {
+			return filtered[i].Preview < filtered[j].Preview
 		}
-		return filteredObjects[i].ObjectID.String() < filteredObjects[j].ObjectID.String()
+		return filtered[i].ObjectID.String() < filtered[j].ObjectID.String()
 	})
 
-	return filteredObjects, nil
+	return filtered, nil
+}
+
+// matchesQuery проверяет, содержит ли объект obj строку query
+// (по имени, по алиасу или по описанию). Если query == "", то всегда true.
+func matchesQuery(obj mapentities.Object, query string) bool {
+	if query == "" {
+		return true
+	}
+	nameLower := strings.ToLower(obj.Name)
+	aliasLower := strings.ToLower(obj.Alias)
+	descLower := strings.ToLower(obj.Description)
+
+	return strings.Contains(nameLower, query) ||
+		strings.Contains(aliasLower, query) ||
+		strings.Contains(descLower, query)
 }

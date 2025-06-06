@@ -6,6 +6,9 @@ import (
 	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
 )
 
+type SyncAllDataRequest struct {
+	Data SyncAllData `json:"data"`
+}
 type SyncAllData struct {
 	ObjectTypes []ObjectTypeInfo `json:"object_types"`
 	Buildings   []SyncBuildings  `json:"buildings"`

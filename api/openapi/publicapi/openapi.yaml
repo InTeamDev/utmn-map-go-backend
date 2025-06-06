@@ -15,15 +15,17 @@ tags:
   - name: Buildings
     description: Операции с зданиями
   - name: Floors
-    description: Операции с зданиями
+    description: Операции с этажами
   - name: Objects
     description: Операции с объектами
   - name: Doors
     description: Операции с дверями
   - name: Route
     description: Операции с маршрутами
-  - name: Polygons
-    description: Операции с полигонами
+  - name: Search
+    description: Операции с поиском
+  - name: Categories
+    description: Операции с категориями
 
 paths:
   /api/buildings:
@@ -43,6 +45,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Building"
+                required:
+                  - buildings
         "500":
           description: Internal server error
 
@@ -65,7 +69,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Building"
+                type: object
+                properties:
+                  building:
+                    $ref: "#/components/schemas/Building"
+                required:
+                  - building
         "400":
           description: Invalid building_id
         "404":
@@ -98,6 +107,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Floor"
+                required:
+                  - floors
         "400":
           description: Invalid building_id
         "500":
@@ -122,7 +133,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetObjectsResponse"
+                type: object
+                properties:
+                  objects:
+                    $ref: "#/components/schemas/GetObjectsResponse"
+                required:
+                  - objects
         "400":
           description: Invalid building_id
         "500":
@@ -154,7 +170,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Object"
+                type: object
+                properties:
+                  object:
+                    $ref: "#/components/schemas/Object"
+                required:
+                  - object
         "400":
           description: Invalid building_id or object_id
         "404":
@@ -187,6 +208,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/GetDoorsResponse"
+                required:
+                  - doors
         "400":
           description: Invalid building_id
         "500":
@@ -217,6 +240,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Intersection"
+                required:
+                  - intersections
         "400":
           description: Invalid building_id
         "500":
@@ -247,6 +272,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Connection"
+                required:
+                  - connections
         "400":
           description: Invalid building_id
         "500":
@@ -277,6 +304,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Node"
+                required:
+                  - nodes
         "400":
           description: Invalid building_id
         "500":
@@ -309,10 +338,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  route:
+                  edges:
                     type: array
                     items:
                       $ref: "#/components/schemas/Connection"
+                required:
+                  - edges
         "400":
           description: Invalid parameters or no route found
         "500":
@@ -357,6 +388,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/SearchResult"
+                required:
+                  - results
         "400":
           description: Invalid building_id or query parameters
         "500":
@@ -379,6 +412,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/ObjectTypeInfo"
+                required:
+                  - categories
         "500":
           description: Internal server error
 
@@ -651,29 +686,6 @@ components:
         - id
         - name
         - address
-
-    CreateBuildingInput:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        address:
-          type: string
-      required:
-        - id
-        - name
-        - address
-
-    UpdateBuildingInput:
-      type: object
-      properties:
-        name:
-          type: string
-        address:
-          type: string
 
     Door:
       type: object
@@ -987,6 +999,7 @@ components:
         - object_type_id
         - preview
         - door_id
+
     BuildRouteRequest:
       type: object
       properties:
