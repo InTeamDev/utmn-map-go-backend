@@ -116,12 +116,15 @@ func (a *AuthAPI) Verify(c *gin.Context) {
 }
 
 func (a *AuthAPI) Refresh(c *gin.Context) {
-	cookie, err := c.Request.Cookie("refresh_token")
-	if err != nil {
+	var req struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		slog.Error("Failed to bind request", "error", err)
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	tokens, err := a.svc.RefreshToken(cookie.Value)
+	tokens, err := a.svc.RefreshToken(req.RefreshToken)
 	if err != nil {
 		c.Status(http.StatusUnauthorized)
 		return
@@ -130,22 +133,16 @@ func (a *AuthAPI) Refresh(c *gin.Context) {
 }
 
 func (a *AuthAPI) Logout(c *gin.Context) {
-	cookie, err := c.Request.Cookie("refresh_token")
-	if err != nil {
-		if errors.Is(err, http.ErrNoCookie) {
-			c.Status(http.StatusBadRequest)
-			return
-		}
-		c.Status(http.StatusInternalServerError)
+	var req struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		slog.Error("Failed to bind request", "error", err)
+		c.Status(http.StatusBadRequest)
 		return
 	}
 	token := strings.TrimPrefix(c.GetHeader("Authorization"), "Bearer ")
-	rt := ""
-	if cookie != nil {
-		rt = cookie.Value
-		http.SetCookie(c.Writer, &http.Cookie{Name: "refresh_token", Value: "", Expires: time.Unix(0, 0), Path: "/"})
-	}
-	if err := a.svc.Logout(token, rt); err != nil {
+	if err := a.svc.Logout(token, req.RefreshToken); err != nil {
 		if errors.Is(err, authservice.ErrUnauthorized) {
 			c.Status(http.StatusUnauthorized)
 			return
