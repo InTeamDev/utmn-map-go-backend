@@ -158,20 +158,6 @@ func (mr *MockMapRepositoryMockRecorder) DeleteObject(ctx, objectID any) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteObject", reflect.TypeOf((*MockMapRepository)(nil).DeleteObject), ctx, objectID)
 }
 
-// DeletePolygonPoint mocks base method.
-func (m *MockMapRepository) DeletePolygonPoint(ctx context.Context, request entities.DeletePolygonPointRequest) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeletePolygonPoint", ctx, request)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeletePolygonPoint indicates an expected call of DeletePolygonPoint.
-func (mr *MockMapRepositoryMockRecorder) DeletePolygonPoint(ctx, request any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePolygonPoint", reflect.TypeOf((*MockMapRepository)(nil).DeletePolygonPoint), ctx, request)
-}
-
 // DeletePolygonPoints mocks base method.
 func (m *MockMapRepository) DeletePolygonPoints(ctx context.Context, request entities.DeletePolygonPointsRequest) error {
 	m.ctrl.T.Helper()

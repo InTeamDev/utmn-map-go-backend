@@ -260,21 +260,6 @@ func (q *Queries) DeleteObject(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const deletePolygonPoint = `-- name: DeletePolygonPoint :exec
-DELETE FROM floor_polygon_points
-WHERE polygon_id = $1 AND point_order = $2
-`
-
-type DeletePolygonPointParams struct {
-	PolygonID  uuid.UUID
-	PointOrder int32
-}
-
-func (q *Queries) DeletePolygonPoint(ctx context.Context, arg DeletePolygonPointParams) error {
-	_, err := q.db.ExecContext(ctx, deletePolygonPoint, arg.PolygonID, arg.PointOrder)
-	return err
-}
-
 const deletePolygonPoints = `-- name: DeletePolygonPoints :exec
 DELETE FROM floor_polygon_points
 WHERE polygon_id = $1 AND point_order = ANY($2::int[])

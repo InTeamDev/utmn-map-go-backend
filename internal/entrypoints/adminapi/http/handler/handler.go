@@ -43,7 +43,6 @@ type MapService interface {
 		order int32,
 		x, y float64,
 	) (mapentities.PolygonPoint, error)
-	DeletePolygonPoint(ctx context.Context, request mapentities.DeletePolygonPointRequest) error
 	DeletePolygonPoints(ctx context.Context, request mapentities.DeletePolygonPointsRequest) error
 }
 

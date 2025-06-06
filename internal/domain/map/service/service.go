@@ -43,7 +43,6 @@ type MapRepository interface {
 	) (entities.PolygonPoint, error)
 	GetDoorFloorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error)
 	GetObjectDoorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error)
-	DeletePolygonPoint(ctx context.Context, request entities.DeletePolygonPointRequest) error
 	DeletePolygonPoints(ctx context.Context, request entities.DeletePolygonPointsRequest) error
 }
 
@@ -253,10 +252,6 @@ func (m *Map) GetObjectDoorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, 
 		return nil, fmt.Errorf("get object-door pairs: %w", err)
 	}
 	return objectDoorPairs, nil
-}
-
-func (m *Map) DeletePolygonPoint(ctx context.Context, request entities.DeletePolygonPointRequest) error {
-	return m.repo.DeletePolygonPoint(ctx, request)
 }
 
 func (m *Map) DeletePolygonPoints(ctx context.Context, request entities.DeletePolygonPointsRequest) error {

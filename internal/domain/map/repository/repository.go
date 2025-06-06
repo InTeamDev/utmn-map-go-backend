@@ -513,13 +513,6 @@ func (r *Map) GetObjectDoorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, 
 	return objectDoorMap, nil
 }
 
-func (r *Map) DeletePolygonPoint(ctx context.Context, request entities.DeletePolygonPointRequest) error {
-	return r.q.DeletePolygonPoint(ctx, sqlc.DeletePolygonPointParams{
-		PolygonID:  request.PolygonID,
-		PointOrder: request.PointOrder,
-	})
-}
-
 func (r *Map) DeletePolygonPoints(ctx context.Context, request entities.DeletePolygonPointsRequest) error {
 	return r.q.DeletePolygonPoints(ctx, sqlc.DeletePolygonPointsParams{
 		PolygonID: request.PolygonID,
