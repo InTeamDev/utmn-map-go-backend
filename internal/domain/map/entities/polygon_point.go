@@ -15,8 +15,7 @@ type PolygonPointRequest struct {
 	Y          float64 `json:"y"`
 }
 
-
 type DeletePolygonPointsRequest struct {
-	PolygonID   uuid.UUID   `json:"polygon_id"`
-	PointOrders []int32     `json:"point_orders"`
+	PolygonID   uuid.UUID `json:"polygon_id"`
+	PointOrders []int32   `json:"point_orders"`
 }
