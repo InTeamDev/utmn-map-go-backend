@@ -76,6 +76,11 @@ paths:
       responses:
         "200":
           description: Verification successful, returns access token and sets refresh cookie
+          headers:
+            Set-Cookie:
+              description: Новый refresh_token устанавливается через заголовок Set-Cookie
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -83,6 +88,8 @@ paths:
                 properties:
                   access_token:
                     type: string
+                required:
+                  - access_token
         "400":
           description: Bad request (invalid JSON, missing fields, invalid or expired code)
         "401":
@@ -99,6 +106,13 @@ paths:
       tags:
         - Auth
       summary: Refresh access token using refresh cookie
+      parameters:
+        - name: refresh_token
+          in: cookie
+          description: Токен для обновления (refresh token)
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Refresh successful, returns new access token and sets a new refresh cookie
@@ -156,6 +170,13 @@ paths:
       summary: Log out the current user by invalidating tokens
       security:
         - BearerAuth: []
+      parameters:
+        - name: refresh_token
+          in: cookie
+          description: Refresh token cookie
+          required: true
+          schema:
+            type: string
       responses:
         "204":
           description: Logout successful (no content)
