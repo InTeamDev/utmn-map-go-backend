@@ -213,6 +213,26 @@ ON CONFLICT (id) DO UPDATE SET
     height = EXCLUDED.height,
     object_id = EXCLUDED.object_id;
 
+-- name: GetDoor :one
+SELECT 
+    d.id,
+    d.x,
+    d.y,
+    d.width,
+    d.height,
+    d.object_id
+FROM 
+    doors d
+WHERE 
+    d.id = @doorID::uuid
+    AND EXISTS (
+        SELECT 1 FROM objects o
+        JOIN floors f ON o.floor_id = f.id
+        WHERE o.id = d.object_id
+          AND o.floor_id = @floorID::uuid
+          AND f.building_id = @buildingID::uuid
+    );  
+
 -- name: CreatePolygon :one
 INSERT INTO floor_polygons (id, floor_id, label, z_index)
 VALUES (@id::uuid, @floor_id::uuid, @label, @z_index)

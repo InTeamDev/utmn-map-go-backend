@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -320,6 +321,34 @@ func (r *Map) UpdateObject(
 
 func (r *Map) DeleteObject(ctx context.Context, objectID uuid.UUID) error {
 	return r.q.DeleteObject(ctx, objectID)
+}
+
+func (r *Map) GetDoor(
+    ctx context.Context,
+    buildingID uuid.UUID,
+    floorID uuid.UUID,
+    doorID uuid.UUID,
+) (entities.Door, error) {
+    dbDoor, err := r.q.GetDoor(ctx, sqlc.GetDoorParams{
+        Doorid:     doorID,
+        Floorid:    floorID,
+        Buildingid: buildingID,
+    })
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return entities.Door{}, entities.ErrDoorNotFound
+        }
+        return entities.Door{}, fmt.Errorf("failed to get door: %w", err)
+    }
+
+    return entities.Door{
+        ID:       dbDoor.ID,
+        X:        dbDoor.X,
+        Y:        dbDoor.Y,
+        Width:    dbDoor.Width,
+        Height:   dbDoor.Height,
+        ObjectID: dbDoor.ObjectID,
+    }, nil
 }
 
 func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
