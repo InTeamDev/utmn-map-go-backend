@@ -10,6 +10,8 @@ var (
 	ErrObjectNotFound     = errors.New("object not found")
 	ErrFloorNotFound      = errors.New("floor not found")
 	ErrObjectTypeNotFound = errors.New("object type not found")
-	ErrInvalidDimensions  = errors.New("invalid object dimensions")
-	ErrPositionConflict   = errors.New("object position conflict")
+	ErrDoorNotFound       = errors.New("door not found")
+
+	ErrInvalidDimensions = errors.New("invalid object dimensions")
+	ErrPositionConflict  = errors.New("object position conflict")
 )
