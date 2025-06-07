@@ -33,7 +33,12 @@ type MapService interface {
 	GetObjectCategories(ctx context.Context) ([]mapentities.ObjectTypeInfo, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentities.GetObjectsResponse, error)
 
-	GetDoor(ctx context.Context, buildingID uuid.UUID, floorID uuid.UUID, doorID uuid.UUID) (mapentities.Door, error)
+	GetDoor(
+		ctx context.Context,
+		buildingID uuid.UUID,
+		floorID uuid.UUID,
+		doorID uuid.UUID,
+	) (mapentities.Door, error)
 
 	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor mapentities.Floor) error
 	CreateDoor(ctx context.Context, objectID uuid.UUID, door mapentities.Door) error

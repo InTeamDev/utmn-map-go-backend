@@ -341,7 +341,7 @@ func (r *Map) GetDoor(
 		return entities.Door{}, fmt.Errorf("get door: %w", err)
 	}
 
-	result:= entities.Door{
+	result := entities.Door{
 		ID:       dbDoor.ID,
 		X:        dbDoor.X,
 		Y:        dbDoor.Y,
@@ -349,7 +349,7 @@ func (r *Map) GetDoor(
 		Height:   dbDoor.Height,
 		ObjectID: dbDoor.ObjectID,
 	}
-	
+
 	return result, nil
 }
 

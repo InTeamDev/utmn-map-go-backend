@@ -28,7 +28,12 @@ type MapRepository interface {
 	) (entities.Object, error)
 	UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error)
 	DeleteObject(ctx context.Context, objectID uuid.UUID) error
-	GetDoor(ctx context.Context, buildingID uuid.UUID, floorID uuid.UUID, doorID uuid.UUID) (entities.Door, error)
+	GetDoor(
+		ctx context.Context,
+		buildingID uuid.UUID,
+		floorID uuid.UUID,
+		doorID uuid.UUID,
+	) (entities.Door, error)
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 	UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error)
