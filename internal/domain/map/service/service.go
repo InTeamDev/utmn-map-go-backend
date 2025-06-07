@@ -87,9 +87,6 @@ func (m *Map) GetDoor(
 ) (entities.Door, error) {
 	door, err := m.repo.GetDoor(ctx, buildingID, floorID, doorID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return entities.Door{}, entities.ErrDoorNotFound
-		}
 		return entities.Door{}, fmt.Errorf("get door: %w", err)
 	}
 	return door, nil

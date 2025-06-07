@@ -202,12 +202,11 @@ func (p *AdminAPI) GetDoorHandler(c *gin.Context) {
 
 	door, err := p.mapService.GetDoor(c.Request.Context(), buildingID, floorID, doorID)
 	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
+		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "door not found"})
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
