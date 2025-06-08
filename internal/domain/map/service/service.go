@@ -256,26 +256,6 @@ func (m *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.
 	if err != nil {
 		return entities.Door{}, fmt.Errorf("create door: %w", err)
 	}
-	if door.Width < 0 || door.Height < 0 {
-		return entities.Door{}, fmt.Errorf("%w: width and height must be positive numbers", entities.ErrInvalidInput)
-	}
-	if door.X < 0 || door.Y < 0 {
-		return entities.Door{}, fmt.Errorf("%w: coordinates must be positive numbers", entities.ErrInvalidInput)
-	}
-	object, err := m.repo.GetObjectByID(ctx, door.ObjectID)
-	if err != nil {
-		return entities.Door{}, fmt.Errorf("get object by id: %w", entities.ErrObjectNotFound)
-	}
-	switch {
-	case (door.X < object.X-10 || object.X+object.Width+10 < door.X) && (object.Y-10 > door.Y || door.Y < object.Y+10):
-		return entities.Door{}, fmt.Errorf("create door: %w", entities.ErrInvalidCoordinates)
-	case (door.X < object.X-10 || object.X+object.Width+10 < door.X) && (object.Y+object.Height-10 > door.Y || door.Y > object.Y+object.Height+10):
-		return entities.Door{}, fmt.Errorf("create door: %w", entities.ErrInvalidCoordinates)
-	case (door.X < object.X-10 || door.X > object.X+10) && (door.Y < object.Y-10 || door.Y > object.Y+object.Height+10):
-		return entities.Door{}, fmt.Errorf("create door: %w", entities.ErrInvalidCoordinates)
-	case (door.X < object.X+object.Width-10 || door.X > object.X+object.Width+10) && (door.Y < object.Y-10 || door.Y > object.Y+object.Height+10):
-		return entities.Door{}, fmt.Errorf("create door: %w", entities.ErrInvalidCoordinates)
-	}
 
 	return door, nil
 }
