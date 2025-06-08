@@ -326,14 +326,13 @@ func (r *Map) DeleteObject(ctx context.Context, objectID uuid.UUID) error {
 func (r *Map) GetDoor(
 	ctx context.Context,
 	buildingID uuid.UUID,
-	floorID uuid.UUID,
 	doorID uuid.UUID,
 ) (entities.Door, error) {
 	dbDoor, err := r.q.GetDoor(ctx, sqlc.GetDoorParams{
 		Doorid:     doorID,
-		Floorid:    floorID,
 		Buildingid: buildingID,
 	})
+
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return entities.Door{}, sql.ErrNoRows

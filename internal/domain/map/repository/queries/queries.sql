@@ -229,9 +229,8 @@ WHERE
         SELECT 1 FROM objects o
         JOIN floors f ON o.floor_id = f.id
         WHERE o.id = d.object_id
-          AND o.floor_id = @floorID::uuid
           AND f.building_id = @buildingID::uuid
-    );  
+    );
 
 -- name: CreatePolygon :one
 INSERT INTO floor_polygons (id, floor_id, label, z_index)

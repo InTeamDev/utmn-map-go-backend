@@ -31,7 +31,6 @@ type MapRepository interface {
 	GetDoor(
 		ctx context.Context,
 		buildingID uuid.UUID,
-		floorID uuid.UUID,
 		doorID uuid.UUID,
 	) (entities.Door, error)
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
@@ -87,10 +86,9 @@ func (m *Map) GetDoors(ctx context.Context, buildID uuid.UUID) ([]entities.GetDo
 func (m *Map) GetDoor(
 	ctx context.Context,
 	buildingID uuid.UUID,
-	floorID uuid.UUID,
 	doorID uuid.UUID,
 ) (entities.Door, error) {
-	door, err := m.repo.GetDoor(ctx, buildingID, floorID, doorID)
+	door, err := m.repo.GetDoor(ctx, buildingID, doorID)
 	if err != nil {
 		return entities.Door{}, fmt.Errorf("get door: %w", err)
 	}

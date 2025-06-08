@@ -203,18 +203,18 @@ func (mr *MockMapRepositoryMockRecorder) GetBuildings(ctx any) *gomock.Call {
 }
 
 // GetDoor mocks base method.
-func (m *MockMapRepository) GetDoor(ctx context.Context, buildingID, floorID, doorID uuid.UUID) (entities.Door, error) {
+func (m *MockMapRepository) GetDoor(ctx context.Context, buildingID, doorID uuid.UUID) (entities.Door, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDoor", ctx, buildingID, floorID, doorID)
+	ret := m.ctrl.Call(m, "GetDoor", ctx, buildingID, doorID)
 	ret0, _ := ret[0].(entities.Door)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetDoor indicates an expected call of GetDoor.
-func (mr *MockMapRepositoryMockRecorder) GetDoor(ctx, buildingID, floorID, doorID any) *gomock.Call {
+func (mr *MockMapRepositoryMockRecorder) GetDoor(ctx, buildingID, doorID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDoor", reflect.TypeOf((*MockMapRepository)(nil).GetDoor), ctx, buildingID, floorID, doorID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDoor", reflect.TypeOf((*MockMapRepository)(nil).GetDoor), ctx, buildingID, doorID)
 }
 
 // GetDoorFloorPairs mocks base method.
