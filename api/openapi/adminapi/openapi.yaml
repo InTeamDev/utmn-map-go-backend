@@ -1016,7 +1016,7 @@ components:
         edges:
           type: array
           items:
-            $ref: "#/components/schemas/Edge"
+            $ref: "#/components/schemas/Connection"
         building_id:
           type: string
           format: uuid

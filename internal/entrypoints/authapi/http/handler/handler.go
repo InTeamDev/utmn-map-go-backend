@@ -46,17 +46,17 @@ func (a *AuthAPI) SaveUser(c *gin.Context) {
 		TGUsername string `json:"tg_username"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil || req.TGUsername == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		slog.Error("Failed to bind request", "error", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 	if err := a.svc.RegisterUser(req.TGID, req.TGUsername); err != nil {
 		slog.Error("Failed to register user", "error", err, "tg_username", req.TGUsername)
 		if errors.Is(err, authservice.ErrConflict) {
-			c.Status(http.StatusConflict)
+			c.JSON(http.StatusConflict, gin.H{"error": "User already registered"})
 			return
 		}
-		c.Status(http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error: " + err.Error()})
 		return
 	}
 	c.Status(http.StatusNoContent)
@@ -74,11 +74,11 @@ func (a *AuthAPI) SendCode(c *gin.Context) {
 	if err != nil {
 		switch err {
 		case authservice.ErrNotFound:
-			c.Status(http.StatusNotFound)
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		case authservice.ErrTooMany:
-			c.Status(http.StatusTooManyRequests)
+			c.JSON(http.StatusTooManyRequests, gin.H{"error": "Too many requests, please try again later"})
 		default:
-			c.Status(http.StatusServiceUnavailable)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error: " + err.Error()})
 		}
 		return
 	}
@@ -92,7 +92,7 @@ func (a *AuthAPI) Verify(c *gin.Context) {
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		slog.Error("Failed to bind request", "error", err)
-		c.Status(http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 	tokens, err := a.svc.VerifyCode(req.TGUsername, req.Code)
@@ -100,15 +100,15 @@ func (a *AuthAPI) Verify(c *gin.Context) {
 		slog.Error("Failed to verify code", "error", err, "tg_username", req.TGUsername)
 		switch err {
 		case authservice.ErrNotFound:
-			c.Status(http.StatusNotFound)
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		case authservice.ErrInvalidCode, authservice.ErrExpired:
-			c.Status(http.StatusBadRequest)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or expired code"})
 		case authservice.ErrTooMany:
-			c.Status(http.StatusTooManyRequests)
+			c.JSON(http.StatusTooManyRequests, gin.H{"error": "Too many attempts"})
 		case authservice.ErrUnauthorized:
-			c.Status(http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		default:
-			c.Status(http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error: " + err.Error()})
 		}
 		return
 	}
@@ -121,12 +121,12 @@ func (a *AuthAPI) Refresh(c *gin.Context) {
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		slog.Error("Failed to bind request", "error", err)
-		c.Status(http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request: " + err.Error()})
 		return
 	}
 	tokens, err := a.svc.RefreshToken(req.RefreshToken)
 	if err != nil {
-		c.Status(http.StatusUnauthorized)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired refresh token"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"access_token": tokens.AccessToken, "refresh_token": tokens.RefreshToken})
@@ -138,16 +138,16 @@ func (a *AuthAPI) Logout(c *gin.Context) {
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		slog.Error("Failed to bind request", "error", err)
-		c.Status(http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 	token := strings.TrimPrefix(c.GetHeader("Authorization"), "Bearer ")
 	if err := a.svc.Logout(token, req.RefreshToken); err != nil {
 		if errors.Is(err, authservice.ErrUnauthorized) {
-			c.Status(http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
-		c.Status(http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error: " + err.Error()})
 		return
 	}
 	c.Status(http.StatusNoContent)
