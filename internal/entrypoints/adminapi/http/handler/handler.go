@@ -461,7 +461,6 @@ func (p *AdminAPI) SyncDatabaseHandler(c *gin.Context) {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
-
 			}
 			// polygons
 			for _, poly := range f.FloorPolygons {
