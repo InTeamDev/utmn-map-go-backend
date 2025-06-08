@@ -260,21 +260,6 @@ func (q *Queries) DeleteObject(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const deletePolygonPoints = `-- name: DeletePolygonPoints :exec
-DELETE FROM floor_polygon_points
-WHERE polygon_id = $1 AND point_order = ANY($2::int[])
-`
-
-type DeletePolygonPointsParams struct {
-	PolygonID uuid.UUID
-	Column2   []int32
-}
-
-func (q *Queries) DeletePolygonPoints(ctx context.Context, arg DeletePolygonPointsParams) error {
-	_, err := q.db.ExecContext(ctx, deletePolygonPoints, arg.PolygonID, pq.Array(arg.Column2))
-	return err
-}
-
 const getBuildingByID = `-- name: GetBuildingByID :one
 SELECT 
     b.id, 
@@ -359,42 +344,6 @@ func (q *Queries) GetDoor(ctx context.Context, arg GetDoorParams) (Door, error) 
 		&i.ObjectID,
 	)
 	return i, err
-}
-
-const getDoorFloorPairs = `-- name: GetDoorFloorPairs :many
-SELECT
-  d.id       AS door_id,
-  o.floor_id AS floor_id
-FROM doors d
-JOIN objects o ON d.object_id = o.id
-`
-
-type GetDoorFloorPairsRow struct {
-	DoorID  uuid.UUID
-	FloorID uuid.UUID
-}
-
-func (q *Queries) GetDoorFloorPairs(ctx context.Context) ([]GetDoorFloorPairsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getDoorFloorPairs)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetDoorFloorPairsRow
-	for rows.Next() {
-		var i GetDoorFloorPairsRow
-		if err := rows.Scan(&i.DoorID, &i.FloorID); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const getDoorsByBuilding = `-- name: GetDoorsByBuilding :many
@@ -664,42 +613,6 @@ func (q *Queries) GetObjectByID(ctx context.Context, id uuid.UUID) (GetObjectByI
 		&i.Doors,
 	)
 	return i, err
-}
-
-const getObjectDoorPairs = `-- name: GetObjectDoorPairs :many
-SELECT
-  d.id AS door_id,
-  o.id AS object_id
-FROM doors d
-JOIN objects o ON d.object_id = o.id
-`
-
-type GetObjectDoorPairsRow struct {
-	DoorID   uuid.UUID
-	ObjectID uuid.UUID
-}
-
-func (q *Queries) GetObjectDoorPairs(ctx context.Context) ([]GetObjectDoorPairsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getObjectDoorPairs)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetObjectDoorPairsRow
-	for rows.Next() {
-		var i GetObjectDoorPairsRow
-		if err := rows.Scan(&i.DoorID, &i.ObjectID); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const getObjectTypeByID = `-- name: GetObjectTypeByID :one
