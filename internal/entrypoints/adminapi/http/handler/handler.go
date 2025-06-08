@@ -606,39 +606,6 @@ func (p *AdminAPI) CreateDoorHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	if door.Width < 0 || door.Height < 0 {
-		err := mapentities.ErrInvalidInput
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	if door.X < 0 || door.Y < 0 {
-		err := mapentities.ErrInvalidInput
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	object, err := p.mapService.GetObjectByID(c.Request.Context(), door.ObjectID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	switch {
-	case (door.X < object.X-10 || object.X+object.Width+10 < door.X) && (object.Y-10 > door.Y || door.Y < object.Y+10):
-		err := mapentities.ErrInvalidCoordinates
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	case (door.X < object.X-10 || object.X+object.Width+10 < door.X) && (object.Y+object.Height-10 > door.Y || door.Y > object.Y+object.Height+10):
-		err := mapentities.ErrInvalidCoordinates
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	case (door.X < object.X-10 || door.X > object.X+10) && (door.Y < object.Y-10 || door.Y > object.Y+object.Height+10):
-		err := mapentities.ErrInvalidCoordinates
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	case (door.X < object.X+object.Width-10 || door.X > object.X+object.Width+10) && (door.Y < object.Y-10 || door.Y > object.Y+object.Height+10):
-		err := mapentities.ErrInvalidCoordinates
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 
 	c.JSON(http.StatusCreated, gin.H{"door": door})
 }
