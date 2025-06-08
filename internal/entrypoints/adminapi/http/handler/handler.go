@@ -601,24 +601,3 @@ func (p *AdminAPI) GetPolygonByIDHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, polygon)
 }
-
-func (p *AdminAPI) GetPolygonByIDHandler(c *gin.Context) {
-	idParam := c.Param("poligon_id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid poligon_id"})
-		return
-	}
-
-	polygon, err := p.mapService.GetPolygonByID(c.Request.Context(), id)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			c.JSON(http.StatusNotFound, gin.H{"error": "polygon not found"})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, polygon)
-}
