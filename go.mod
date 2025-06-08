@@ -14,9 +14,15 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
-require github.com/oapi-codegen/runtime v1.1.1
+require (
+	github.com/oapi-codegen/runtime v1.1.1
+	github.com/patrickmn/go-cache v2.1.0+incompatible
+)
 
-require github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
+require (
+	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
+	github.com/rogpeppe/go-internal v1.10.0 // indirect
+)
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
