@@ -15,6 +15,7 @@ import (
 type MapRepository interface {
 	GetObjectByID(ctx context.Context, objectID uuid.UUID) (entities.Object, error)
 	GetBuildings(ctx context.Context) ([]entities.Building, error)
+	GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.FloorPolygon, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
 	GetDoors(ctx context.Context, buildID uuid.UUID) ([]entities.GetDoorsResponse, error)
 	GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error)
@@ -233,4 +234,18 @@ func (m *Map) CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entit
 
 func (m *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error {
 	return m.repo.CreateDoor(ctx, objectID, door)
+}
+
+func (m *Map) GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.FloorPolygon, error) {
+	dbPolygon, err := m.repo.GetPolygonByID(ctx, id)
+	if err != nil {
+		return entities.FloorPolygon{}, err
+	}
+
+	return entities.FloorPolygon{
+		ID:      dbPolygon.ID,
+		FloorID: dbPolygon.FloorID,
+		Label:   dbPolygon.Label,
+		ZIndex:  int(dbPolygon.ZIndex),
+	}, nil
 }

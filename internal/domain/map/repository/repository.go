@@ -486,3 +486,16 @@ func (r *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.
 	}
 	return nil
 }
+
+func (r *Map) GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.FloorPolygon, error) {
+	dbPolygon, err := r.GetPolygonByID(ctx, id)
+	if err != nil {
+		return entities.FloorPolygon{}, err
+	}
+	return entities.FloorPolygon{
+		ID:      dbPolygon.ID,
+		FloorID: dbPolygon.FloorID,
+		Label:   dbPolygon.Label,
+		ZIndex:  int(dbPolygon.ZIndex),
+	}, nil
+}

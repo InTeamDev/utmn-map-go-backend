@@ -293,6 +293,21 @@ func (mr *MockMapRepositoryMockRecorder) GetObjectsResponse(ctx, buildingID any)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetObjectsResponse", reflect.TypeOf((*MockMapRepository)(nil).GetObjectsResponse), ctx, buildingID)
 }
 
+// GetPolygonByID mocks base method.
+func (m *MockMapRepository) GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.FloorPolygon, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPolygonByID", ctx, id)
+	ret0, _ := ret[0].(entities.FloorPolygon)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPolygonByID indicates an expected call of GetPolygonByID.
+func (mr *MockMapRepositoryMockRecorder) GetPolygonByID(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPolygonByID", reflect.TypeOf((*MockMapRepository)(nil).GetPolygonByID), ctx, id)
+}
+
 // UpdateBuilding mocks base method.
 func (m *MockMapRepository) UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error) {
 	m.ctrl.T.Helper()

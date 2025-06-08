@@ -146,6 +146,11 @@ RETURNING *;
 DELETE FROM objects
 WHERE id = @id::uuid;
 
+-- name: GetPolygonByID :one
+SELECT id, floor_id, label, z_index
+FROM floor_polygons
+WHERE id = $1;
+
 -- name: GetFloorByID :one
 SELECT * FROM floors
 WHERE id = @id::uuid;

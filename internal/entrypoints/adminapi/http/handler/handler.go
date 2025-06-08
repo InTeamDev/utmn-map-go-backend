@@ -35,6 +35,7 @@ type MapService interface {
 
 	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor mapentities.Floor) error
 	CreateDoor(ctx context.Context, objectID uuid.UUID, door mapentities.Door) error
+	GetPolygonByID(ctx context.Context, id uuid.UUID) (mapentities.FloorPolygon, error)
 
 	CreatePolygon(ctx context.Context, polygon mapentities.Polygon) (mapentities.Polygon, error)
 	CreatePolygonPoint(
@@ -93,6 +94,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 		// sync
 		api.POST("/sync", p.SyncDatabaseHandler)
 		api.GET("/sync", p.GetDatabaseHandler)
+		api.GET("/floors/:floor_id/poligons/:poligon_id", p.GetPolygonByIDHandler)
 	}
 }
 
@@ -519,4 +521,25 @@ func (p *AdminAPI) GetDatabaseHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+func (p *AdminAPI) GetPolygonByIDHandler(c *gin.Context) {
+	idParam := c.Param("poligon_id")
+	id, err := uuid.Parse(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid poligon_id"})
+		return
+	}
+
+	polygon, err := p.mapService.GetPolygonByID(c.Request.Context(), id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"error": "polygon not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, polygon)
 }
