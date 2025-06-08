@@ -34,7 +34,6 @@ type MapService interface {
 	GetObjectByID(ctx context.Context, objectID uuid.UUID) (mapentities.Object, error)
 	GetObjectCategories(ctx context.Context) ([]mapentities.ObjectTypeInfo, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentities.GetObjectsResponse, error)
-	GetObjectByID(ctx context.Context, id uuid.UUID) (mapentities.Object, error)
 
 	GetDoor(
 		ctx context.Context,
