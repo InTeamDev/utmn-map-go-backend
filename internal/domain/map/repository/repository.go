@@ -548,3 +548,16 @@ func (r *Map) DeletePolygonPoints(ctx context.Context, request entities.DeletePo
 		Column2:   request.PointOrders,
 	})
 }
+
+func (r *Map) GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.FloorPolygon, error) {
+	dbPolygon, err := r.GetPolygonByID(ctx, id)
+	if err != nil {
+		return entities.FloorPolygon{}, err
+	}
+	return entities.FloorPolygon{
+		ID:      dbPolygon.ID,
+		FloorID: dbPolygon.FloorID,
+		Label:   dbPolygon.Label,
+		ZIndex:  int(dbPolygon.ZIndex),
+	}, nil
+}
