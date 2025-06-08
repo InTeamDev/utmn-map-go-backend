@@ -274,6 +274,47 @@ paths:
         "500":
           description: Internal server error
 
+  /api/buildings/{building_id}/doors:
+    post:
+      tags:
+        - Doors
+      summary: Create a new door for the Object
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Creation payload for a new door
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Door"
+      responses:
+        "201":
+          description: Door created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    $ref: "#/components/schemas/Door"
+                required:
+                  - object
+        "400":
+          description: Invalid input
+        "401":
+          description: Unathorized
+        "404":
+          description: Building not found
+        "500":
+          description: Internal server error
+
   /api/buildings/{building_id}/route/intersections:
     post:
       tags:

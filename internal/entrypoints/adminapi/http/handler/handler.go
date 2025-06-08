@@ -92,7 +92,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 		api.DELETE("/buildings/:building_id/floors/:floor_id/objects/:object_id", p.DeleteObjectHandler)
 		// TODO: doors post, patch and delete
 		api.GET("/buildings/:building_id/doors/:door_id", p.GetDoorHandler)
-		api.POST("/buildings/:building_id/floors/:floor_id/doors", p.CreateDoorHandler)
+		api.POST("/buildings/:building_id/doors", p.CreateDoorHandler)
 		// route
 		api.POST("/buildings/:building_id/route/intersections", p.AddIntersection)
 		api.POST("/buildings/:building_id/route/connections", p.AddConnection)
