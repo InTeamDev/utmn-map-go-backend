@@ -332,7 +332,6 @@ func (r *Map) GetDoor(
 		Doorid:     doorID,
 		Buildingid: buildingID,
 	})
-
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return entities.Door{}, sql.ErrNoRows
