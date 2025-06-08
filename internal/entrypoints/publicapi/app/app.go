@@ -15,11 +15,11 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/InTeamDev/utmn-map-go-backend/config"
-	mapcache "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/cache"
 	maprepository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/repository"
 	mapservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/service"
 	routerepository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/repository"
 	routeservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/service"
+	searchrepository "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/repository"
 	searchservice "github.com/InTeamDev/utmn-map-go-backend/internal/domain/search/service"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/entrypoints/publicapi/http/handler"
 	"github.com/InTeamDev/utmn-map-go-backend/internal/middleware"
@@ -63,9 +63,9 @@ func runApp(ctx context.Context, configPath string) error {
 	mapConverter := maprepository.NewMapConverter()
 	mapRepository := maprepository.NewMap(db, mapConverter)
 	mapService := mapservice.NewMap(mapRepository)
-	mapCache := mapcache.NewInMemoryMapCache()
 
-	searchService := searchservice.NewSearchService(mapCache, mapService)
+	searchRepository := searchrepository.NewSearchRepository(db)
+	searchService := searchservice.NewSearchService(searchRepository)
 
 	routeConverter := routerepository.NewRouteConverter()
 	routeRepository := routerepository.NewRoute(db, routeConverter)
