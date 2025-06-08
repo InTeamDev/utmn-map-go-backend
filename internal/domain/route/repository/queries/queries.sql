@@ -27,14 +27,26 @@ WHERE i.id = @intersection_id
   AND b.id = @building_id;
 
 -- name: GetConnections :many
-SELECT c.from_id, c.to_id, c.weight 
-FROM connections c
-WHERE EXISTS (
-    SELECT 1 FROM intersections i
-    JOIN floors f ON i.floor_id = f.id
-    WHERE (i.id = c.from_id OR i.id = c.to_id)
-    AND f.building_id = $1
-);
+SELECT c.from_id, c.to_id, c.weight
+  FROM connections c
+ WHERE EXISTS (
+   -- объединяем все узлы здания: пересечения + двери
+   SELECT id
+     FROM (
+       SELECT i.id
+         FROM intersections i
+         JOIN floors f ON i.floor_id = f.id
+        WHERE f.building_id = $1
+       UNION
+       SELECT d.id
+         FROM doors d
+         JOIN objects o ON d.object_id = o.id
+         JOIN floors f ON o.floor_id = f.id
+        WHERE f.building_id = $1
+     ) AS nodes
+    WHERE nodes.id = c.from_id
+       OR nodes.id = c.to_id
+ );
 
 -- name: GetIntersections :many
 SELECT 
