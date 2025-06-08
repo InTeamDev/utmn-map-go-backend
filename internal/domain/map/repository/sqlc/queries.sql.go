@@ -36,7 +36,7 @@ func (q *Queries) CreateBuilding(ctx context.Context, arg CreateBuildingParams) 
 	return i, err
 }
 
-const createDoor = `-- name: CreateDoor :exec
+const createDoor = `-- name: CreateDoor :one
 INSERT INTO doors (id, x, y, width, height, object_id)
 VALUES ($1::uuid, $2, $3, $4, $5, $6::uuid)
 ON CONFLICT (id) DO UPDATE SET
@@ -45,6 +45,7 @@ ON CONFLICT (id) DO UPDATE SET
     width = EXCLUDED.width,
     height = EXCLUDED.height,
     object_id = EXCLUDED.object_id
+RETURNING id, x, y, width, height, object_id
 `
 
 type CreateDoorParams struct {
@@ -56,8 +57,8 @@ type CreateDoorParams struct {
 	ObjectID uuid.UUID
 }
 
-func (q *Queries) CreateDoor(ctx context.Context, arg CreateDoorParams) error {
-	_, err := q.db.ExecContext(ctx, createDoor,
+func (q *Queries) CreateDoor(ctx context.Context, arg CreateDoorParams) (Door, error) {
+	row := q.db.QueryRowContext(ctx, createDoor,
 		arg.ID,
 		arg.X,
 		arg.Y,
@@ -65,7 +66,16 @@ func (q *Queries) CreateDoor(ctx context.Context, arg CreateDoorParams) error {
 		arg.Height,
 		arg.ObjectID,
 	)
-	return err
+	var i Door
+	err := row.Scan(
+		&i.ID,
+		&i.X,
+		&i.Y,
+		&i.Width,
+		&i.Height,
+		&i.ObjectID,
+	)
+	return i, err
 }
 
 const createFloor = `-- name: CreateFloor :exec
