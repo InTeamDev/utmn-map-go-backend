@@ -550,14 +550,16 @@ func (r *Map) DeletePolygonPoints(ctx context.Context, request entities.DeletePo
 }
 
 func (r *Map) GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.FloorPolygon, error) {
-	dbPolygon, err := r.GetPolygonByID(ctx, id)
+	dbPolygon, err := r.q.GetPolygonByID(ctx, id)
 	if err != nil {
 		return entities.FloorPolygon{}, err
 	}
-	return entities.FloorPolygon{
+
+	polygon := entities.FloorPolygon{
 		ID:      dbPolygon.ID,
 		FloorID: dbPolygon.FloorID,
-		Label:   dbPolygon.Label,
-		ZIndex:  int(dbPolygon.ZIndex),
-	}, nil
+		Label:   dbPolygon.Label.String,
+		ZIndex:  int(dbPolygon.ZIndex.Int32),
+	}
+	return polygon, nil
 }

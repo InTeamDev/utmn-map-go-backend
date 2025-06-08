@@ -51,10 +51,3 @@ type CreateObjectInput struct {
 	Height       float64   `json:"height"         binding:"required,gte=1"`
 	ObjectTypeID int32     `json:"object_type_id" binding:"required"`
 }
-
-type FloorPolygon struct {
-	ID      uuid.UUID
-	FloorID uuid.UUID
-	Label   string
-	ZIndex  int
-}
