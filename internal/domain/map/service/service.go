@@ -33,7 +33,12 @@ type MapRepository interface {
 		buildingID uuid.UUID,
 		doorID uuid.UUID,
 	) (entities.Door, error)
-	UpdateDoor(ctx context.Context, buildingID uuid.UUID, doorID uuid.UUID, input entities.Door) (entities.Door, error)
+	UpdateDoor(
+		ctx context.Context,
+		buildingID uuid.UUID,
+		doorID uuid.UUID,
+		input entities.Door,
+	) (entities.Door, error)
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 	UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error)
