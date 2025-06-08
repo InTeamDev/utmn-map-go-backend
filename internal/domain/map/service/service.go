@@ -107,7 +107,6 @@ func (m *Map) UpdateDoor(
 	doorID uuid.UUID,
 	input entities.Door,
 ) (entities.Door, error) {
-
 	if input.Width <= 0 || input.Height <= 0 {
 		return entities.Door{}, fmt.Errorf("%w: width and height must be positive", entities.ErrInvalidInput)
 	}
