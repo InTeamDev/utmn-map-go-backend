@@ -107,7 +107,7 @@ func (r *RouteService) BuildRoute(
 	buildingID uuid.UUID,
 	input entities.BuildRouteRequest,
 ) ([]entities.Connection, error) {
-	// --- 2. Подгружаем все узлы (пересечения + двери) одного и того же buildingID.
+	// 1. Загрузка всех узлов
 	intersections, err := r.repo.GetIntersections(ctx, buildingID)
 	if err != nil {
 		return nil, fmt.Errorf("GetIntersections: %w", err)
@@ -116,7 +116,8 @@ func (r *RouteService) BuildRoute(
 	if err != nil {
 		return nil, fmt.Errorf("GetDoors: %w", err)
 	}
-	// Заполняем nodesMap для быстрой проверки существования любого UUID:
+
+	// Формируем карту существующих узлов
 	nodesMap := make(map[uuid.UUID]struct{}, len(intersections)+len(doors))
 	for _, n := range intersections {
 		nodesMap[n.ID] = struct{}{}
@@ -124,7 +125,8 @@ func (r *RouteService) BuildRoute(
 	for _, n := range doors {
 		nodesMap[n.ID] = struct{}{}
 	}
-	// Проверяем, что start, end и все waypoints есть в nodesMap:
+
+	// Валидация: start, end и waypoints должны существовать
 	if _, ok := nodesMap[input.StartNodeID]; !ok {
 		return nil, errors.New("start node не найден среди пересечений/дверей")
 	}
@@ -137,47 +139,72 @@ func (r *RouteService) BuildRoute(
 		}
 	}
 
-	// --- 3. Ловим из репозитория все связи (connections) для этого buildingID
+	// 2. Загрузка всех связей
 	allConns, err := r.repo.GetConnections(ctx, buildingID)
 	if err != nil {
 		return nil, fmt.Errorf("get connections: %w", err)
 	}
 
-	// --- 4. Собираем порядок «посещений»: start → waypoints... → end
+	// 3. Формирование порядка узлов: start -> waypoints... -> end
 	order := make([]uuid.UUID, 0, len(input.Waypoints)+2)
 	order = append(order, input.StartNodeID)
 	order = append(order, input.Waypoints...)
 	order = append(order, input.EndNodeID)
 
-	var result []entities.Connection
-	// Пробегаем по всем соседним парам в слайсе order:
+	// 4. Строим полный путь узлов
+	var fullNodePath []uuid.UUID
 	for i := 0; i < len(order)-1; i++ {
-		segmentStart := order[i]
-		segmentEnd := order[i+1]
+		segStart := order[i]
+		segEnd := order[i+1]
 
-		// Для каждого отрезка вызываем buildShortestPath, передавая полный список связей:
-		edges, err := buildShortestPath(allConns, segmentStart, segmentEnd)
+		segment, err := buildNodePath(allConns, segStart, segEnd)
 		if err != nil {
-			return nil, fmt.Errorf("no route from %s to %s: %w", segmentStart, segmentEnd, err)
+			return nil, fmt.Errorf("no route from %s to %s: %w", segStart, segEnd, err)
 		}
-		// Склеиваем все рёбра (edges) текущего отрезка в общий результат
-		result = append(result, edges...)
+
+		if i == 0 {
+			// первый сегмент — весь путь
+			fullNodePath = append(fullNodePath, segment...)
+		} else {
+			// последующие — без дублирования точки начала
+			fullNodePath = append(fullNodePath, segment[1:]...)
+		}
+	}
+
+	// 5. Обёртывание в Connection-структуры
+	result := make([]entities.Connection, 0, len(fullNodePath)-1)
+	for i := 0; i < len(fullNodePath)-1; i++ {
+		u := fullNodePath[i]
+		v := fullNodePath[i+1]
+		// ищем вес ребра между u и v
+		w := 0.0
+		for _, c := range allConns {
+			if (c.FromID == u && c.ToID == v) || (c.FromID == v && c.ToID == u) {
+				w = c.Weight
+				break
+			}
+		}
+		result = append(result, entities.Connection{
+			FromID: u,
+			ToID:   v,
+			Weight: w,
+		})
 	}
 
 	return result, nil
 }
 
-// --- Вспомогательная функция: стандартная Дейкстра по списку связей.
-// Возвращает список ребер (entities.Connection) в порядке следования кратчайшего пути.
-func buildShortestPath(
+// buildNodePath возвращает последовательность узлов (UUID) кратчайшего пути
+func buildNodePath(
 	conns []entities.Connection,
 	start, end uuid.UUID,
-) ([]entities.Connection, error) {
+) ([]uuid.UUID, error) {
 	type neighbor struct {
 		to     uuid.UUID
 		weight float64
 	}
 
+	// 1. Строим список смежности (двунаправленный)
 	adj := make(map[uuid.UUID][]neighbor, len(conns))
 	nodesSet := make(map[uuid.UUID]struct{}, len(conns)*2)
 	for _, c := range conns {
@@ -187,12 +214,11 @@ func buildShortestPath(
 		nodesSet[c.ToID] = struct{}{}
 	}
 
-	// Карты для алгоритма:
+	// 2. Инициализация Дейкстры
+	const inf = 1e18
 	dist := make(map[uuid.UUID]float64, len(nodesSet))
 	prev := make(map[uuid.UUID]uuid.UUID, len(nodesSet))
 	unvisited := make(map[uuid.UUID]struct{}, len(nodesSet))
-	const inf = 1e18
-
 	for node := range nodesSet {
 		dist[node] = inf
 		unvisited[node] = struct{}{}
@@ -205,27 +231,26 @@ func buildShortestPath(
 	}
 	dist[start] = 0
 
-	// Основной цикл Дейкстры (O(N^2) версия без heap):
+	// 3. Основной цикл Дейкстры
 	for len(unvisited) > 0 {
-		// Находим вершину u из unvisited с минимальным dist[u]
+		// выбор минимального
 		var u uuid.UUID
-		minDist := inf
+		minD := inf
 		for n := range unvisited {
-			if d := dist[n]; d < minDist {
-				minDist = d
+			if d := dist[n]; d < minD {
+				minD = d
 				u = n
 			}
 		}
 
-		// Если мы дошли до целевой вершины или minDist == inf — выходим
-		if u == end || minDist == inf {
+		if u == end || minD == inf {
 			break
 		}
 		delete(unvisited, u)
 
-		// Расслабляем все рёбра из u
+		// релаксация
 		for _, nb := range adj[u] {
-			if _, seen := unvisited[nb.to]; !seen {
+			if _, ok := unvisited[nb.to]; !ok {
 				continue
 			}
 			alt := dist[u] + nb.weight
@@ -236,12 +261,10 @@ func buildShortestPath(
 		}
 	}
 
-	// Если до конца не дошли — возвращаем ошибку
+	// 4. Восстановление пути
 	if _, reached := prev[end]; !reached && start != end {
 		return nil, errors.New("route not found")
 	}
-
-	// Восстанавливаем путь (список UUID) с конца в начало
 	var path []uuid.UUID
 	for cur := end; ; {
 		path = append([]uuid.UUID{cur}, path...)
@@ -254,25 +277,5 @@ func buildShortestPath(
 		}
 		cur = p
 	}
-
-	// Конвертируем последовательность UUID в список ребер (entities.Connection)
-	var edges []entities.Connection
-	for i := 0; i < len(path)-1; i++ {
-		u := path[i]
-		v := path[i+1]
-		// ищем вес ребра u → v
-		w := 0.0
-		for _, nb := range adj[u] {
-			if nb.to == v {
-				w = nb.weight
-				break
-			}
-		}
-		edges = append(edges, entities.Connection{
-			FromID: u,
-			ToID:   v,
-			Weight: w,
-		})
-	}
-	return edges, nil
+	return path, nil
 }
