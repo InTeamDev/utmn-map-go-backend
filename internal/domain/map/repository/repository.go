@@ -504,12 +504,12 @@ func (r *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.
 	}
 
 	params := sqlc.CreateDoorParams{
-		ID:           objectID,
-		X:            door.X,
-		Y:            door.Y,
-		Width:        door.Width,
-		Height:       door.Height,
-		ObjectID:     door.ObjectID,
+		ID:       id,
+		X:        door.X,
+		Y:        door.Y,
+		Width:    door.Width,
+		Height:   door.Height,
+		ObjectID: door.ObjectID,
 	}
 
 	rowDoor, err := r.q.CreateDoor(ctx, params)
@@ -518,11 +518,11 @@ func (r *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.
 	}
 
 	createdDoor := entities.Door{
-		ID: rowDoor.ID,
-		X: rowDoor.X,
-		Y: rowDoor.Y,
-		Width: rowDoor.Width,
-		Height: rowDoor.Height,
+		ID:       rowDoor.ID,
+		X:        rowDoor.X,
+		Y:        rowDoor.Y,
+		Width:    rowDoor.Width,
+		Height:   rowDoor.Height,
 		ObjectID: rowDoor.ObjectID,
 	}
 
