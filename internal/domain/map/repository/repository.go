@@ -497,23 +497,36 @@ func (r *Map) CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entit
 	return nil
 }
 
-func (r *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error {
+func (r *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) (entities.Door, error) {
 	id := door.ID
 	if id == uuid.Nil {
 		id = uuid.New()
 	}
-	err := r.q.CreateDoor(ctx, sqlc.CreateDoorParams{
-		ID:       id,
-		X:        door.X,
-		Y:        door.Y,
-		Width:    door.Width,
-		Height:   door.Height,
-		ObjectID: objectID,
-	})
-	if err != nil {
-		return fmt.Errorf("create door: %w", err)
+
+	params := sqlc.CreateDoorParams{
+		ID:           objectID,
+		X:            door.X,
+		Y:            door.Y,
+		Width:        door.Width,
+		Height:       door.Height,
+		ObjectID:     door.ObjectID,
 	}
-	return nil
+
+	rowDoor, err := r.q.CreateDoor(ctx, params)
+	if err != nil {
+		return entities.Door{}, fmt.Errorf("create door: %w", err)
+	}
+
+	createdDoor := entities.Door{
+		ID: rowDoor.ID,
+		X: rowDoor.X,
+		Y: rowDoor.Y,
+		Width: rowDoor.Width,
+		Height: rowDoor.Height,
+		ObjectID: rowDoor.ObjectID,
+	}
+
+	return createdDoor, nil
 }
 
 // GetDoorFloorPairs retrieves a map[doorID]floorID.

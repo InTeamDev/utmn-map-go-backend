@@ -38,7 +38,7 @@ type MapRepository interface {
 	UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error)
 	GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Building, error)
 	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entities.Floor) error
-	CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error
+	CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) (entities.Door, error)
 	CreatePolygon(ctx context.Context, polygon entities.Polygon) (entities.Polygon, error)
 	CreatePolygonPoint(
 		ctx context.Context,
@@ -251,8 +251,12 @@ func (m *Map) CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entit
 	return m.repo.CreateFloor(ctx, buildingID, floor)
 }
 
-func (m *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error {
-	return m.repo.CreateDoor(ctx, objectID, door)
+func (m *Map) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) (entities.Door, error) {
+	door, err := m.repo.CreateDoor(ctx, objectID, door)
+	if err != nil {
+		return entities.Door{}, fmt.Errorf("create door: %w", err)
+	}
+	return door, nil
 }
 
 func (m *Map) GetDoorFloorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error) {

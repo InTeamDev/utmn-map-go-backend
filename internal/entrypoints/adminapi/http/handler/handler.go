@@ -40,7 +40,7 @@ type MapService interface {
 	) (mapentities.Door, error)
 
 	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor mapentities.Floor) error
-	CreateDoor(ctx context.Context, objectID uuid.UUID, door mapentities.Door) error
+	CreateDoor(ctx context.Context, objectID uuid.UUID, door mapentities.Door) (mapentities.Door, error)
 
 	CreatePolygon(ctx context.Context, polygon mapentities.Polygon) (mapentities.Polygon, error)
 	CreatePolygonPoint(
@@ -92,6 +92,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 		api.DELETE("/buildings/:building_id/floors/:floor_id/objects/:object_id", p.DeleteObjectHandler)
 		// TODO: doors post, patch and delete
 		api.GET("/buildings/:building_id/doors/:door_id", p.GetDoorHandler)
+		api.POST("/buildings/:building_id/floors/:floor_id/doors", p.CreateDoorHandler)
 		// route
 		api.POST("/buildings/:building_id/route/intersections", p.AddIntersection)
 		api.POST("/buildings/:building_id/route/connections", p.AddConnection)
@@ -453,10 +454,12 @@ func (p *AdminAPI) SyncDatabaseHandler(c *gin.Context) {
 				}
 			}
 			for _, d := range f.Doors {
-				if err := p.mapService.CreateDoor(ctx, d.ObjectID, d); err != nil {
+				_, err := p.mapService.CreateDoor(ctx, d.ObjectID, d)
+				if err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
+				
 			}
 			// polygons
 			for _, poly := range f.FloorPolygons {
@@ -577,4 +580,20 @@ func (p *AdminAPI) GetDatabaseHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": result})
+}
+
+func (p *AdminAPI) CreateDoorHandler(c *gin.Context) {
+	var input mapentities.Door
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	door, err := p.mapService.CreateDoor(c.Request.Context(), input.ObjectID, input)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"door": door})
 }

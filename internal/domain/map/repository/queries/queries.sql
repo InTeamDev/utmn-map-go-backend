@@ -203,7 +203,7 @@ ON CONFLICT (id) DO UPDATE SET
     alias = EXCLUDED.alias,
     building_id = EXCLUDED.building_id;
 
--- name: CreateDoor :exec
+-- name: CreateDoor :one
 INSERT INTO doors (id, x, y, width, height, object_id)
 VALUES (@id::uuid, @x, @y, @width, @height, @object_id::uuid)
 ON CONFLICT (id) DO UPDATE SET
@@ -211,7 +211,8 @@ ON CONFLICT (id) DO UPDATE SET
     y = EXCLUDED.y,
     width = EXCLUDED.width,
     height = EXCLUDED.height,
-    object_id = EXCLUDED.object_id;
+    object_id = EXCLUDED.object_id
+RETURNING id, x, y, width, height, object_id;
 
 -- name: GetDoor :one
 SELECT 

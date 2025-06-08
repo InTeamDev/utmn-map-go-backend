@@ -58,11 +58,12 @@ func (mr *MockMapRepositoryMockRecorder) CreateBuilding(ctx, input any) *gomock.
 }
 
 // CreateDoor mocks base method.
-func (m *MockMapRepository) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) error {
+func (m *MockMapRepository) CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) (entities.Door, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateDoor", ctx, objectID, door)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(entities.Door)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CreateDoor indicates an expected call of CreateDoor.
