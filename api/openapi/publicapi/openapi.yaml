@@ -19,7 +19,7 @@ tags:
   - name: Objects
     description: Операции с объектами
   - name: Doors
-    description: Операции с дверями
+    description: Операции с дверьми
   - name: Route
     description: Операции с маршрутами
   - name: Search
@@ -212,6 +212,46 @@ paths:
                   - doors
         "400":
           description: Invalid building_id
+        "500":
+          description: Internal server error
+
+  /api/buildings/{building_id}/doors/{door_id}:
+    get:
+      tags:
+        - Doors
+      summary: Retrieve a door by its ID
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: door_id
+          in: path
+          description: UUID of the door
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Door
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  door:
+                    items:
+                      $ref: "#/components/schemas/Door"
+                required:
+                  - door
+        "400":
+          description: Invalid building_id
+        "404":
+          description: Door not found
         "500":
           description: Internal server error
 

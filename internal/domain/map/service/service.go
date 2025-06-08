@@ -28,6 +28,11 @@ type MapRepository interface {
 	) (entities.Object, error)
 	UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error)
 	DeleteObject(ctx context.Context, objectID uuid.UUID) error
+	GetDoor(
+		ctx context.Context,
+		buildingID uuid.UUID,
+		doorID uuid.UUID,
+	) (entities.Door, error)
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 	UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error)
@@ -76,6 +81,18 @@ func (m *Map) GetDoors(ctx context.Context, buildID uuid.UUID) ([]entities.GetDo
 		return nil, fmt.Errorf("get doors: %w", err)
 	}
 	return doors, nil
+}
+
+func (m *Map) GetDoor(
+	ctx context.Context,
+	buildingID uuid.UUID,
+	doorID uuid.UUID,
+) (entities.Door, error) {
+	door, err := m.repo.GetDoor(ctx, buildingID, doorID)
+	if err != nil {
+		return entities.Door{}, fmt.Errorf("get door: %w", err)
+	}
+	return door, nil
 }
 
 func (m *Map) GetObjectCategories(ctx context.Context) ([]entities.ObjectTypeInfo, error) {

@@ -33,6 +33,12 @@ type MapService interface {
 	GetObjectCategories(ctx context.Context) ([]mapentities.ObjectTypeInfo, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentities.GetObjectsResponse, error)
 
+	GetDoor(
+		ctx context.Context,
+		buildingID uuid.UUID,
+		doorID uuid.UUID,
+	) (mapentities.Door, error)
+
 	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor mapentities.Floor) error
 	CreateDoor(ctx context.Context, objectID uuid.UUID, door mapentities.Door) error
 
@@ -85,6 +91,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 		api.PATCH("/buildings/:building_id/floors/:floor_id/objects/:object_id", p.UpdateObjectHandler)
 		api.DELETE("/buildings/:building_id/floors/:floor_id/objects/:object_id", p.DeleteObjectHandler)
 		// TODO: doors post, patch and delete
+		api.GET("/buildings/:building_id/doors/:door_id", p.GetDoorHandler)
 		// route
 		api.POST("/buildings/:building_id/route/intersections", p.AddIntersection)
 		api.POST("/buildings/:building_id/route/connections", p.AddConnection)
@@ -176,6 +183,32 @@ func (p *AdminAPI) UpdateObjectHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"object": result})
+}
+
+func (p *AdminAPI) GetDoorHandler(c *gin.Context) {
+	buildingID, err := uuid.Parse(c.Param("building_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	doorID, err := uuid.Parse(c.Param("door_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid door_id"})
+		return
+	}
+
+	door, err := p.mapService.GetDoor(c.Request.Context(), buildingID, doorID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "door not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, door)
 }
 
 func (p *AdminAPI) DeleteBuildingHandler(c *gin.Context) {
