@@ -351,6 +351,37 @@ func (r *Map) GetDoor(
 	return result, nil
 }
 
+func (r *Map) UpdateDoor(
+	ctx context.Context,
+	buildingID uuid.UUID,
+	doorID uuid.UUID,
+	input entities.Door,
+) (entities.Door, error) {
+	params := sqlc.UpdateDoorParams{
+		DoorID:     doorID,
+		BuildingID: buildingID,
+		X:          input.X,
+		Y:          input.Y,
+		Width:      input.Width,
+		Height:     input.Height,
+		ObjectID:   input.ObjectID,
+	}
+
+	dbDoor, err := r.q.UpdateDoor(ctx, params)
+	if err != nil {
+		return entities.Door{}, err
+	}
+
+	return entities.Door{
+		ID:       dbDoor.ID,
+		X:        dbDoor.X,
+		Y:        dbDoor.Y,
+		Width:    dbDoor.Width,
+		Height:   dbDoor.Height,
+		ObjectID: dbDoor.ObjectID,
+	}, nil
+}
+
 func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
 	id := input.ID
 	if id == uuid.Nil {

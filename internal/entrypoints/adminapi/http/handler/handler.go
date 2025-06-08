@@ -11,6 +11,7 @@ import (
 
 	mapentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
 	routeentities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/route/entities"
+	"github.com/InTeamDev/utmn-map-go-backend/pkg/validate"
 )
 
 type MapService interface {
@@ -32,11 +33,18 @@ type MapService interface {
 	DeleteObject(ctx context.Context, objectID uuid.UUID) error
 	GetObjectCategories(ctx context.Context) ([]mapentities.ObjectTypeInfo, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentities.GetObjectsResponse, error)
+	GetObjectByID(ctx context.Context, id uuid.UUID) (mapentities.Object, error)
 
 	GetDoor(
 		ctx context.Context,
 		buildingID uuid.UUID,
 		doorID uuid.UUID,
+	) (mapentities.Door, error)
+	UpdateDoor(
+		ctx context.Context,
+		buildingID uuid.UUID,
+		doorID uuid.UUID,
+		input mapentities.Door,
 	) (mapentities.Door, error)
 
 	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor mapentities.Floor) error
@@ -92,6 +100,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 		api.DELETE("/buildings/:building_id/floors/:floor_id/objects/:object_id", p.DeleteObjectHandler)
 		// TODO: doors post, patch and delete
 		api.GET("/buildings/:building_id/doors/:door_id", p.GetDoorHandler)
+		api.PATCH("/buildings/:building_id/doors/:door_id", p.UpdateDoorHandler)
 		// route
 		api.POST("/buildings/:building_id/route/intersections", p.AddIntersection)
 		api.POST("/buildings/:building_id/route/connections", p.AddConnection)
@@ -209,6 +218,52 @@ func (p *AdminAPI) GetDoorHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, door)
+}
+
+func (p *AdminAPI) UpdateDoorHandler(c *gin.Context) {
+	buildingID, err := uuid.Parse(c.Param("building_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid building_id"})
+		return
+	}
+
+	doorID, err := uuid.Parse(c.Param("door_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid door_id"})
+		return
+	}
+
+	var input mapentities.Door
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		return
+	}
+
+	object, err := p.mapService.GetObjectByID(c.Request.Context(), input.ObjectID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := validate.CreateDoorValidation(input, object); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	updatedDoor, err := p.mapService.UpdateDoor(c.Request.Context(), buildingID, doorID, input)
+	if err != nil {
+		switch {
+		case errors.Is(err, mapentities.ErrDoorNotFound):
+			c.JSON(http.StatusNotFound, gin.H{"error": "door not found"})
+		case errors.Is(err, mapentities.ErrInvalidInput):
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedDoor)
 }
 
 func (p *AdminAPI) DeleteBuildingHandler(c *gin.Context) {

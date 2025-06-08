@@ -33,6 +33,7 @@ type MapRepository interface {
 		buildingID uuid.UUID,
 		doorID uuid.UUID,
 	) (entities.Door, error)
+	UpdateDoor(ctx context.Context, buildingID uuid.UUID, doorID uuid.UUID, input entities.Door) (entities.Door, error)
 	CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error)
 	DeleteBuilding(ctx context.Context, id uuid.UUID) error
 	UpdateBuilding(ctx context.Context, id uuid.UUID, input entities.UpdateBuildingInput) (entities.Building, error)
@@ -93,6 +94,31 @@ func (m *Map) GetDoor(
 		return entities.Door{}, fmt.Errorf("get door: %w", err)
 	}
 	return door, nil
+}
+
+func (m *Map) UpdateDoor(
+	ctx context.Context,
+	buildingID uuid.UUID,
+	doorID uuid.UUID,
+	input entities.Door,
+) (entities.Door, error) {
+
+	if input.Width <= 0 || input.Height <= 0 {
+		return entities.Door{}, fmt.Errorf("%w: width and height must be positive", entities.ErrInvalidInput)
+	}
+
+	if input.X < 0 || input.Y < 0 {
+		return entities.Door{}, fmt.Errorf("%w: coordinates cannot be negative", entities.ErrInvalidInput)
+	}
+
+	if _, err := m.repo.GetDoor(ctx, buildingID, doorID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return entities.Door{}, entities.ErrDoorNotFound
+		}
+		return entities.Door{}, err
+	}
+
+	return m.repo.UpdateDoor(ctx, buildingID, doorID, input)
 }
 
 func (m *Map) GetObjectCategories(ctx context.Context) ([]entities.ObjectTypeInfo, error) {
