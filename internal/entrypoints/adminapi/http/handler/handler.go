@@ -591,20 +591,20 @@ func (p *AdminAPI) CreateDoorHandler(c *gin.Context) {
 		return
 	}
 
+	object, err := p.mapService.GetObjectByID(c.Request.Context(), input.ObjectID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := validate.CreateDoorValidation(input, object); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	door, err := p.mapService.CreateDoor(c.Request.Context(), input.ObjectID, input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	object, err := p.mapService.GetObjectByID(c.Request.Context(), door.ObjectID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := validate.CreateDoorValidation(door, object); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
