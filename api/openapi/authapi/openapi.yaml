@@ -48,12 +48,28 @@ paths:
                   - expires_at
         "400":
           description: Bad request (missing or invalid tg_username)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "404":
           description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "429":
           description: Too many requests (rate limit exceeded)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "503":
           description: Service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /api/auth/verify:
     post:
@@ -84,14 +100,34 @@ paths:
                 $ref: "#/components/schemas/TokenPair"
         "400":
           description: Bad request (invalid JSON, missing fields, invalid or expired code)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "401":
           description: Unauthorized (invalid code)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "404":
           description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "429":
           description: Too many attempts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /api/auth/refresh:
     post:
@@ -119,10 +155,22 @@ paths:
                 $ref: "#/components/schemas/TokenPair"
         "400":
           description: Bad request (missing or invalid refresh_token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "401":
           description: Unauthorized (invalid or expired refresh token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /api/auth/logout:
     post:
@@ -148,10 +196,22 @@ paths:
           description: Logout successful (no content)
         "400":
           description: Bad request (missing or invalid refresh_token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "401":
           description: Unauthorized (invalid or expired token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "500":
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   securitySchemes:
@@ -173,3 +233,12 @@ components:
       required:
         - access_token
         - refresh_token
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+      required:
+        - error
