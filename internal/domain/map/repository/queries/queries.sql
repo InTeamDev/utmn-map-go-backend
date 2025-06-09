@@ -214,6 +214,10 @@ ON CONFLICT (id) DO UPDATE SET
     object_id = EXCLUDED.object_id
 RETURNING id, x, y, width, height, object_id;
 
+-- name: DeleteDoor :exec
+DELETE FROM doors
+WHERE id = $1;
+
 -- name: GetDoor :one
 SELECT 
     d.id,

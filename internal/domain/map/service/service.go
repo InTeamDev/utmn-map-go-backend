@@ -39,6 +39,7 @@ type MapRepository interface {
 	GetBuildingByID(ctx context.Context, id uuid.UUID) (entities.Building, error)
 	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor entities.Floor) error
 	CreateDoor(ctx context.Context, objectID uuid.UUID, door entities.Door) (entities.Door, error)
+	DeleteDoor(ctx context.Context, doorID uuid.UUID) error
 	CreatePolygon(ctx context.Context, polygon entities.Polygon) (entities.Polygon, error)
 	CreatePolygonPoint(
 		ctx context.Context,
@@ -278,4 +279,8 @@ func (m *Map) GetObjectDoorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, 
 
 func (m *Map) DeletePolygonPoints(ctx context.Context, request entities.DeletePolygonPointsRequest) error {
 	return m.repo.DeletePolygonPoints(ctx, request)
+}
+
+func (m *Map) DeleteDoor(ctx context.Context, doorID uuid.UUID) error {
+	return m.repo.DeleteDoor(ctx, doorID)
 }

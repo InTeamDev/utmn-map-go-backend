@@ -315,6 +315,38 @@ paths:
         "500":
           description: Internal server error
 
+  /api/buildings/{building_id}/doors/{door_id}:
+    delete:
+      tags:
+        - Doors
+      summary: Delete a door
+      parameters:
+        - name: building_id
+          in: path
+          description: UUID of the building
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: door_id
+          in: path
+          description: UUID of the door to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: No content-door deleted
+        "400":
+          description: Invalid ID supplied
+        "401":
+          description: Unathorized
+        "404":
+          description: Building or Door not found
+        "500":
+          description: Internal server error
+
   /api/buildings/{building_id}/route/intersections:
     post:
       tags:

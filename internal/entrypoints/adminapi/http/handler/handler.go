@@ -43,6 +43,7 @@ type MapService interface {
 
 	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor mapentities.Floor) error
 	CreateDoor(ctx context.Context, objectID uuid.UUID, door mapentities.Door) (mapentities.Door, error)
+	DeleteDoor(ctx context.Context, doorID uuid.UUID) error
 
 	CreatePolygon(ctx context.Context, polygon mapentities.Polygon) (mapentities.Polygon, error)
 	CreatePolygonPoint(
@@ -95,6 +96,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 		// TODO: doors post, patch and delete
 		api.GET("/buildings/:building_id/doors/:door_id", p.GetDoorHandler)
 		api.POST("/buildings/:building_id/doors", p.CreateDoorHandler)
+		api.DELETE("/buildings/:building_id/doors/:door_id", p.DeleteDoorHandler)
 		// route
 		api.POST("/buildings/:building_id/route/intersections", p.AddIntersection)
 		api.POST("/buildings/:building_id/route/connections", p.AddConnection)
@@ -461,7 +463,6 @@ func (p *AdminAPI) SyncDatabaseHandler(c *gin.Context) {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
-
 			}
 			// polygons
 			for _, poly := range f.FloorPolygons {
@@ -609,4 +610,26 @@ func (p *AdminAPI) CreateDoorHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"door": door})
+}
+
+func (p *AdminAPI) DeleteDoorHandler(c *gin.Context) {
+	doorIDStr := c.Param("door_id")
+	doorID, err := uuid.Parse(doorIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid door_id"})
+		return
+	}
+
+	err = p.mapService.DeleteDoor(c.Request.Context(), doorID)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			c.JSON(http.StatusNotFound, gin.H{"error": "door not found"})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }

@@ -351,6 +351,10 @@ func (r *Map) GetDoor(
 	return result, nil
 }
 
+func (r *Map) DeleteDoor(ctx context.Context, doorID uuid.UUID) error {
+	return r.q.DeleteObject(ctx, doorID)
+}
+
 func (r *Map) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
 	id := input.ID
 	if id == uuid.Nil {
