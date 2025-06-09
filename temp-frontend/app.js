@@ -5,7 +5,7 @@ const adminApiUrl = 'https://utmn-map.zetoqqq.ru/adminapi';
 const publicApiUrl = 'https://utmn-map.zetoqqq.ru/publicapi';
 
 // 1. Bearer-токен для adminApi
-const ADMIN_API_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDkzNzU5NzUsImlhdCI6MTc0OTM3NDE3NSwianRpIjoiZTRlOTM0YmMtZTM5ZS00MDYyLThhNzEtMDFkNGU3N2U3NjE2Iiwicm9sZXMiOlsidXNlciJdLCJzdWIiOiI5Yjg0Y2Q3Yy01N2FkLTQzY2UtOTljNi02MTViODdjZTdiY2QifQ.y3l7oW6fQJTYa0unE8etsFMMS3_ls-Lw_f2_K0NxqdY';
+const ADMIN_API_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk0NzQzMjIsImlhdCI6MTc0OTQ3MjUyMiwianRpIjoiZjE2ZjQ3NDAtZjNiYy00OWI3LTk0MTktMGJkOWJmODE2ZjU0Iiwicm9sZXMiOlsidXNlciJdLCJzdWIiOiJlZWEwNzUxMS0yYzg3LTRmNTEtYTdhZS05OWEwNmNmOTM2OWMifQ.sXWVH5k1CfnsFeNvbjtBQJCeo7C77xiN_COQToXmqeU';
 
 let allData = null;
 let currentFloor = null;
@@ -16,21 +16,20 @@ let visibleObjects = [];
 let selectedObject = null;
 let currentBuildingId = null;
 
-// Новые глобальные переменные для графа:
-let graphNodes = [];        // объекты вида { floor_id, id, type, x, y }
-let graphConnections = [];  // объекты вида { from_id, to_id, weight }
-
-// Новая переменная для хранения выбранных узлов (максимум 2)
+// Граф
+let graphNodes = [];
+let graphConnections = [];
 let selectedNodes = [];
 
+// --- INIT ---
 async function init() {
     try {
         const res = await fetch(`${publicApiUrl}/api/buildings`);
-        const data = await res.json();
-        if (!Array.isArray(data.buildings) || data.buildings.length === 0) {
+        const { buildings } = await res.json();
+        if (!Array.isArray(buildings) || buildings.length === 0) {
             throw new Error("Нет доступных зданий");
         }
-        currentBuildingId = data.buildings[0].id;
+        currentBuildingId = buildings[0].id;
         console.log("Выбранное здание:", currentBuildingId);
 
         await loadBuildingObjects(currentBuildingId);
@@ -42,87 +41,79 @@ async function init() {
     }
 }
 
-function loadBuildingObjects(buildingId) {
-    return fetch(`${publicApiUrl}/api/buildings/${buildingId}/objects`)
-        .then(res => res.json())
-        .then(data => {
-            const result = data.objects;
-            console.log("Извлечённые данные по объектам:", result);
-            if (!Array.isArray(result.floors)) throw new Error("Ожидался массив этажей");
-            allData = result;
-            createFloorButtons(allData);
-        })
-        .catch(err => {
-            console.error("Ошибка при загрузке объектов:", err);
-            infoBox.innerHTML = "Ошибка загрузки данных с сервера.";
-        });
+// --- LOAD PUBLIC DATA ---
+async function loadBuildingObjects(buildingId) {
+    try {
+        const res = await fetch(`${publicApiUrl}/api/buildings/${buildingId}/objects`);
+        const { objects } = await res.json();
+        allData = objects;
+        createFloorButtons(allData);
+    } catch (err) {
+        console.error("Ошибка при загрузке объектов:", err);
+        infoBox.innerHTML = "Ошибка загрузки данных с сервера.";
+    }
 }
 
-function loadGraphData(buildingId) {
-    const nodesPromise = fetch(`${publicApiUrl}/api/buildings/${buildingId}/graph/nodes`)
-        .then(res => res.json())
-        .then(data => {
-            if (Array.isArray(data.nodes)) {
-                graphNodes = data.nodes;
-            } else {
-                console.warn("Ожидался массив nodes");
-            }
-        })
-        .catch(err => {
-            console.error("Ошибка при загрузке узлов (nodes):", err);
-        });
-
-    const connsPromise = fetch(`${publicApiUrl}/api/buildings/${buildingId}/connections`)
-        .then(res => res.json())
-        .then(data => {
-            if (Array.isArray(data.connections)) {
-                graphConnections = data.connections;
-            } else {
-                console.warn("Ожидался массив connections");
-            }
-        })
-        .catch(err => {
-            console.error("Ошибка при загрузке связей (connections):", err);
-        });
-
-    return Promise.all([nodesPromise, connsPromise]);
+async function loadGraphData(buildingId) {
+    try {
+        const [nodesRes, connsRes] = await Promise.all([
+            fetch(`${publicApiUrl}/api/buildings/${buildingId}/graph/nodes`),
+            fetch(`${publicApiUrl}/api/buildings/${buildingId}/connections`)
+        ]);
+        const { nodes } = await nodesRes.json();
+        const { connections } = await connsRes.json();
+        graphNodes = Array.isArray(nodes) ? nodes : [];
+        graphConnections = Array.isArray(connections) ? connections : [];
+    } catch (err) {
+        console.error("Ошибка при загрузке графа:", err);
+    }
 }
 
-function saveObject() {
-    if (!selectedObject || !selectedObject.id) return;
+// --- SAVE OBJECT (ADMIN API) ---
+async function saveObject() {
+    if (!selectedObject) return;
 
     const inputs = infoBox.querySelectorAll('[data-key]');
-    const allowedKeys = ['name', 'object_type', 'alias', 'description'];
-    const updatedFields = {};
-
+    const updated = {};
     inputs.forEach(el => {
         const key = el.dataset.key;
-        if (!allowedKeys.includes(key)) return;
-        updatedFields[key] = el.value;
+        if (key === 'object_type') {
+            updated.object_type_id = +el.value;
+        } else {
+            updated[key] = el.value;
+        }
     });
 
-    fetch(`${adminApiUrl}/api/objects/${selectedObject.id}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': ADMIN_API_TOKEN
-        },
-        body: JSON.stringify(updatedFields)
-    })
-        .then(res => {
-            if (!res.ok) throw new Error('Ошибка при сохранении');
-            return res.json();
-        })
-        .then(updated => {
-            Object.assign(selectedObject, updated);
-            visualize(allData);
-        })
-        .catch(err => {
-            console.error(err);
-            infoBox.innerHTML = `<span style="color:red;">Ошибка при сохранении: ${err.message}</span>`;
+    try {
+        const res = await fetch(
+            `${adminApiUrl}/api/buildings/${currentBuildingId}/floors/${selectedObject.floor.id}/objects/${selectedObject.id}`,
+            {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': ADMIN_API_TOKEN
+                },
+                body: JSON.stringify(updated)
+            }
+        );
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const { object } = await res.json();
+        // Обновляем локальный объект
+        Object.assign(selectedObject, {
+            name: object.name,
+            alias: object.alias,
+            description: object.description,
+            object_type_id: object.object_type_id
         });
+        visualize(allData);
+        infoBox.innerHTML = `<span style="color:green;">Объект сохранён</span>`;
+    } catch (err) {
+        console.error(err);
+        infoBox.innerHTML = `<span style="color:red;">Ошибка при сохранении: ${err.message}</span>`;
+    }
 }
 
+// --- CANVAS RESIZE ---
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -130,7 +121,7 @@ function resizeCanvas() {
 }
 window.addEventListener('resize', resizeCanvas);
 
-// Перетаскивание и масштабирование
+// --- DRAG & ZOOM ---
 canvas.addEventListener('mousedown', e => {
     drag = true;
     lastX = e.clientX;
@@ -159,13 +150,13 @@ canvas.addEventListener('wheel', e => {
     visualize(allData);
 }, { passive: false });
 
-// Обработка клика: двери, объекты и узлы графа
+// --- CLICK HANDLER ---
 canvas.addEventListener('click', e => {
     const rect = canvas.getBoundingClientRect();
     const clickX = (e.clientX - rect.left - offsetX) / scale;
     const clickY = (e.clientY - rect.top - offsetY) / scale;
 
-    // Сначала — двери (старый код)
+    // Двери
     for (const object of visibleObjects) {
         if (Array.isArray(object.doors)) {
             for (const door of object.doors) {
@@ -176,24 +167,17 @@ canvas.addEventListener('click', e => {
             }
         }
     }
-
-    // Затем — объекты
+    // Объекты
     for (const obj of visibleObjects) {
-        if (
-            clickX >= obj.x &&
-            clickX <= obj.x + obj.width &&
-            clickY >= obj.y &&
-            clickY <= obj.y + obj.height
-        ) {
+        if (clickX >= obj.x && clickX <= obj.x + obj.width &&
+            clickY >= obj.y && clickY <= obj.y + obj.height) {
             showObjectInfo(obj);
             return;
         }
     }
-
-    // Наконец — узлы графа
+    // Узлы графа
     const node = findNodeUnderCursor(clickX, clickY);
     if (node) {
-        // добавляем в selectedNodes (макс. 2, без дубликатов)
         if (!selectedNodes.find(n => n.id === node.id)) {
             if (selectedNodes.length === 2) selectedNodes.shift();
             selectedNodes.push(node);
@@ -205,22 +189,25 @@ canvas.addEventListener('click', e => {
     infoBox.innerHTML = 'Ничего не найдено под курсором.';
 });
 
-// Редактирование обычного объекта
+// --- SHOW OBJECT EDIT FORM ---
 async function showObjectInfo(obj) {
     selectedObject = obj;
-    selectedNodes = []; // сброс выбора узлов
+    selectedNodes = [];
     let html = `<b>Редактирование объекта:</b><br>`;
     html += `<b>id:</b> <div style="font-family: monospace;">${obj.id}</div>`;
     html += `<b>coords:</b> x=${obj.x}; y=${obj.y}; w=${obj.width}; h=${obj.height}<br>`;
     html += `<b>name:</b> <input data-key="name" value="${obj.name || ''}" style="width:100%"><br>`;
     html += `<b>alias:</b> <input data-key="alias" value="${obj.alias || ''}" style="width:100%"><br>`;
     html += `<b>description:</b> <input data-key="description" value="${obj.description || ''}" style="width:100%"><br>`;
-    // Тип объекта
+
+    // Категории
     let opts = `<option value="">-- выберите тип --</option>`;
     try {
         const res = await fetch(`${publicApiUrl}/api/categories`);
-        const cats = (await res.json()).categories;
-        opts += cats.map(c => `<option value="${c}" ${c === obj.object_type ? 'selected' : ''}>${c}</option>`).join('');
+        const { categories } = await res.json();
+        opts += categories.map(c =>
+            `<option value="${c.id}" ${c.id === obj.object_type_id ? 'selected' : ''}>${c.name}</option>`
+        ).join('');
     } catch {
         opts += `<option disabled>Ошибка загрузки</option>`;
     }
@@ -229,9 +216,9 @@ async function showObjectInfo(obj) {
     infoBox.innerHTML = html;
 }
 
-// Инфо о двери
+// --- SHOW DOOR INFO ---
 function showDoorInfo(door, parent) {
-    selectedNodes = []; // сброс выбора узлов
+    selectedNodes = [];
     let html = `<b>Информация о двери:</b><br>`;
     html += `door id: <span style="font-family: monospace;">${door.id}</span><br>`;
     html += `x=${door.x}, y=${door.y}, w=${door.width}, h=${door.height}<br>`;
@@ -242,7 +229,7 @@ function showDoorInfo(door, parent) {
     infoBox.innerHTML = html;
 }
 
-// Инфо о выбранном узле и кнопка «Создать связь»
+// --- SHOW NODE INFO ---
 function showNodeInfo(node) {
     selectedObject = null;
     let html = `<b>Узел графа:</b><br>`;
@@ -256,8 +243,9 @@ function showNodeInfo(node) {
     if (btn) btn.onclick = createConnection;
 }
 
-// Отправка POST-запроса для создания связи
+// --- CREATE CONNECTION (ADMIN API) ---
 async function createConnection() {
+    if (selectedNodes.length < 2) return;
     const [fromNode, toNode] = selectedNodes;
     const payload = { from_id: fromNode.id, to_id: toNode.id, weight: 1 };
     try {
@@ -274,11 +262,7 @@ async function createConnection() {
         );
         if (!res.ok) throw new Error(`Status ${res.status}`);
         const { connection } = await res.json();
-        graphConnections.push({
-            from_id: connection.from_id,
-            to_id: connection.to_id,
-            weight: connection.weight
-        });
+        graphConnections.push(connection);
         visualize(allData);
         selectedNodes = [];
         infoBox.innerHTML = `<span style="color:green;">Связь создана!</span>`;
@@ -288,39 +272,38 @@ async function createConnection() {
     }
 }
 
-// Функция поиска узла под курсором (радиус 5px)
+// --- FIND NODE ---
 function findNodeUnderCursor(x, y) {
     const floorData = currentFloor
         ? allData.floors.find(f => f.floor.name === currentFloor)
         : null;
-    const floorId = floorData ? floorData.floor.id : null;
+    const fid = floorData ? floorData.floor.id : null;
     return graphNodes
-        .filter(n => n.floor_id === floorId)
+        .filter(n => n.floor_id === fid)
         .find(n => {
             const dx = x - n.x;
             const dy = y - n.y;
-            return dx * dx + dy * dy <= 5 * 5;
+            return dx * dx + dy * dy <= 25;
         }) || null;
 }
 
-// --- Остальной код без изменений ---
-
+// --- FLOOR BUTTONS ---
 function createFloorButtons(data) {
-    const floors = data.floors.map(f => f.floor.name);
     const container = document.getElementById('floor-buttons');
     container.innerHTML = '';
     const allBtn = document.createElement('button');
     allBtn.textContent = 'Все этажи';
     allBtn.onclick = () => { currentFloor = null; visualize(allData); };
     container.appendChild(allBtn);
-    floors.forEach(floor => {
+    data.floors.forEach(f => {
         const btn = document.createElement('button');
-        btn.textContent = floor;
-        btn.onclick = () => { currentFloor = floor; visualize(allData); };
+        btn.textContent = f.floor.name;
+        btn.onclick = () => { currentFloor = f.floor.name; visualize(allData); };
         container.appendChild(btn);
     });
 }
 
+// --- UTILITIES ---
 function adjustColor(color, factor) {
     const parts = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*([\d.]+)?\)/);
     if (parts) {
@@ -329,9 +312,6 @@ function adjustColor(color, factor) {
     }
     return color;
 }
-function lightenColor(c, f = 1.2) { return adjustColor(c, f); }
-function darkenColor(c, f = 0.8) { return adjustColor(c, f); }
-
 function isPointInRotatedRect(px, py, door) {
     const a = door.angle || 0;
     const dx = px - door.x, dy = py - door.y;
@@ -351,6 +331,7 @@ function animateDoor(door, targetAngle) {
     })(start);
 }
 
+// --- VISUALIZE ---
 function visualize(data) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
@@ -359,11 +340,11 @@ function visualize(data) {
     visibleObjects = [];
 
     const floorData = currentFloor
-        ? allData.floors.find(f => f.floor.name === currentFloor)
+        ? data.floors.find(f => f.floor.name === currentFloor)
         : null;
-    const floors = floorData ? [floorData] : allData.floors;
+    const floors = floorData ? [floorData] : data.floors;
 
-    for (const fl of floors) {
+    floors.forEach(fl => {
         fl.background.forEach(bg => {
             const pts = bg.points.sort((a, b) => a.order - b.order);
             if (pts.length > 1) {
@@ -376,15 +357,9 @@ function visualize(data) {
             }
         });
         fl.objects.forEach(obj => {
-            const { x, y, width, height, object_type, name, doors } = obj;
-            const colors = {
-                'cabinet': 'rgba(0,128,255,1)',
-                'wardrobe': 'rgba(255,165,0,0.5)',
-                'woman-toilet': 'rgba(255,192,203,0.5)',
-                'man-toilet': 'rgba(144,238,144,0.5)',
-                'gym': 'rgba(128,0,128,0.5)',
-            };
-            ctx.fillStyle = colors[object_type] || 'rgba(200,200,200,0.5)';
+            const { x, y, width, height, object_type_id, name, doors } = obj;
+            // Цвета по типу — можно сопоставить заранее
+            ctx.fillStyle = 'rgba(200,200,200,0.5)';
             ctx.fillRect(x, y, width, height);
             ctx.strokeStyle = 'black'; ctx.strokeRect(x, y, width, height);
             ctx.fillStyle = 'black'; ctx.font = '14px Arial';
@@ -398,9 +373,9 @@ function visualize(data) {
             }
             visibleObjects.push(obj);
         });
-    }
+    });
 
-    // Рисуем граф на текущем этаже
+    // Рисуем граф текущего этажа
     if (currentFloor && floorData) {
         const fid = floorData.floor.id;
         const nodesOnF = graphNodes.filter(n => n.floor_id === fid);
