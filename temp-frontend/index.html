@@ -45,6 +45,19 @@
             max-height: 90vh;
         }
 
+        #coords {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            font-family: monospace;
+        }
+
         canvas {
             display: block;
             background: #f8f8f8;
@@ -55,6 +68,7 @@
 <body>
     <div id="floor-buttons"></div>
     <div id="info-box">Нажмите на объект для получения информации</div>
+    <div id="coords">X: 0.0, Y: 0.0</div>
     <canvas id="canvas"></canvas>
     <script src="app.js"></script>
 </body>

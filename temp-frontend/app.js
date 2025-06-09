@@ -1,11 +1,12 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const infoBox = document.getElementById('info-box');
+const coordsDiv = document.getElementById('coords');
 const adminApiUrl = 'https://utmn-map.zetoqqq.ru/adminapi';
 const publicApiUrl = 'https://utmn-map.zetoqqq.ru/publicapi';
 
 // 1. Bearer-токен для adminApi
-const ADMIN_API_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk0NzQzMjIsImlhdCI6MTc0OTQ3MjUyMiwianRpIjoiZjE2ZjQ3NDAtZjNiYy00OWI3LTk0MTktMGJkOWJmODE2ZjU0Iiwicm9sZXMiOlsidXNlciJdLCJzdWIiOiJlZWEwNzUxMS0yYzg3LTRmNTEtYTdhZS05OWEwNmNmOTM2OWMifQ.sXWVH5k1CfnsFeNvbjtBQJCeo7C77xiN_COQToXmqeU';
+const ADMIN_API_TOKEN = 'Bearer token_здесь_замените_на_ваш';
 
 let allData = null;
 let currentFloor = null;
@@ -30,7 +31,6 @@ async function init() {
             throw new Error("Нет доступных зданий");
         }
         currentBuildingId = buildings[0].id;
-        console.log("Выбранное здание:", currentBuildingId);
 
         await loadBuildingObjects(currentBuildingId);
         await loadGraphData(currentBuildingId);
@@ -98,7 +98,6 @@ async function saveObject() {
         );
         if (!res.ok) throw new Error(`Status ${res.status}`);
         const { object } = await res.json();
-        // Обновляем локальный объект
         Object.assign(selectedObject, {
             name: object.name,
             alias: object.alias,
@@ -121,7 +120,7 @@ function resizeCanvas() {
 }
 window.addEventListener('resize', resizeCanvas);
 
-// --- DRAG & ZOOM ---
+// --- DRAG, ZOOM & CURSOR COORDS ---
 canvas.addEventListener('mousedown', e => {
     drag = true;
     lastX = e.clientX;
@@ -129,14 +128,23 @@ canvas.addEventListener('mousedown', e => {
 });
 canvas.addEventListener('mouseup', () => drag = false);
 canvas.addEventListener('mouseleave', () => drag = false);
+
 canvas.addEventListener('mousemove', e => {
-    if (!drag) return;
-    offsetX += e.clientX - lastX;
-    offsetY += e.clientY - lastY;
-    lastX = e.clientX;
-    lastY = e.clientY;
-    visualize(allData);
+    const rect = canvas.getBoundingClientRect();
+    // Вычисляем координаты в системе карты
+    const cx = (e.clientX - rect.left - offsetX) / scale;
+    const cy = (e.clientY - rect.top - offsetY) / scale;
+    coordsDiv.textContent = `X: ${cx.toFixed(1)}, Y: ${cy.toFixed(1)}`;
+
+    if (drag) {
+        offsetX += e.clientX - lastX;
+        offsetY += e.clientY - lastY;
+        lastX = e.clientX;
+        lastY = e.clientY;
+        visualize(allData);
+    }
 });
+
 canvas.addEventListener('wheel', e => {
     e.preventDefault();
     const zoomFactor = 1.05;
@@ -200,7 +208,6 @@ async function showObjectInfo(obj) {
     html += `<b>alias:</b> <input data-key="alias" value="${obj.alias || ''}" style="width:100%"><br>`;
     html += `<b>description:</b> <input data-key="description" value="${obj.description || ''}" style="width:100%"><br>`;
 
-    // Категории
     let opts = `<option value="">-- выберите тип --</option>`;
     try {
         const res = await fetch(`${publicApiUrl}/api/categories`);
@@ -243,7 +250,7 @@ function showNodeInfo(node) {
     if (btn) btn.onclick = createConnection;
 }
 
-// --- CREATE CONNECTION (ADMIN API) ---
+// --- CREATE CONNECTION ---
 async function createConnection() {
     if (selectedNodes.length < 2) return;
     const [fromNode, toNode] = selectedNodes;
@@ -304,31 +311,12 @@ function createFloorButtons(data) {
 }
 
 // --- UTILITIES ---
-function adjustColor(color, factor) {
-    const parts = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*([\d.]+)?\)/);
-    if (parts) {
-        let [r, g, b, a] = parts.slice(1).map((v, i) => i < 3 ? Math.round(v * factor) : parseFloat(v || 1));
-        return `rgba(${r},${g},${b},${a})`;
-    }
-    return color;
-}
 function isPointInRotatedRect(px, py, door) {
     const a = door.angle || 0;
     const dx = px - door.x, dy = py - door.y;
     const cos = Math.cos(-a), sin = Math.sin(-a);
     const lx = dx * cos - dy * sin, ly = dx * sin + dy * cos;
     return lx >= 0 && lx <= door.width && ly >= 0 && ly <= door.height;
-}
-
-function animateDoor(door, targetAngle) {
-    const start = performance.now();
-    const from = door.angle || 0;
-    (function step(now) {
-        const t = Math.min((now - start) / 500, 1);
-        door.angle = from + (targetAngle - from) * t;
-        visualize(allData);
-        if (t < 1) requestAnimationFrame(step);
-    })(start);
 }
 
 // --- VISUALIZE ---
@@ -357,8 +345,7 @@ function visualize(data) {
             }
         });
         fl.objects.forEach(obj => {
-            const { x, y, width, height, object_type_id, name, doors } = obj;
-            // Цвета по типу — можно сопоставить заранее
+            const { x, y, width, height, name, doors } = obj;
             ctx.fillStyle = 'rgba(200,200,200,0.5)';
             ctx.fillRect(x, y, width, height);
             ctx.strokeStyle = 'black'; ctx.strokeRect(x, y, width, height);
@@ -375,7 +362,6 @@ function visualize(data) {
         });
     });
 
-    // Рисуем граф текущего этажа
     if (currentFloor && floorData) {
         const fid = floorData.floor.id;
         const nodesOnF = graphNodes.filter(n => n.floor_id === fid);
