@@ -44,7 +44,6 @@ type MapService interface {
 	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor mapentities.Floor) error
 	CreateDoor(ctx context.Context, objectID uuid.UUID, door mapentities.Door) (mapentities.Door, error)
 
-	GetPolygonByID(ctx context.Context, id uuid.UUID) (mapentities.FloorPolygon, error)
 	CreatePolygon(ctx context.Context, polygon mapentities.Polygon) (mapentities.Polygon, error)
 	CreatePolygonPoint(
 		ctx context.Context,
