@@ -13,6 +13,16 @@ SELECT
 FROM buildings b
 WHERE b.id = @id::uuid;
 
+-- name: ListPolygonPointsByPolygonID :many
+SELECT
+  polygon_id,
+  point_order AS order,
+  x,
+  y
+FROM floor_polygon_points
+WHERE polygon_id = $1
+ORDER BY point_order;
+
 -- name: GetFloorsByBuilding :many
 SELECT 
     f.id, 
@@ -145,6 +155,11 @@ RETURNING *;
 -- name: DeleteObject :exec
 DELETE FROM objects
 WHERE id = @id::uuid;
+
+-- name: GetPolygonByID :one
+SELECT id, floor_id, label, z_index
+FROM floor_polygons
+WHERE id = $1;
 
 -- name: GetFloorByID :one
 SELECT * FROM floors

@@ -158,3 +158,22 @@ func (mc *MapConverterImpl) FloorBackgroundSqlcToEntityMany(
 	}
 	return result
 }
+
+func (mc *MapConverterImpl) PolygonPointSqlcToEntity(row sqlc.ListPolygonPointsByPolygonIDRow) entities.PolygonPoint {
+	return entities.PolygonPoint{
+		PolygonID: row.PolygonID,
+		Order:     row.Order,
+		X:         row.X,
+		Y:         row.Y,
+	}
+}
+
+func (mc *MapConverterImpl) SlicePolygonPointSqlcToEntity(
+	rows []sqlc.ListPolygonPointsByPolygonIDRow,
+) []entities.PolygonPoint {
+	points := make([]entities.PolygonPoint, 0, len(rows))
+	for _, row := range rows {
+		points = append(points, mc.PolygonPointSqlcToEntity(row))
+	}
+	return points
+}

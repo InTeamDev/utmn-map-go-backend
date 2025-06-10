@@ -25,6 +25,7 @@ type MapService interface {
 	GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]mapentities.Object, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentities.GetObjectsResponse, error)
 	GetDoors(ctx context.Context, buildID uuid.UUID) ([]mapentities.GetDoorsResponse, error)
+	GetPolygonByID(ctx context.Context, id uuid.UUID) (mapentities.Polygon, error)
 }
 
 type RouteService interface {
@@ -71,6 +72,8 @@ func (p *PublicAPI) RegisterRoutes(router *gin.Engine) {
 		api.GET("/buildings/:building_id/graph/nodes", p.GetNodesHandler)
 		api.POST("/buildings/:building_id/route", p.BuildRouteHandler)
 		// polygons
+		api.GET("/buildings/:building_id/floors/:floor_id/poligons/:poligon_id", p.GetPolygonByIDPublicHandler)
+
 		// search
 		api.GET("/buildings/:building_id/search", p.SearchHandler)
 		// categories
@@ -232,6 +235,27 @@ func (p *PublicAPI) GetNodesHandler(c *gin.Context) {
 	nodes = append(nodes, doors...)
 	nodes = append(nodes, intersections...)
 	c.JSON(http.StatusOK, gin.H{"nodes": nodes})
+}
+
+func (p *PublicAPI) GetPolygonByIDPublicHandler(c *gin.Context) {
+	idParam := c.Param("poligon_id")
+	id, err := uuid.Parse(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid poligon_id"})
+		return
+	}
+
+	polygon, err := p.mapService.GetPolygonByID(c.Request.Context(), id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"error": "polygon not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, polygon)
 }
 
 func (p *PublicAPI) BuildRouteHandler(c *gin.Context) {
