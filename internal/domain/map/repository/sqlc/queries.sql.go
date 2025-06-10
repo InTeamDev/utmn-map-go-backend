@@ -858,6 +858,52 @@ func (q *Queries) GetPolygonByID(ctx context.Context, id uuid.UUID) (FloorPolygo
 	return i, err
 }
 
+const listPolygonPointsByPolygonID = `-- name: ListPolygonPointsByPolygonID :many
+SELECT
+  polygon_id,
+  point_order AS order,
+  x,
+  y
+FROM floor_polygon_points
+WHERE polygon_id = $1
+ORDER BY point_order
+`
+
+type ListPolygonPointsByPolygonIDRow struct {
+	PolygonID uuid.UUID
+	Order     int32
+	X         float64
+	Y         float64
+}
+
+func (q *Queries) ListPolygonPointsByPolygonID(ctx context.Context, polygonID uuid.UUID) ([]ListPolygonPointsByPolygonIDRow, error) {
+	rows, err := q.db.QueryContext(ctx, listPolygonPointsByPolygonID, polygonID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListPolygonPointsByPolygonIDRow
+	for rows.Next() {
+		var i ListPolygonPointsByPolygonIDRow
+		if err := rows.Scan(
+			&i.PolygonID,
+			&i.Order,
+			&i.X,
+			&i.Y,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateBuilding = `-- name: UpdateBuilding :one
 UPDATE buildings
 SET name = COALESCE($1, name),

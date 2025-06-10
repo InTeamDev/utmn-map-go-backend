@@ -28,6 +28,9 @@ type MapConverter interface {
 	ObjectTypesSqlcToEntity(objectTypes []sqlc.ObjectType) []entities.ObjectTypeInfo
 	// Новая функция для конвертации background этажа
 	FloorBackgroundSqlcToEntityMany(rows []sqlc.GetFloorBackgroundRow) []entities.FloorBackgroundElement
+	SlicePolygonPointSqlcToEntity(
+		rows []sqlc.ListPolygonPointsByPolygonIDRow,
+	) []entities.PolygonPoint
 }
 
 type Map struct {
@@ -567,12 +570,17 @@ func (r *Map) GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.Polygo
 	if err != nil {
 		return entities.Polygon{}, err
 	}
-
+	pts, err := r.q.ListPolygonPointsByPolygonID(ctx, id)
+	if err != nil {
+		return entities.Polygon{}, err
+	}
+	points := r.converter.SlicePolygonPointSqlcToEntity(pts)
 	polygon := entities.Polygon{
 		ID:      dbPolygon.ID,
 		FloorID: dbPolygon.FloorID,
 		Label:   dbPolygon.Label.String,
 		ZIndex:  int32(dbPolygon.ZIndex.Int32),
+		Points:  points,
 	}
 	return polygon, nil
 }

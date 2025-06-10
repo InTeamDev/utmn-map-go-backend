@@ -181,3 +181,17 @@ func (mr *MockMapConverterMockRecorder) ObjectsSqlcToEntityByBuilding(objects, d
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ObjectsSqlcToEntityByBuilding", reflect.TypeOf((*MockMapConverter)(nil).ObjectsSqlcToEntityByBuilding), objects, doors)
 }
+
+// SlicePolygonPointSqlcToEntity mocks base method.
+func (m *MockMapConverter) SlicePolygonPointSqlcToEntity(rows []sqlc.ListPolygonPointsByPolygonIDRow) []entities.PolygonPoint {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SlicePolygonPointSqlcToEntity", rows)
+	ret0, _ := ret[0].([]entities.PolygonPoint)
+	return ret0
+}
+
+// SlicePolygonPointSqlcToEntity indicates an expected call of SlicePolygonPointSqlcToEntity.
+func (mr *MockMapConverterMockRecorder) SlicePolygonPointSqlcToEntity(rows any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SlicePolygonPointSqlcToEntity", reflect.TypeOf((*MockMapConverter)(nil).SlicePolygonPointSqlcToEntity), rows)
+}

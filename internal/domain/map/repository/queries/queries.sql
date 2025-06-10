@@ -13,6 +13,16 @@ SELECT
 FROM buildings b
 WHERE b.id = @id::uuid;
 
+-- name: ListPolygonPointsByPolygonID :many
+SELECT
+  polygon_id,
+  point_order AS order,
+  x,
+  y
+FROM floor_polygon_points
+WHERE polygon_id = $1
+ORDER BY point_order;
+
 -- name: GetFloorsByBuilding :many
 SELECT 
     f.id, 
