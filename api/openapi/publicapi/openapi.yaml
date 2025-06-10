@@ -1117,21 +1117,22 @@ components:
       required:
         - start_node_id
         - end_node_id
-FloorPolygon:
-  type: object
-  properties:
-    id:
-      type: string
-      format: uuid
-    floor_id:
-      type: string
-      format: uuid
-    label:
-      type: string
-    z_index:
-      type: integer
-  required:
-    - id
-    - floor_id
-    - label
-    - z_index
+        
+    FloorPolygon:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        floor_id:
+          type: string
+          format: uuid
+        label:
+          type: string
+        z_index:
+          type: integer
+      required:
+        - id
+        - floor_id
+        - label
+        - z_index

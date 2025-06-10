@@ -15,7 +15,7 @@ import (
 type MapRepository interface {
 	GetObjectByID(ctx context.Context, objectID uuid.UUID) (entities.Object, error)
 	GetBuildings(ctx context.Context) ([]entities.Building, error)
-	GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.FloorPolygon, error)
+	GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.Polygon, error)
 	GetFloors(ctx context.Context, buildID uuid.UUID) ([]entities.Floor, error)
 	GetDoors(ctx context.Context, buildID uuid.UUID) ([]entities.GetDoorsResponse, error)
 	GetObjectTypes(ctx context.Context) ([]entities.ObjectTypeInfo, error)
@@ -281,16 +281,16 @@ func (m *Map) DeletePolygonPoints(ctx context.Context, request entities.DeletePo
 	return m.repo.DeletePolygonPoints(ctx, request)
 }
 
-func (m *Map) GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.FloorPolygon, error) {
+func (m *Map) GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.Polygon, error) {
 	dbPolygon, err := m.repo.GetPolygonByID(ctx, id)
 	if err != nil {
-		return entities.FloorPolygon{}, err
+		return entities.Polygon{}, err
 	}
 
-	return entities.FloorPolygon{
+	return entities.Polygon{
 		ID:      dbPolygon.ID,
 		FloorID: dbPolygon.FloorID,
 		Label:   dbPolygon.Label,
-		ZIndex:  int(dbPolygon.ZIndex),
+		ZIndex:  int32(dbPolygon.ZIndex),
 	}, nil
 }

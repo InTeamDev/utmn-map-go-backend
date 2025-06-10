@@ -25,7 +25,7 @@ type MapService interface {
 	GetObjectsByBuilding(ctx context.Context, buildID uuid.UUID) ([]mapentities.Object, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentities.GetObjectsResponse, error)
 	GetDoors(ctx context.Context, buildID uuid.UUID) ([]mapentities.GetDoorsResponse, error)
-	GetPolygonByID(ctx context.Context, id uuid.UUID) (mapentities.FloorPolygon, error)
+	GetPolygonByID(ctx context.Context, id uuid.UUID) (mapentities.Polygon, error)
 }
 
 type RouteService interface {
@@ -72,7 +72,7 @@ func (p *PublicAPI) RegisterRoutes(router *gin.Engine) {
 		api.GET("/buildings/:building_id/graph/nodes", p.GetNodesHandler)
 		api.POST("/buildings/:building_id/route", p.BuildRouteHandler)
 		// polygons
-		api.GET("buildings/:building_id/floors/:floor_id/poligons/:poligon_id", p.GetPolygonByIDPublicHandler)
+		api.GET("/buildings/:building_id/floors/:floor_id/poligons/:poligon_id", p.GetPolygonByIDPublicHandler)
 
 		// search
 		api.GET("/buildings/:building_id/search", p.SearchHandler)
