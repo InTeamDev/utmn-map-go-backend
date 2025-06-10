@@ -1117,7 +1117,7 @@ components:
       required:
         - start_node_id
         - end_node_id
-        
+
     FloorPolygon:
       type: object
       properties:
