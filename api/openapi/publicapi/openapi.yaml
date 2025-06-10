@@ -389,6 +389,66 @@ paths:
         "500":
           description: Internal server error
 
+  /api/buildings/{building_id}/floors/{floor_id}/poligons/{poligon_id}:
+    get:
+      tags:
+        - Polygon
+      summary: Получить полигон по ID
+      operationId: getPolygonById
+      parameters:
+        - name: building_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: floor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: poligon_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Информация о полигоне
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FloorPolygon"
+        "400":
+          description: Неверный UUID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "404":
+          description: Полигон не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
   /api/buildings/{building_id}/search:
     get:
       tags:
@@ -1057,3 +1117,21 @@ components:
       required:
         - start_node_id
         - end_node_id
+FloorPolygon:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+    floor_id:
+      type: string
+      format: uuid
+    label:
+      type: string
+    z_index:
+      type: integer
+  required:
+    - id
+    - floor_id
+    - label
+    - z_index
