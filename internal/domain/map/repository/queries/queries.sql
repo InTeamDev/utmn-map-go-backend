@@ -248,6 +248,30 @@ WHERE
           AND f.building_id = @buildingID::uuid
     );
 
+-- name: UpdateDoor :one
+UPDATE doors
+SET 
+    x = COALESCE($1, x),
+    y = COALESCE($2, y),
+    width = COALESCE($3, width),
+    height = COALESCE($4, height),
+    object_id = COALESCE($5, object_id)
+WHERE 
+    id = @door_id::uuid
+    AND EXISTS (
+        SELECT 1 FROM objects o
+        JOIN floors f ON o.floor_id = f.id
+        WHERE o.id = doors.object_id
+          AND f.building_id = @building_id::uuid
+    )
+RETURNING 
+    id,
+    x,
+    y,
+    width,
+    height,
+    object_id;
+
 -- name: CreatePolygon :one
 INSERT INTO floor_polygons (id, floor_id, label, z_index)
 VALUES (@id::uuid, @floor_id::uuid, @label, @z_index)

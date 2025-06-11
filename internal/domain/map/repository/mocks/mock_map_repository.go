@@ -383,6 +383,21 @@ func (mr *MockMapRepositoryMockRecorder) UpdateBuilding(ctx, id, input any) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBuilding", reflect.TypeOf((*MockMapRepository)(nil).UpdateBuilding), ctx, id, input)
 }
 
+// UpdateDoor mocks base method.
+func (m *MockMapRepository) UpdateDoor(ctx context.Context, buildingID, doorID uuid.UUID, input entities.Door) (entities.Door, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateDoor", ctx, buildingID, doorID, input)
+	ret0, _ := ret[0].(entities.Door)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateDoor indicates an expected call of UpdateDoor.
+func (mr *MockMapRepositoryMockRecorder) UpdateDoor(ctx, buildingID, doorID, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDoor", reflect.TypeOf((*MockMapRepository)(nil).UpdateDoor), ctx, buildingID, doorID, input)
+}
+
 // UpdateObject mocks base method.
 func (m *MockMapRepository) UpdateObject(ctx context.Context, id uuid.UUID, input entities.UpdateObjectInput) (entities.Object, error) {
 	m.ctrl.T.Helper()

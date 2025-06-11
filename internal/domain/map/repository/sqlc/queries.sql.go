@@ -925,6 +925,63 @@ func (q *Queries) UpdateBuilding(ctx context.Context, arg UpdateBuildingParams) 
 	return i, err
 }
 
+const updateDoor = `-- name: UpdateDoor :one
+UPDATE doors
+SET 
+    x = COALESCE($1, x),
+    y = COALESCE($2, y),
+    width = COALESCE($3, width),
+    height = COALESCE($4, height),
+    object_id = COALESCE($5, object_id)
+WHERE 
+    id = $6::uuid
+    AND EXISTS (
+        SELECT 1 FROM objects o
+        JOIN floors f ON o.floor_id = f.id
+        WHERE o.id = doors.object_id
+          AND f.building_id = $7::uuid
+    )
+RETURNING 
+    id,
+    x,
+    y,
+    width,
+    height,
+    object_id
+`
+
+type UpdateDoorParams struct {
+	X          float64
+	Y          float64
+	Width      float64
+	Height     float64
+	ObjectID   uuid.UUID
+	DoorID     uuid.UUID
+	BuildingID uuid.UUID
+}
+
+func (q *Queries) UpdateDoor(ctx context.Context, arg UpdateDoorParams) (Door, error) {
+	row := q.db.QueryRowContext(ctx, updateDoor,
+		arg.X,
+		arg.Y,
+		arg.Width,
+		arg.Height,
+		arg.ObjectID,
+		arg.DoorID,
+		arg.BuildingID,
+	)
+	var i Door
+	err := row.Scan(
+		&i.ID,
+		&i.X,
+		&i.Y,
+		&i.Width,
+		&i.Height,
+		&i.ObjectID,
+	)
+	return i, err
+}
+
 const updateObject = `-- name: UpdateObject :one
 UPDATE objects
 SET name = COALESCE($1, name),
