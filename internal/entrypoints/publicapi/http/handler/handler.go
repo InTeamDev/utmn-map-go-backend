@@ -74,12 +74,11 @@ func (p *PublicAPI) RegisterRoutes(router *gin.Engine) {
 		api.POST("/buildings/:building_id/route", p.BuildRouteHandler)
 		// polygons
 		api.GET("/buildings/:building_id/floors/:floor_id/poligons/:poligon_id", p.GetPolygonByIDPublicHandler)
-
+		api.GET("/buildings/:building_id/floors/:floor_id/poligons", p.GetPolygonsByFloorIDHandler)
 		// search
 		api.GET("/buildings/:building_id/search", p.SearchHandler)
 		// categories
 		api.GET("/categories", p.GetObjectCategories)
-		api.GET("/floors/:floor_id/poligons", p.GetPolygonsByFloorIDHandler)
 	}
 }
 

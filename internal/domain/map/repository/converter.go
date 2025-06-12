@@ -177,3 +177,20 @@ func (mc *MapConverterImpl) SlicePolygonPointSqlcToEntity(
 	}
 	return points
 }
+
+func (c *MapConverterImpl) PolygonSqlcToEntity(row sqlc.FloorPolygon) entities.Polygon {
+	return entities.Polygon{
+		ID:      row.ID,
+		FloorID: row.FloorID,
+		Label:   row.Label.String,
+		ZIndex:  int32(row.ZIndex.Int32),
+	}
+}
+
+func (c *MapConverterImpl) FloorPolygon(rows []sqlc.FloorPolygon) []entities.Polygon {
+	polygons := make([]entities.Polygon, 0, len(rows))
+	for _, row := range rows {
+		polygons = append(polygons, c.PolygonSqlcToEntity(row))
+	}
+	return polygons
+}

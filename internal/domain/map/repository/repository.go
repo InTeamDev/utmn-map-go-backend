@@ -31,6 +31,7 @@ type MapConverter interface {
 	SlicePolygonPointSqlcToEntity(
 		rows []sqlc.ListPolygonPointsByPolygonIDRow,
 	) []entities.PolygonPoint
+	FloorPolygon(rows []sqlc.FloorPolygon) []entities.Polygon
 }
 
 type Map struct {
@@ -621,16 +622,5 @@ func (r *Map) GetPolygonsByFloorID(ctx context.Context, floorID uuid.UUID) ([]en
 	if err != nil {
 		return nil, err
 	}
-
-	polygons := make([]entities.Polygon, 0, len(dbPolygons))
-	for _, row := range dbPolygons {
-		polygons = append(polygons, entities.Polygon{
-			ID:      row.ID,
-			FloorID: row.FloorID,
-			Label:   row.Label.String,
-			ZIndex:  int32(row.ZIndex.Int32),
-		})
-	}
-
-	return polygons, nil
+	return r.converter.FloorPolygon(dbPolygons), nil
 }

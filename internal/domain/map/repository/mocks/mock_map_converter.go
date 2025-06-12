@@ -84,6 +84,20 @@ func (mr *MockMapConverterMockRecorder) FloorBackgroundSqlcToEntityMany(rows any
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FloorBackgroundSqlcToEntityMany", reflect.TypeOf((*MockMapConverter)(nil).FloorBackgroundSqlcToEntityMany), rows)
 }
 
+// FloorPolygon mocks base method.
+func (m *MockMapConverter) FloorPolygon(rows []sqlc.FloorPolygon) []entities.Polygon {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FloorPolygon", rows)
+	ret0, _ := ret[0].([]entities.Polygon)
+	return ret0
+}
+
+// FloorPolygon indicates an expected call of FloorPolygon.
+func (mr *MockMapConverterMockRecorder) FloorPolygon(rows any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FloorPolygon", reflect.TypeOf((*MockMapConverter)(nil).FloorPolygon), rows)
+}
+
 // FloorSqlcToEntity mocks base method.
 func (m *MockMapConverter) FloorSqlcToEntity(f sqlc.Floor) entities.Floor {
 	m.ctrl.T.Helper()

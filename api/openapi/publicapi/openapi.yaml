@@ -255,45 +255,83 @@ paths:
         "500":
           description: Internal server error
 
-  /api/buildings/{building_id}/doors/{door_id}:
-    get:
-      tags:
-        - Doors
-      summary: Updates doors properties
-      parameters:
-        - name: building_id
-          in: path
-          description: UUID of the building
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: door_id
-          in: path
-          description: UUID of the door
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "200":
-          description: Door
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  door:
-                    items:
-                      $ref: "#/components/schemas/Door"
-                required:
-                  - door
-        "400":
-          description: Invalid building_id
-        "404":
-          description: Door not found
-        "500":
-          description: Internal server error
+/api/buildings/{building_id}/doors/{door_id}:
+  get:
+    tags:
+      - Doors
+    summary: Get door by ID
+    parameters:
+      - name: building_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: door_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "200":
+        description: Door
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                door:
+                  $ref: "#/components/schemas/Door"
+              required:
+                - door
+      "400":
+        description: Invalid building_id
+      "404":
+        description: Door not found
+      "500":
+        description: Internal server error
+
+/api/buildings/{building_id}/floors/{floor_id}/poligons:
+  get:
+    tags:
+      - Polygons
+    summary: Получение всех полигонов этажа
+    parameters:
+      - name: building_id
+        in: path
+        required: true
+        description: UUID здания
+        schema:
+          type: string
+          format: uuid
+      - name: floor_id
+        in: path
+        required: true
+        description: UUID этажа
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "200":
+        description: Список полигонов этажа
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                polygons:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Polygon"
+              required:
+                - polygons
+      "400":
+        description: Неверный UUID
+      "404":
+        description: Этаж или здание не найдены
+      "500":
+        description: Внутренняя ошибка сервера
 
   /api/buildings/{building_id}/intersections:
     get:
