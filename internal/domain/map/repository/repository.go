@@ -615,3 +615,22 @@ func (r *Map) GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.Polygo
 	}
 	return polygon, nil
 }
+
+func (r *Map) GetPolygonsByFloorID(ctx context.Context, floorID uuid.UUID) ([]entities.Polygon, error) {
+	dbPolygons, err := r.q.GetPolygonsByFloorID(ctx, floorID)
+	if err != nil {
+		return nil, err
+	}
+
+	polygons := make([]entities.Polygon, 0, len(dbPolygons))
+	for _, row := range dbPolygons {
+		polygons = append(polygons, entities.Polygon{
+			ID:      row.ID,
+			FloorID: row.FloorID,
+			Label:   row.Label.String,
+			ZIndex:  int32(row.ZIndex.Int32),
+		})
+	}
+
+	return polygons, nil
+}

@@ -26,6 +26,7 @@ type MapService interface {
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentities.GetObjectsResponse, error)
 	GetDoors(ctx context.Context, buildID uuid.UUID) ([]mapentities.GetDoorsResponse, error)
 	GetPolygonByID(ctx context.Context, id uuid.UUID) (mapentities.Polygon, error)
+	GetPolygonsByFloorID(ctx context.Context, floorID uuid.UUID) ([]mapentities.Polygon, error)
 }
 
 type RouteService interface {
@@ -78,6 +79,7 @@ func (p *PublicAPI) RegisterRoutes(router *gin.Engine) {
 		api.GET("/buildings/:building_id/search", p.SearchHandler)
 		// categories
 		api.GET("/categories", p.GetObjectCategories)
+		api.GET("/floors/:floor_id/poligons", p.GetPolygonsByFloorIDHandler)
 	}
 }
 
@@ -323,4 +325,31 @@ func (p *PublicAPI) GetObjectCategories(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"categories": categories})
+}
+
+func (p *PublicAPI) GetPolygonsByFloorIDHandler(c *gin.Context) {
+	floorIDParam := c.Param("floor_id")
+	floorID, err := uuid.Parse(floorIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid floor_id"})
+		return
+	}
+
+	polygons, err := p.mapService.GetPolygonsByFloorID(c.Request.Context(), floorID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	dto := make([]mapentities.Polygon, 0, len(polygons))
+	for _, p := range polygons {
+		dto = append(dto, mapentities.Polygon{
+			ID:      p.ID,
+			FloorID: p.FloorID,
+			Label:   p.Label,
+			ZIndex:  int32(p.ZIndex),
+		})
+	}
+
+	c.JSON(http.StatusOK, dto)
 }
