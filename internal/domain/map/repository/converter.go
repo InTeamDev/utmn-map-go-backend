@@ -187,7 +187,7 @@ func (c *MapConverterImpl) PolygonSqlcToEntity(row sqlc.FloorPolygon) entities.P
 	}
 }
 
-func (c *MapConverterImpl) FloorPolygon(rows []sqlc.FloorPolygon) []entities.Polygon {
+func (c *MapConverterImpl) SlicePolygonSqlcToEntity(rows []sqlc.FloorPolygon) []entities.Polygon {
 	polygons := make([]entities.Polygon, 0, len(rows))
 	for _, row := range rows {
 		polygons = append(polygons, c.PolygonSqlcToEntity(row))
