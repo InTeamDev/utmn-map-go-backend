@@ -318,3 +318,11 @@ SET
   label = COALESCE(sqlc.narg('label')::text, label),
   z_index = COALESCE(sqlc.narg('z_index')::int, z_index)
 WHERE id = @id::uuid;
+
+-- name: ChangePolygonPoint :exec
+UPDATE floor_polygon_points
+SET
+  point_order = @point_order,
+  x = @x,
+  y = @y
+WHERE polygon_id = @polygon_id::uuid AND point_order = @old_point_order;

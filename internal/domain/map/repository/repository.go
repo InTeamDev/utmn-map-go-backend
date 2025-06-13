@@ -634,3 +634,13 @@ func (r *Map) UpdatePoligon(ctx context.Context, req entities.UpdatePoligonReque
 		ZIndex: r.converter.ToSqlNullInt32(req.ZIndex),
 	})
 }
+
+func (r *Map) ChangePolygonPoint(ctx context.Context, req entities.ChangePolygonPointRequest) error {
+	return r.q.ChangePolygonPoint(ctx, sqlc.ChangePolygonPointParams{
+		PolygonID:     req.PolygonID,
+		OldPointOrder: req.OldPointOrder,
+		PointOrder:    req.NewPointOrder,
+		X:             req.X,
+		Y:             req.Y,
+	})
+}
