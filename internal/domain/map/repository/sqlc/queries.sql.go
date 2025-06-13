@@ -858,6 +858,40 @@ func (q *Queries) GetPolygonByID(ctx context.Context, id uuid.UUID) (FloorPolygo
 	return i, err
 }
 
+const getPolygonsByFloorID = `-- name: GetPolygonsByFloorID :many
+SELECT id, floor_id, label, z_index
+FROM floor_polygons
+WHERE floor_id = $1
+`
+
+func (q *Queries) GetPolygonsByFloorID(ctx context.Context, floorID uuid.UUID) ([]FloorPolygon, error) {
+	rows, err := q.db.QueryContext(ctx, getPolygonsByFloorID, floorID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FloorPolygon
+	for rows.Next() {
+		var i FloorPolygon
+		if err := rows.Scan(
+			&i.ID,
+			&i.FloorID,
+			&i.Label,
+			&i.ZIndex,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listPolygonPointsByPolygonID = `-- name: ListPolygonPointsByPolygonID :many
 SELECT
   polygon_id,

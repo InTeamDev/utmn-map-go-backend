@@ -306,3 +306,8 @@ SELECT
   o.id AS object_id
 FROM doors d
 JOIN objects o ON d.object_id = o.id;
+
+-- name: GetPolygonsByFloorID :many
+SELECT id, floor_id, label, z_index
+FROM floor_polygons
+WHERE floor_id = $1;
