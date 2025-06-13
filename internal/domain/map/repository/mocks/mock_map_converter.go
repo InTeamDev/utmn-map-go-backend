@@ -10,6 +10,7 @@
 package mocks
 
 import (
+	sql "database/sql"
 	reflect "reflect"
 
 	entities "github.com/InTeamDev/utmn-map-go-backend/internal/domain/map/entities"
@@ -180,6 +181,34 @@ func (m *MockMapConverter) ObjectsSqlcToEntityByBuilding(objects []sqlc.GetObjec
 func (mr *MockMapConverterMockRecorder) ObjectsSqlcToEntityByBuilding(objects, doors any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ObjectsSqlcToEntityByBuilding", reflect.TypeOf((*MockMapConverter)(nil).ObjectsSqlcToEntityByBuilding), objects, doors)
+}
+
+// PolygonInt32 mocks base method.
+func (m *MockMapConverter) PolygonInt32(i *int32) sql.NullInt32 {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PolygonInt32", i)
+	ret0, _ := ret[0].(sql.NullInt32)
+	return ret0
+}
+
+// PolygonInt32 indicates an expected call of PolygonInt32.
+func (mr *MockMapConverterMockRecorder) PolygonInt32(i any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PolygonInt32", reflect.TypeOf((*MockMapConverter)(nil).PolygonInt32), i)
+}
+
+// PolygonString mocks base method.
+func (m *MockMapConverter) PolygonString(s *string) sql.NullString {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PolygonString", s)
+	ret0, _ := ret[0].(sql.NullString)
+	return ret0
+}
+
+// PolygonString indicates an expected call of PolygonString.
+func (mr *MockMapConverterMockRecorder) PolygonString(s any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PolygonString", reflect.TypeOf((*MockMapConverter)(nil).PolygonString), s)
 }
 
 // SlicePolygonPointSqlcToEntity mocks base method.
