@@ -42,6 +42,20 @@ func (m *MockMapRepository) EXPECT() *MockMapRepositoryMockRecorder {
 	return m.recorder
 }
 
+// ChangePolygon mocks base method.
+func (m *MockMapRepository) ChangePolygon(ctx context.Context, req entities.ChangePolygonRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ChangePolygon", ctx, req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ChangePolygon indicates an expected call of ChangePolygon.
+func (mr *MockMapRepositoryMockRecorder) ChangePolygon(ctx, req any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangePolygon", reflect.TypeOf((*MockMapRepository)(nil).ChangePolygon), ctx, req)
+}
+
 // CreateBuilding mocks base method.
 func (m *MockMapRepository) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
 	m.ctrl.T.Helper()
