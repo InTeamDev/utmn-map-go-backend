@@ -1069,3 +1069,19 @@ func (q *Queries) UpdateObject(ctx context.Context, arg UpdateObjectParams) (Obj
 	)
 	return i, err
 }
+
+const upgradePolygonPoints = `-- name: UpgradePolygonPoints :exec
+DELETE FROM floor_polygon_points
+WHERE polygon_id = $1::uuid
+  AND point_order = ANY($2::int[])
+`
+
+type UpgradePolygonPointsParams struct {
+	PolygonID   uuid.UUID
+	PointOrders []int32
+}
+
+func (q *Queries) UpgradePolygonPoints(ctx context.Context, arg UpgradePolygonPointsParams) error {
+	_, err := q.db.ExecContext(ctx, upgradePolygonPoints, arg.PolygonID, pq.Array(arg.PointOrders))
+	return err
+}

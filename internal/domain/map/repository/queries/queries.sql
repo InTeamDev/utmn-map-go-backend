@@ -311,3 +311,8 @@ JOIN objects o ON d.object_id = o.id;
 SELECT id, floor_id, label, z_index
 FROM floor_polygons
 WHERE floor_id = $1;
+
+-- name: UpgradePolygonPoints :exec
+DELETE FROM floor_polygon_points
+WHERE polygon_id = @polygon_id::uuid
+  AND point_order = ANY(@point_orders::int[]);

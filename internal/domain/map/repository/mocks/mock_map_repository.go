@@ -427,3 +427,17 @@ func (mr *MockMapRepositoryMockRecorder) UpdateObject(ctx, id, input any) *gomoc
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateObject", reflect.TypeOf((*MockMapRepository)(nil).UpdateObject), ctx, id, input)
 }
+
+// UpgradePolygonPoints mocks base method.
+func (m *MockMapRepository) UpgradePolygonPoints(ctx context.Context, req entities.UpgradePolygonPointsRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpgradePolygonPoints", ctx, req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpgradePolygonPoints indicates an expected call of UpgradePolygonPoints.
+func (mr *MockMapRepositoryMockRecorder) UpgradePolygonPoints(ctx, req any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpgradePolygonPoints", reflect.TypeOf((*MockMapRepository)(nil).UpgradePolygonPoints), ctx, req)
+}

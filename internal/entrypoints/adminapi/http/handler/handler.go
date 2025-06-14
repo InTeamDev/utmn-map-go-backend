@@ -34,6 +34,7 @@ type MapService interface {
 	GetObjectByID(ctx context.Context, objectID uuid.UUID) (mapentities.Object, error)
 	GetObjectCategories(ctx context.Context) ([]mapentities.ObjectTypeInfo, error)
 	GetObjectsResponse(ctx context.Context, buildingID uuid.UUID) (mapentities.GetObjectsResponse, error)
+	UpgradePolygonPoints(ctx context.Context, req mapentities.UpgradePolygonPointsRequest) error
 
 	GetDoor(
 		ctx context.Context,
@@ -110,6 +111,8 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 		api.POST("/buildings/:building_id/floors/:floor_id/poligons", p.CreatePolygonHandler)
 		api.POST("/buildings/:building_id/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
 		api.DELETE("/buildings/:building_id/floors/:floor_id/poligons:poligon_id/points", p.DeletePolygonPointsHandler)
+		api.DELETE("/buildings/:building_id/floors/:floor_id/poligons:poligon_id", p.UpgradePolygonPointsHandler)
+
 		// sync
 		api.POST("/sync", p.SyncDatabaseHandler)
 		api.GET("/sync", p.GetDatabaseHandler)
@@ -460,6 +463,33 @@ func (p *AdminAPI) DeletePolygonPointsHandler(c *gin.Context) {
 	}
 
 	if err := p.mapService.DeletePolygonPoints(c.Request.Context(), req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+func (p *AdminAPI) UpgradePolygonPointsHandler(c *gin.Context) {
+	polygonID, err := uuid.Parse(c.Param("poligon_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid poligon_id"})
+		return
+	}
+
+	var body struct {
+		PointOrders []int32 `json:"point_orders"`
+	}
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = p.mapService.UpgradePolygonPoints(c.Request.Context(), mapentities.UpgradePolygonPointsRequest{
+		PolygonID:   polygonID,
+		PointOrders: body.PointOrders,
+	})
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

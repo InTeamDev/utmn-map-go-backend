@@ -597,6 +597,13 @@ func (r *Map) DeletePolygonPoints(ctx context.Context, request entities.DeletePo
 	})
 }
 
+func (r *Map) UpgradePolygonPoints(ctx context.Context, req entities.UpgradePolygonPointsRequest) error {
+	return r.q.UpgradePolygonPoints(ctx, sqlc.UpgradePolygonPointsParams{
+		PolygonID:   req.PolygonID,
+		PointOrders: req.PointOrders,
+	})
+}
+
 func (r *Map) GetPolygonByID(ctx context.Context, id uuid.UUID) (entities.Polygon, error) {
 	dbPolygon, err := r.q.GetPolygonByID(ctx, id)
 	if err != nil {

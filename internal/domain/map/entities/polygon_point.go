@@ -19,3 +19,8 @@ type DeletePolygonPointsRequest struct {
 	PolygonID   uuid.UUID `json:"polygon_id"`
 	PointOrders []int32   `json:"point_orders"`
 }
+
+type UpgradePolygonPointsRequest struct {
+	PolygonID   uuid.UUID `json:"polygon_id"`
+	PointOrders []int32   `json:"point_orders"`
+}
