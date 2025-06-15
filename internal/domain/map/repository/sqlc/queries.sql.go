@@ -14,25 +14,6 @@ import (
 	"github.com/lib/pq"
 )
 
-const changePolygon = `-- name: ChangePolygon :exec
-UPDATE floor_polygons
-SET
-  label = COALESCE($1::text, label),
-  z_index = COALESCE($2::int, z_index)
-WHERE id = $3::uuid
-`
-
-type ChangePolygonParams struct {
-	Label  sql.NullString
-	ZIndex sql.NullInt32
-	ID     uuid.UUID
-}
-
-func (q *Queries) ChangePolygon(ctx context.Context, arg ChangePolygonParams) error {
-	_, err := q.db.ExecContext(ctx, changePolygon, arg.Label, arg.ZIndex, arg.ID)
-	return err
-}
-
 const createBuilding = `-- name: CreateBuilding :one
 INSERT INTO buildings (id, name, address)
 VALUES ($1, $2, $3)
@@ -1087,4 +1068,23 @@ func (q *Queries) UpdateObject(ctx context.Context, arg UpdateObjectParams) (Obj
 		&i.FloorID,
 	)
 	return i, err
+}
+
+const updatePoligon = `-- name: UpdatePoligon :exec
+UPDATE floor_polygons
+SET
+  label = COALESCE($1::text, label),
+  z_index = COALESCE($2::int, z_index)
+WHERE id = $3::uuid
+`
+
+type UpdatePoligonParams struct {
+	Label  sql.NullString
+	ZIndex sql.NullInt32
+	ID     uuid.UUID
+}
+
+func (q *Queries) UpdatePoligon(ctx context.Context, arg UpdatePoligonParams) error {
+	_, err := q.db.ExecContext(ctx, updatePoligon, arg.Label, arg.ZIndex, arg.ID)
+	return err
 }

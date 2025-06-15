@@ -42,20 +42,6 @@ func (m *MockMapRepository) EXPECT() *MockMapRepositoryMockRecorder {
 	return m.recorder
 }
 
-// ChangePolygon mocks base method.
-func (m *MockMapRepository) ChangePolygon(ctx context.Context, req entities.ChangePolygonRequest) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ChangePolygon", ctx, req)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ChangePolygon indicates an expected call of ChangePolygon.
-func (mr *MockMapRepositoryMockRecorder) ChangePolygon(ctx, req any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangePolygon", reflect.TypeOf((*MockMapRepository)(nil).ChangePolygon), ctx, req)
-}
-
 // CreateBuilding mocks base method.
 func (m *MockMapRepository) CreateBuilding(ctx context.Context, input entities.CreateBuildingInput) (entities.Building, error) {
 	m.ctrl.T.Helper()
@@ -440,4 +426,18 @@ func (m *MockMapRepository) UpdateObject(ctx context.Context, id uuid.UUID, inpu
 func (mr *MockMapRepositoryMockRecorder) UpdateObject(ctx, id, input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateObject", reflect.TypeOf((*MockMapRepository)(nil).UpdateObject), ctx, id, input)
+}
+
+// UpdatePoligon mocks base method.
+func (m *MockMapRepository) UpdatePoligon(ctx context.Context, req entities.UpdatePoligonRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePoligon", ctx, req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdatePoligon indicates an expected call of UpdatePoligon.
+func (mr *MockMapRepositoryMockRecorder) UpdatePoligon(ctx, req any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePoligon", reflect.TypeOf((*MockMapRepository)(nil).UpdatePoligon), ctx, req)
 }

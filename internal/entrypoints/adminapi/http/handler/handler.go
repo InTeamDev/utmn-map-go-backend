@@ -58,7 +58,7 @@ type MapService interface {
 		x, y float64,
 	) (mapentities.PolygonPoint, error)
 	DeletePolygonPoints(ctx context.Context, request mapentities.DeletePolygonPointsRequest) error
-	ChangePolygon(ctx context.Context, req mapentities.ChangePolygonRequest) error
+	UpdatePoligon(ctx context.Context, req mapentities.UpdatePoligonRequest) error
 }
 
 type RouteService interface {
@@ -81,11 +81,6 @@ type RouteService interface {
 type AdminAPI struct {
 	mapService   MapService
 	routeService RouteService
-}
-
-var body struct {
-	Label  *string `json:"label"`
-	ZIndex *int32  `json:"z_index"`
 }
 
 func NewAdminAPI(mapService MapService, routeService RouteService) *AdminAPI {
@@ -116,7 +111,7 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 		api.POST("/buildings/:building_id/floors/:floor_id/poligons", p.CreatePolygonHandler)
 		api.POST("/buildings/:building_id/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
 		api.DELETE("/buildings/:building_id/floors/:floor_id/poligons:poligon_id/points", p.DeletePolygonPointsHandler)
-		api.PATCH("/buildings/:building_id/floors/:floor_id/poligons:poligon_id", p.ChangePolygonHandler)
+		api.PATCH("/buildings/:building_id/floors/:floor_id/poligons:poligon_id", p.UpdatePoligonHandler)
 		// sync
 		api.POST("/sync", p.SyncDatabaseHandler)
 		api.GET("/sync", p.GetDatabaseHandler)
@@ -671,7 +666,7 @@ func (p *AdminAPI) CreateDoorHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"door": door})
 }
 
-func (p *AdminAPI) ChangePolygonHandler(c *gin.Context) {
+func (p *AdminAPI) UpdatePoligonHandler(c *gin.Context) {
 	polygonIDParam := c.Param("poligon_id")
 	polygonID, err := uuid.Parse(polygonIDParam)
 	if err != nil {
@@ -679,12 +674,17 @@ func (p *AdminAPI) ChangePolygonHandler(c *gin.Context) {
 		return
 	}
 
+	var body struct {
+		Label  *string `json:"label"`
+		ZIndex *int32  `json:"z_index"`
+	}
+
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = p.mapService.ChangePolygon(c.Request.Context(), mapentities.ChangePolygonRequest{
+	err = p.mapService.UpdatePoligon(c.Request.Context(), mapentities.UpdatePoligonRequest{
 		ID:     polygonID,
 		Label:  body.Label,
 		ZIndex: body.ZIndex,

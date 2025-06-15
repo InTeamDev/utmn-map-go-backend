@@ -10,8 +10,8 @@ type Polygon struct {
 	Points  []PolygonPoint `json:"points"`
 }
 
-type ChangePolygonRequest struct {
-	ID     uuid.UUID
-	Label  *string
-	ZIndex *int32
+type UpdatePoligonRequest struct {
+	ID     uuid.UUID `json:"id"`
+	Label  *string   `json:"label"`
+	ZIndex *int32    `json:"z_index"`
 }

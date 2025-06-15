@@ -183,34 +183,6 @@ func (mr *MockMapConverterMockRecorder) ObjectsSqlcToEntityByBuilding(objects, d
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ObjectsSqlcToEntityByBuilding", reflect.TypeOf((*MockMapConverter)(nil).ObjectsSqlcToEntityByBuilding), objects, doors)
 }
 
-// PolygonInt32 mocks base method.
-func (m *MockMapConverter) PolygonInt32(i *int32) sql.NullInt32 {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PolygonInt32", i)
-	ret0, _ := ret[0].(sql.NullInt32)
-	return ret0
-}
-
-// PolygonInt32 indicates an expected call of PolygonInt32.
-func (mr *MockMapConverterMockRecorder) PolygonInt32(i any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PolygonInt32", reflect.TypeOf((*MockMapConverter)(nil).PolygonInt32), i)
-}
-
-// PolygonString mocks base method.
-func (m *MockMapConverter) PolygonString(s *string) sql.NullString {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PolygonString", s)
-	ret0, _ := ret[0].(sql.NullString)
-	return ret0
-}
-
-// PolygonString indicates an expected call of PolygonString.
-func (mr *MockMapConverterMockRecorder) PolygonString(s any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PolygonString", reflect.TypeOf((*MockMapConverter)(nil).PolygonString), s)
-}
-
 // SlicePolygonPointSqlcToEntity mocks base method.
 func (m *MockMapConverter) SlicePolygonPointSqlcToEntity(rows []sqlc.ListPolygonPointsByPolygonIDRow) []entities.PolygonPoint {
 	m.ctrl.T.Helper()
@@ -237,4 +209,32 @@ func (m *MockMapConverter) SlicePolygonSqlcToEntity(rows []sqlc.FloorPolygon) []
 func (mr *MockMapConverterMockRecorder) SlicePolygonSqlcToEntity(rows any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SlicePolygonSqlcToEntity", reflect.TypeOf((*MockMapConverter)(nil).SlicePolygonSqlcToEntity), rows)
+}
+
+// ToSqlNullInt32 mocks base method.
+func (m *MockMapConverter) ToSqlNullInt32(i *int32) sql.NullInt32 {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ToSqlNullInt32", i)
+	ret0, _ := ret[0].(sql.NullInt32)
+	return ret0
+}
+
+// ToSqlNullInt32 indicates an expected call of ToSqlNullInt32.
+func (mr *MockMapConverterMockRecorder) ToSqlNullInt32(i any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ToSqlNullInt32", reflect.TypeOf((*MockMapConverter)(nil).ToSqlNullInt32), i)
+}
+
+// ToSqlNullString mocks base method.
+func (m *MockMapConverter) ToSqlNullString(s *string) sql.NullString {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ToSqlNullString", s)
+	ret0, _ := ret[0].(sql.NullString)
+	return ret0
+}
+
+// ToSqlNullString indicates an expected call of ToSqlNullString.
+func (mr *MockMapConverterMockRecorder) ToSqlNullString(s any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ToSqlNullString", reflect.TypeOf((*MockMapConverter)(nil).ToSqlNullString), s)
 }

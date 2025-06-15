@@ -312,7 +312,7 @@ SELECT id, floor_id, label, z_index
 FROM floor_polygons
 WHERE floor_id = $1;
 
--- name: ChangePolygon :exec
+-- name: UpdatePoligon :exec
 UPDATE floor_polygons
 SET
   label = COALESCE(sqlc.narg('label')::text, label),

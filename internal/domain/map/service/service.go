@@ -57,7 +57,7 @@ type MapRepository interface {
 	GetObjectDoorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error)
 	DeletePolygonPoints(ctx context.Context, request entities.DeletePolygonPointsRequest) error
 	GetPolygonsByFloorID(ctx context.Context, floorID uuid.UUID) ([]entities.Polygon, error)
-	ChangePolygon(ctx context.Context, req entities.ChangePolygonRequest) error
+	UpdatePoligon(ctx context.Context, req entities.UpdatePoligonRequest) error
 }
 
 type Map struct {
@@ -326,6 +326,6 @@ func (m *Map) GetPolygonsByFloorID(ctx context.Context, floorID uuid.UUID) ([]en
 	return m.repo.GetPolygonsByFloorID(ctx, floorID)
 }
 
-func (m *Map) ChangePolygon(ctx context.Context, req entities.ChangePolygonRequest) error {
-	return m.repo.ChangePolygon(ctx, req)
+func (m *Map) UpdatePoligon(ctx context.Context, req entities.UpdatePoligonRequest) error {
+	return m.repo.UpdatePoligon(ctx, req)
 }

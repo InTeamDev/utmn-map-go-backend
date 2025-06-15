@@ -196,14 +196,14 @@ func (c *MapConverterImpl) SlicePolygonSqlcToEntity(rows []sqlc.FloorPolygon) []
 	return polygons
 }
 
-func (c *MapConverterImpl) PolygonString(s *string) sql.NullString {
+func (c *MapConverterImpl) ToSqlNullString(s *string) sql.NullString {
 	if s != nil {
 		return sql.NullString{String: *s, Valid: true}
 	}
 	return sql.NullString{Valid: false}
 }
 
-func (c *MapConverterImpl) PolygonInt32(i *int32) sql.NullInt32 {
+func (c *MapConverterImpl) ToSqlNullInt32(i *int32) sql.NullInt32 {
 	if i != nil {
 		return sql.NullInt32{Int32: *i, Valid: true}
 	}
