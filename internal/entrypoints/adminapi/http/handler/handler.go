@@ -50,7 +50,7 @@ type MapService interface {
 
 	CreateFloor(ctx context.Context, buildingID uuid.UUID, floor mapentities.Floor) error
 	CreateDoor(ctx context.Context, objectID uuid.UUID, door mapentities.Door) (mapentities.Door, error)
-	ChangePolygonPoint(ctx context.Context, req mapentities.ChangePolygonPointRequest) error
+	UpdatePolygonPoint(ctx context.Context, req mapentities.UpdatePolygonPointRequest) error
 	CreatePolygon(ctx context.Context, polygon mapentities.Polygon) (mapentities.Polygon, error)
 	CreatePolygonPoint(
 		ctx context.Context,
@@ -118,8 +118,10 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 		api.POST("/buildings/:building_id/floors/:floor_id/poligons", p.CreatePolygonHandler)
 		api.POST("/buildings/:building_id/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
 		api.DELETE("/buildings/:building_id/floors/:floor_id/poligons:poligon_id/points", p.DeletePolygonPointsHandler)
-		api.PATCH("/buildings/:building_id/floors/:floor_id/poligons:poligon_id", p.UpdatePoligonHandler)
-		api.PATCH("/floors/:floor_id/poligons/:poligon_id/points/:point_id", p.ChangePolygonPointHandler)
+		api.PATCH(
+			"/buildings/:building_id/floors/:floor_id/poligons/:poligon_id/points/:point_id",
+			p.UpdatePolygonPointHandler,
+		)
 
 		// sync
 		api.POST("/sync", p.SyncDatabaseHandler)
@@ -675,38 +677,7 @@ func (p *AdminAPI) CreateDoorHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"door": door})
 }
 
-func (p *AdminAPI) UpdatePoligonHandler(c *gin.Context) {
-	polygonIDParam := c.Param("poligon_id")
-	polygonID, err := uuid.Parse(polygonIDParam)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid poligon_id"})
-		return
-	}
-
-	var body struct {
-		Label  *string `json:"label"`
-		ZIndex *int32  `json:"z_index"`
-	}
-
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = p.mapService.UpdatePoligon(c.Request.Context(), mapentities.UpdatePoligonRequest{
-		ID:     polygonID,
-		Label:  body.Label,
-		ZIndex: body.ZIndex,
-	})
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.Status(http.StatusNoContent)
-}
-
-func (p *AdminAPI) ChangePolygonPointHandler(c *gin.Context) {
+func (p *AdminAPI) UpdatePolygonPointHandler(c *gin.Context) {
 	polygonID, err := uuid.Parse(c.Param("poligon_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid poligon_id"})
@@ -724,7 +695,7 @@ func (p *AdminAPI) ChangePolygonPointHandler(c *gin.Context) {
 		return
 	}
 
-	req := mapentities.ChangePolygonPointRequest{
+	req := mapentities.UpdatePolygonPointRequest{
 		PolygonID:     polygonID,
 		OldPointOrder: int32(oldOrder),
 		NewPointOrder: body.PointOrder,
@@ -732,7 +703,7 @@ func (p *AdminAPI) ChangePolygonPointHandler(c *gin.Context) {
 		Y:             body.Y,
 	}
 
-	if err := p.mapService.ChangePolygonPoint(c.Request.Context(), req); err != nil {
+	if err := p.mapService.UpdatePolygonPoint(c.Request.Context(), req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
