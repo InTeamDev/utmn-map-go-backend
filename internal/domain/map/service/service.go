@@ -56,7 +56,7 @@ type MapRepository interface {
 	GetDoorFloorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error)
 	GetObjectDoorPairs(ctx context.Context) (map[uuid.UUID]uuid.UUID, error)
 	DeletePolygonPoints(ctx context.Context, request entities.DeletePolygonPointsRequest) error
-	ChangePolygonPoint(ctx context.Context, req entities.ChangePolygonPointRequest) error
+	UpdatePolygonPoint(ctx context.Context, req entities.UpdatePolygonPointRequest) error
 	GetPolygonsByFloorID(ctx context.Context, floorID uuid.UUID) ([]entities.Polygon, error)
 }
 
@@ -326,6 +326,6 @@ func (m *Map) GetPolygonsByFloorID(ctx context.Context, floorID uuid.UUID) ([]en
 	return m.repo.GetPolygonsByFloorID(ctx, floorID)
 }
 
-func (s *Map) ChangePolygonPoint(ctx context.Context, req entities.ChangePolygonPointRequest) error {
-	return s.repo.ChangePolygonPoint(ctx, req)
+func (m *Map) UpdatePolygonPoint(ctx context.Context, req entities.UpdatePolygonPointRequest) error {
+	return m.repo.UpdatePolygonPoint(ctx, req)
 }

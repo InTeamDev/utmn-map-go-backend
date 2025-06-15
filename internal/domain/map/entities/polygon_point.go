@@ -20,10 +20,10 @@ type DeletePolygonPointsRequest struct {
 	PointOrders []int32   `json:"point_orders"`
 }
 
-type ChangePolygonPointRequest struct {
-	PolygonID     uuid.UUID
-	OldPointOrder int32
-	NewPointOrder int32
-	X             float64
-	Y             float64
+type UpdatePolygonPointRequest struct {
+	PolygonID     uuid.UUID `json:"polygon_id"`
+	OldPointOrder int32     `json:"old_point_order"`
+	NewPointOrder int32     `json:"point_order"`
+	X             float64   `json:"x"`
+	Y             float64   `json:"y"`
 }

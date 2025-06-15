@@ -14,34 +14,6 @@ import (
 	"github.com/lib/pq"
 )
 
-const changePolygonPoint = `-- name: ChangePolygonPoint :exec
-UPDATE floor_polygon_points
-SET
-  point_order = $1,
-  x = $2,
-  y = $3
-WHERE polygon_id = $4::uuid AND point_order = $5
-`
-
-type ChangePolygonPointParams struct {
-	PointOrder    int32
-	X             float64
-	Y             float64
-	PolygonID     uuid.UUID
-	OldPointOrder int32
-}
-
-func (q *Queries) ChangePolygonPoint(ctx context.Context, arg ChangePolygonPointParams) error {
-	_, err := q.db.ExecContext(ctx, changePolygonPoint,
-		arg.PointOrder,
-		arg.X,
-		arg.Y,
-		arg.PolygonID,
-		arg.OldPointOrder,
-	)
-	return err
-}
-
 const createBuilding = `-- name: CreateBuilding :one
 INSERT INTO buildings (id, name, address)
 VALUES ($1, $2, $3)
@@ -1096,4 +1068,32 @@ func (q *Queries) UpdateObject(ctx context.Context, arg UpdateObjectParams) (Obj
 		&i.FloorID,
 	)
 	return i, err
+}
+
+const updatePolygonPoint = `-- name: UpdatePolygonPoint :exec
+UPDATE floor_polygon_points
+SET
+  point_order = COALESCE($1, point_order),
+  x = COALESCE($2, x),
+  y = COALESCE($3, y)
+WHERE polygon_id = $4::uuid AND point_order = $5
+`
+
+type UpdatePolygonPointParams struct {
+	PointOrder    int32
+	X             float64
+	Y             float64
+	PolygonID     uuid.UUID
+	OldPointOrder int32
+}
+
+func (q *Queries) UpdatePolygonPoint(ctx context.Context, arg UpdatePolygonPointParams) error {
+	_, err := q.db.ExecContext(ctx, updatePolygonPoint,
+		arg.PointOrder,
+		arg.X,
+		arg.Y,
+		arg.PolygonID,
+		arg.OldPointOrder,
+	)
+	return err
 }
