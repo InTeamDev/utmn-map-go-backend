@@ -110,8 +110,8 @@ func (p *AdminAPI) RegisterRoutes(router *gin.Engine, m ...gin.HandlerFunc) {
 		// polygons
 		api.POST("/buildings/:building_id/floors/:floor_id/poligons", p.CreatePolygonHandler)
 		api.POST("/buildings/:building_id/floors/:floor_id/poligons/:p_id/points", p.CreatePolygonPointsHandler)
-		api.DELETE("/buildings/:building_id/floors/:floor_id/poligons:poligon_id/points", p.DeletePolygonPointsHandler)
-		api.DELETE("/buildings/:building_id/floors/:floor_id/poligons:poligon_id", p.UpgradePolygonPointsHandler)
+		api.DELETE("/buildings/:building_id/floors/:floor_id/poligons/:poligon_id/points", p.DeletePolygonPointsHandler)
+		api.DELETE("/buildings/:building_id/floors/:floor_id/poligons/:poligon_id", p.UpgradePolygonPointsHandler)
 
 		// sync
 		api.POST("/sync", p.SyncDatabaseHandler)
