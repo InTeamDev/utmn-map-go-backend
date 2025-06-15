@@ -311,3 +311,10 @@ JOIN objects o ON d.object_id = o.id;
 SELECT id, floor_id, label, z_index
 FROM floor_polygons
 WHERE floor_id = $1;
+
+-- name: UpdatePoligon :exec
+UPDATE floor_polygons
+SET
+  label = COALESCE(sqlc.narg('label')::text, label),
+  z_index = COALESCE(sqlc.narg('z_index')::int, z_index)
+WHERE id = @id::uuid;
