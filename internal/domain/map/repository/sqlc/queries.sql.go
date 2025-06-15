@@ -1069,3 +1069,31 @@ func (q *Queries) UpdateObject(ctx context.Context, arg UpdateObjectParams) (Obj
 	)
 	return i, err
 }
+
+const updatePolygonPoint = `-- name: UpdatePolygonPoint :exec
+UPDATE floor_polygon_points
+SET
+  point_order = COALESCE($1, point_order),
+  x = COALESCE($2, x),
+  y = COALESCE($3, y)
+WHERE polygon_id = $4::uuid AND point_order = $5
+`
+
+type UpdatePolygonPointParams struct {
+	PointOrder    int32
+	X             float64
+	Y             float64
+	PolygonID     uuid.UUID
+	OldPointOrder int32
+}
+
+func (q *Queries) UpdatePolygonPoint(ctx context.Context, arg UpdatePolygonPointParams) error {
+	_, err := q.db.ExecContext(ctx, updatePolygonPoint,
+		arg.PointOrder,
+		arg.X,
+		arg.Y,
+		arg.PolygonID,
+		arg.OldPointOrder,
+	)
+	return err
+}

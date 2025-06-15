@@ -311,3 +311,11 @@ JOIN objects o ON d.object_id = o.id;
 SELECT id, floor_id, label, z_index
 FROM floor_polygons
 WHERE floor_id = $1;
+
+-- name: UpdatePolygonPoint :exec
+UPDATE floor_polygon_points
+SET
+  point_order = COALESCE(@point_order, point_order),
+  x = COALESCE(@x, x),
+  y = COALESCE(@y, y)
+WHERE polygon_id = @polygon_id::uuid AND point_order = @old_point_order;
