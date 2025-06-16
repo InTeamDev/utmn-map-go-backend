@@ -312,9 +312,17 @@ SELECT id, floor_id, label, z_index
 FROM floor_polygons
 WHERE floor_id = $1;
 
--- name: UpdatePoligon :exec
+-- name: UpdatePolygon :exec
 UPDATE floor_polygons
 SET
   label = COALESCE(sqlc.narg('label')::text, label),
   z_index = COALESCE(sqlc.narg('z_index')::int, z_index)
 WHERE id = @id::uuid;
+
+-- name: UpdatePolygonPoint :exec
+UPDATE floor_polygon_points
+SET
+  point_order = COALESCE(@point_order, point_order),
+  x = COALESCE(@x, x),
+  y = COALESCE(@y, y)
+WHERE polygon_id = @polygon_id::uuid AND point_order = @old_point_order;

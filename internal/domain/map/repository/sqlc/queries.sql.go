@@ -1070,7 +1070,7 @@ func (q *Queries) UpdateObject(ctx context.Context, arg UpdateObjectParams) (Obj
 	return i, err
 }
 
-const updatePoligon = `-- name: UpdatePoligon :exec
+const UpdatePolygon = `-- name: UpdatePolygon :exec
 UPDATE floor_polygons
 SET
   label = COALESCE($1::text, label),
@@ -1078,13 +1078,41 @@ SET
 WHERE id = $3::uuid
 `
 
-type UpdatePoligonParams struct {
+type UpdatePolygonParams struct {
 	Label  sql.NullString
 	ZIndex sql.NullInt32
 	ID     uuid.UUID
 }
 
-func (q *Queries) UpdatePoligon(ctx context.Context, arg UpdatePoligonParams) error {
-	_, err := q.db.ExecContext(ctx, updatePoligon, arg.Label, arg.ZIndex, arg.ID)
+func (q *Queries) UpdatePolygon(ctx context.Context, arg UpdatePolygonParams) error {
+	_, err := q.db.ExecContext(ctx, UpdatePolygon, arg.Label, arg.ZIndex, arg.ID)
+	return err
+}
+
+const updatePolygonPoint = `-- name: UpdatePolygonPoint :exec
+UPDATE floor_polygon_points
+SET
+  point_order = COALESCE($1, point_order),
+  x = COALESCE($2, x),
+  y = COALESCE($3, y)
+WHERE polygon_id = $4::uuid AND point_order = $5
+`
+
+type UpdatePolygonPointParams struct {
+	PointOrder    int32
+	X             float64
+	Y             float64
+	PolygonID     uuid.UUID
+	OldPointOrder int32
+}
+
+func (q *Queries) UpdatePolygonPoint(ctx context.Context, arg UpdatePolygonPointParams) error {
+	_, err := q.db.ExecContext(ctx, updatePolygonPoint,
+		arg.PointOrder,
+		arg.X,
+		arg.Y,
+		arg.PolygonID,
+		arg.OldPointOrder,
+	)
 	return err
 }
