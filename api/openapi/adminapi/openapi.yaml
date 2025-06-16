@@ -473,7 +473,7 @@ paths:
   /buildings/{building_id}/floors/{floor_id}/poligons/{poligon_id}:
     patch:
       summary: Обновление полигона
-      operationId: updatePoligon
+      operationId: UpdatePolygon
       tags:
         - Poligons
       parameters:
@@ -504,7 +504,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdatePoligonRequestBody"
+              $ref: "#/components/schemas/UpdatePolygonRequestBody"
       responses:
         "204":
           description: Успешно обновлено, без контента в ответе
@@ -1252,7 +1252,7 @@ components:
       required:
         - polygon_id
 
-    UpdatePoligonRequestBody:
+    UpdatePolygonRequestBody:
       type: object
       description: Схема тела запроса для обновления полигона
       properties:

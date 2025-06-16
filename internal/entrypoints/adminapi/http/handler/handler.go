@@ -59,7 +59,7 @@ type MapService interface {
 		x, y float64,
 	) (mapentities.PolygonPoint, error)
 	DeletePolygonPoints(ctx context.Context, request mapentities.DeletePolygonPointsRequest) error
-	UpdatePoligon(ctx context.Context, req mapentities.UpdatePoligonRequest) error
+	UpdatePolygon(ctx context.Context, req mapentities.UpdatePolygonRequest) error
 }
 
 type RouteService interface {
@@ -77,12 +77,6 @@ type RouteService interface {
 	// DeleteNode(ctx context.Context, id uuid.UUID) error
 	GetConnections(ctx context.Context, buildingID uuid.UUID) ([]routeentities.Connection, error)
 	DeleteIntersection(ctx context.Context, buildingID, intersectionID uuid.UUID) error
-}
-
-var body struct {
-	PointOrder int32   `json:"point_order"`
-	X          float64 `json:"x"`
-	Y          float64 `json:"y"`
 }
 
 type AdminAPI struct {
@@ -683,7 +677,11 @@ func (p *AdminAPI) UpdatePolygonPointHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid poligon_id"})
 		return
 	}
-
+	var body struct {
+		PointOrder int32   `json:"point_order"`
+		X          float64 `json:"x"`
+		Y          float64 `json:"y"`
+	}
 	oldOrder, err := strconv.Atoi(c.Param("point_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid point_id"})

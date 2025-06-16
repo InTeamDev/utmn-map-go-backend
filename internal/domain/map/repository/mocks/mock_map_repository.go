@@ -428,18 +428,18 @@ func (mr *MockMapRepositoryMockRecorder) UpdateObject(ctx, id, input any) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateObject", reflect.TypeOf((*MockMapRepository)(nil).UpdateObject), ctx, id, input)
 }
 
-// UpdatePoligon mocks base method.
-func (m *MockMapRepository) UpdatePoligon(ctx context.Context, req entities.UpdatePoligonRequest) error {
+// UpdatePolygon mocks base method.
+func (m *MockMapRepository) UpdatePolygon(ctx context.Context, req entities.UpdatePolygonRequest) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdatePoligon", ctx, req)
+	ret := m.ctrl.Call(m, "UpdatePolygon", ctx, req)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// UpdatePoligon indicates an expected call of UpdatePoligon.
-func (mr *MockMapRepositoryMockRecorder) UpdatePoligon(ctx, req any) *gomock.Call {
+// UpdatePolygon indicates an expected call of UpdatePolygon.
+func (mr *MockMapRepositoryMockRecorder) UpdatePolygon(ctx, req any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePoligon", reflect.TypeOf((*MockMapRepository)(nil).UpdatePoligon), ctx, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePolygon", reflect.TypeOf((*MockMapRepository)(nil).UpdatePolygon), ctx, req)
 }
 
 // UpdatePolygonPoint mocks base method.

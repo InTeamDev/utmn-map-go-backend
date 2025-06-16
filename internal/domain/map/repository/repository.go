@@ -627,8 +627,8 @@ func (r *Map) GetPolygonsByFloorID(ctx context.Context, floorID uuid.UUID) ([]en
 	return r.converter.SlicePolygonSqlcToEntity(dbPolygons), nil
 }
 
-func (r *Map) UpdatePoligon(ctx context.Context, req entities.UpdatePoligonRequest) error {
-	return r.q.UpdatePoligon(ctx, sqlc.UpdatePoligonParams{
+func (r *Map) UpdatePolygon(ctx context.Context, req entities.UpdatePolygonRequest) error {
+	return r.q.UpdatePolygon(ctx, sqlc.UpdatePolygonParams{
 		ID:     req.ID,
 		Label:  r.converter.ToSqlNullString(req.Label),
 		ZIndex: r.converter.ToSqlNullInt32(req.ZIndex),

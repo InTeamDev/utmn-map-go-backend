@@ -1070,7 +1070,7 @@ func (q *Queries) UpdateObject(ctx context.Context, arg UpdateObjectParams) (Obj
 	return i, err
 }
 
-const updatePoligon = `-- name: UpdatePoligon :exec
+const UpdatePolygon = `-- name: UpdatePolygon :exec
 UPDATE floor_polygons
 SET
   label = COALESCE($1::text, label),
@@ -1078,14 +1078,14 @@ SET
 WHERE id = $3::uuid
 `
 
-type UpdatePoligonParams struct {
+type UpdatePolygonParams struct {
 	Label  sql.NullString
 	ZIndex sql.NullInt32
 	ID     uuid.UUID
 }
 
-func (q *Queries) UpdatePoligon(ctx context.Context, arg UpdatePoligonParams) error {
-	_, err := q.db.ExecContext(ctx, updatePoligon, arg.Label, arg.ZIndex, arg.ID)
+func (q *Queries) UpdatePolygon(ctx context.Context, arg UpdatePolygonParams) error {
+	_, err := q.db.ExecContext(ctx, UpdatePolygon, arg.Label, arg.ZIndex, arg.ID)
 	return err
 }
 
