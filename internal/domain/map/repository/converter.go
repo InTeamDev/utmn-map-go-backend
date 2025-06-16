@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"encoding/json"
 
 	"github.com/google/uuid"
@@ -193,4 +194,18 @@ func (c *MapConverterImpl) SlicePolygonSqlcToEntity(rows []sqlc.FloorPolygon) []
 		polygons = append(polygons, c.PolygonSqlcToEntity(row))
 	}
 	return polygons
+}
+
+func (c *MapConverterImpl) ToSqlNullString(s *string) sql.NullString {
+	if s != nil {
+		return sql.NullString{String: *s, Valid: true}
+	}
+	return sql.NullString{Valid: false}
+}
+
+func (c *MapConverterImpl) ToSqlNullInt32(i *int32) sql.NullInt32 {
+	if i != nil {
+		return sql.NullInt32{Int32: *i, Valid: true}
+	}
+	return sql.NullInt32{Valid: false}
 }

@@ -1069,3 +1069,22 @@ func (q *Queries) UpdateObject(ctx context.Context, arg UpdateObjectParams) (Obj
 	)
 	return i, err
 }
+
+const updatePoligon = `-- name: UpdatePoligon :exec
+UPDATE floor_polygons
+SET
+  label = COALESCE($1::text, label),
+  z_index = COALESCE($2::int, z_index)
+WHERE id = $3::uuid
+`
+
+type UpdatePoligonParams struct {
+	Label  sql.NullString
+	ZIndex sql.NullInt32
+	ID     uuid.UUID
+}
+
+func (q *Queries) UpdatePoligon(ctx context.Context, arg UpdatePoligonParams) error {
+	_, err := q.db.ExecContext(ctx, updatePoligon, arg.Label, arg.ZIndex, arg.ID)
+	return err
+}
