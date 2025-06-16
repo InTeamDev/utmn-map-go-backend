@@ -470,7 +470,52 @@ paths:
           description: Invalid input
         "500":
           description: Internal server error
-
+  /buildings/{building_id}/floors/{floor_id}/poligons/{poligon_id}:
+    patch:
+      summary: Обновление полигона
+      operationId: updatePoligon
+      tags:
+        - Poligons
+      parameters:
+        - name: building_id
+          in: path
+          required: true
+          description: UUID здания
+          schema:
+            type: string
+            format: uuid
+        - name: floor_id
+          in: path
+          required: true
+          description: UUID этажа
+          schema:
+            type: string
+            format: uuid
+        - name: poligon_id
+          in: path
+          required: true
+          description: UUID полигона
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Параметры для обновления полигона (все поля опциональные)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePoligonRequestBody"
+      responses:
+        "204":
+          description: Успешно обновлено, без контента в ответе
+        "400":
+          description: Ошибка валидации запроса или неверный UUID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Внутренняя ошибка сервера
   /api/buildings/{building_id}/floors/{floor_id}/poligons/{p_id}/points:
     post:
       tags:
@@ -1206,3 +1251,16 @@ components:
             format: uuid
       required:
         - polygon_id
+
+    UpdatePoligonRequestBody:
+      type: object
+      description: Схема тела запроса для обновления полигона
+      properties:
+        label:
+          type: string
+          description: Новый лейбл полигона
+        z_index:
+          type: integer
+          format: int32
+          description: Новый z-index полигона
+      additionalProperties: false
